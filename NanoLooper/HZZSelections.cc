@@ -317,7 +317,7 @@ vector<Jet> getJets(bool reapplyJEC, bool isSim) {
     Jet jet;
     jet.p4.SetPtEtaPhiM(Jet_pt()[i], Jet_eta()[i], Jet_phi()[i], Jet_mass()[i]);
     jet.bTag = Jet_btagDeepFlavB()[i];
-    if (isSim)
+    if (!gconf.is_data)
       jet.hadronFlavour = Jet_hadronFlavour()[i];
     else
       jet.hadronFlavour = 0;

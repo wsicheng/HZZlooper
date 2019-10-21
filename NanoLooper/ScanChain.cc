@@ -62,6 +62,7 @@ int ScanChain(TChain *ch, string sample, string outdir) {
 
   // set configuration parameters
   gconf.GetConfigs(2017);
+  gconf.GetSampleType(sample);
 
   while ( (currentFile = (TFile*)fileIter.Next()) ) {
     TFile *file = TFile::Open( currentFile->GetTitle() );

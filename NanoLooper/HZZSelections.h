@@ -2,6 +2,7 @@
 #define NZZSelections_H
 
 #include "../NanoCORE/Nano.h"
+#include "../NanoCORE/Config.h"
 #include "PhysicsObjects.h"
 
 const float k_minPt_photon = 55;

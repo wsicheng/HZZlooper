@@ -42,9 +42,14 @@ void GlobalConfig::GetConfigsFromDatasetName(std::string dsname)
 
 void GlobalConfig::GetSampleType(std::string dsname) {
 
-  if (dsname.find("Run201") != std::string::npos) is_data = true;
+  if (dsname.find("leMuon") != std::string::npos ||
+      dsname.find("leElectron") != std::string::npos ||
+      dsname.find("EGamma") != std::string::npos ||
+      dsname.find("SinglePhoton") != std::string::npos
+      )
+    is_data = true;
 
-  if (dsname.find("data") != std::string::npos ) samptype = "data";
+  if (is_data) samptype = dsname;
   else if ( dsname.find("TTJets") != std::string::npos ) samptype = "ttbar";
   else if ( dsname.find("ST_") != std::string::npos ) samptype = "singletop";
   else if ( dsname.find("TTW") != std::string::npos ) samptype = "ttW";
