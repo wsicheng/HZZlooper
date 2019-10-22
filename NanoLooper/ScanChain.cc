@@ -45,17 +45,23 @@ using namespace std;
 using namespace tas;
 using namespace utils;
 
+// turn on to apply json file to data
+const bool applyGoodRunList = true;
+
 int ScanChain(TChain *ch, string sample, string outdir) {
 
   TFile* fout = new TFile(Form("%s/%s.root", outdir.c_str(), sample.c_str()), "RECREATE");
   // H1(met, 50, 0, -1);
 
-  int nEventsTotal = 0;
-  int nEventsChain = ch->GetEntries();
+  unsigned int nEventsChain = ch->GetEntries();
+  unsigned int nEventsTotal = 0;
+  unsigned int nPassedTotal = 0;
+  unsigned int nDuplicates = 0;
   TFile *currentFile = 0;
   TObjArray *listOfFiles = ch->GetListOfFiles();
   TIter fileIter(listOfFiles);
   tqdm bar;
+  const bool show_progress = (sample.find("_") == string::npos);
 
   map<string,TH1*> hvec;
   // TFile* outfile = new TFile("hists.root", "RECREATE");
@@ -63,6 +69,12 @@ int ScanChain(TChain *ch, string sample, string outdir) {
   // set configuration parameters
   gconf.GetConfigs(2017);
   gconf.GetSampleType(sample);
+
+  if (applyGoodRunList && gconf.is_data) {
+    const char* json_file = "../NanoCORE/goodrun_files/Cert_271036-325175_13TeV_Combined161718_JSON_snt.txt";
+    cout << ">>> Loading goodrun json file: " << json_file << endl;
+    set_goodrun_file(json_file);
+  }
 
   while ( (currentFile = (TFile*)fileIter.Next()) ) {
     TFile *file = TFile::Open( currentFile->GetTitle() );
@@ -75,15 +87,29 @@ int ScanChain(TChain *ch, string sample, string outdir) {
     // auto psRead = new TTreePerfStats("readPerf", tree);
     nt.Init(tree);
 
-    for( unsigned int event = 0; event < tree->GetEntriesFast(); ++event) {
+    for( unsigned int evt = 0; evt < tree->GetEntriesFast(); ++evt) {
 
-      nt.GetEntry(event);
-      tree->LoadTree(event);
+      nt.GetEntry(evt);
+      tree->LoadTree(evt);
 
       nEventsTotal++;
-      bar.progress(nEventsTotal, nEventsChain);
+      if (show_progress) bar.progress(nEventsTotal, nEventsChain);
 
       // if (event > 50000) break;
+
+      if (gconf.is_data) {
+        if (applyGoodRunList && !goodrun(run(), luminosityBlock())) continue;
+        duplicate_removal::DorkyEventIdentifier id(run(), event(), luminosityBlock());
+        if (is_duplicate(id)) {
+          ++nDuplicates;
+          continue;
+        }
+      }
+
+      bool passMETfilt = passesMETfilters(gconf.is_data);
+      if (!passMETfilt) continue;
+
+      nPassedTotal++;
 
       auto tightElectrons = getElectrons();
       auto tightMuons = getMuons();
@@ -183,7 +209,6 @@ int ScanChain(TChain *ch, string sample, string outdir) {
       // std::tie(njets,nbtags,ht) = getJetInfo(leps);
 
       // float met = MET_pt();
-      // bool passfilt = passesMETfilters(false);
 
       // debug(passfilt,nbtags,met,njets,nleps);
 
@@ -204,19 +229,13 @@ int ScanChain(TChain *ch, string sample, string outdir) {
       // h_nleps->Fill(leps.size());
       // h_weight->Fill(weight);
 
-      // h_ptratio->Fill(getPtRatio(lep1.id(),lep1.idx()));
-      // h_ptratio->Fill(getPtRatio(lep2.id(),lep2.idx()));
-      // h_ptrel->Fill(getPtRel(lep1.id(),lep1.idx()));
-      // h_ptrel->Fill(getPtRel(lep2.id(),lep2.idx()));
-
-
     } // Event loop
 
     delete file;
 
 
   } // File loop
-  bar.finish();
+  if (show_progress) bar.finish();
 
   fout->cd();
   for (auto& h : hvec) {
@@ -229,5 +248,11 @@ int ScanChain(TChain *ch, string sample, string outdir) {
 
   // fout->Write();
   fout->Close();
+
+  cout << "\n---------------------------------" << endl;
+  cout << nEventsTotal << " Events Processed, where " << nDuplicates << " duplicates were skipped, and ";
+  cout << nPassedTotal << " Events passed all selections." << endl;
+  cout << "---------------------------------\n" << endl;
+
   return 0;
 }
