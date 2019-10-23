@@ -924,6 +924,8 @@ void Nano::Init(TTree *tree) {
     if (b_HLT_IsoMu20_eta2p1_TightChargedIsoPFTauHPS27_eta2p1_TightID_CrossL1_) { b_HLT_IsoMu20_eta2p1_TightChargedIsoPFTauHPS27_eta2p1_TightID_CrossL1_->SetAddress(&HLT_IsoMu20_eta2p1_TightChargedIsoPFTauHPS27_eta2p1_TightID_CrossL1_); }
     b_HLT_IsoMu24_ = tree->GetBranch("HLT_IsoMu24");
     if (b_HLT_IsoMu24_) { b_HLT_IsoMu24_->SetAddress(&HLT_IsoMu24_); }
+    b_HLT_IsoTkMu24_ = tree->GetBranch("HLT_IsoTkMu24");
+    if (b_HLT_IsoTkMu24_) { b_HLT_IsoTkMu24_->SetAddress(&HLT_IsoTkMu24_); }
     b_HLT_IsoMu24_TwoProngs35_ = tree->GetBranch("HLT_IsoMu24_TwoProngs35");
     if (b_HLT_IsoMu24_TwoProngs35_) { b_HLT_IsoMu24_TwoProngs35_->SetAddress(&HLT_IsoMu24_TwoProngs35_); }
     b_HLT_IsoMu24_eta2p1_ = tree->GetBranch("HLT_IsoMu24_eta2p1");
@@ -1470,6 +1472,8 @@ void Nano::Init(TTree *tree) {
     if (b_HLT_Photon200_) { b_HLT_Photon200_->SetAddress(&HLT_Photon200_); }
     b_HLT_Photon20_HoverELoose_ = tree->GetBranch("HLT_Photon20_HoverELoose");
     if (b_HLT_Photon20_HoverELoose_) { b_HLT_Photon20_HoverELoose_->SetAddress(&HLT_Photon20_HoverELoose_); }
+    b_HLT_Photon250_NoHE_ = tree->GetBranch("HLT_Photon250_NoHE");
+    if (b_HLT_Photon250_NoHE_) { b_HLT_Photon250_NoHE_->SetAddress(&HLT_Photon250_NoHE_); }
     b_HLT_Photon300_NoHE_ = tree->GetBranch("HLT_Photon300_NoHE");
     if (b_HLT_Photon300_NoHE_) { b_HLT_Photon300_NoHE_->SetAddress(&HLT_Photon300_NoHE_); }
     b_HLT_Photon30_HoverELoose_ = tree->GetBranch("HLT_Photon30_HoverELoose");
@@ -2622,6 +2626,8 @@ void Nano::Init(TTree *tree) {
     if (b_Photon_charge_) { b_Photon_charge_->SetAddress(&Photon_charge_); }
     b_Photon_cleanmask_ = tree->GetBranch("Photon_cleanmask");
     if (b_Photon_cleanmask_) { b_Photon_cleanmask_->SetAddress(&Photon_cleanmask_); }
+    b_Photon_cutBased_ = tree->GetBranch("Photon_cutBased");
+    if (b_Photon_cutBased_) { b_Photon_cutBased_->SetAddress(&Photon_cutBased_); }
     b_Photon_cutBasedBitmap_ = tree->GetBranch("Photon_cutBasedBitmap");
     if (b_Photon_cutBasedBitmap_) { b_Photon_cutBasedBitmap_->SetAddress(&Photon_cutBasedBitmap_); }
     b_Photon_cutBasedV1Bitmap_ = tree->GetBranch("Photon_cutBasedV1Bitmap");
@@ -3432,6 +3438,7 @@ void Nano::GetEntry(unsigned int idx) {
     loaded_HLT_IsoMu20_eta2p1_TightChargedIsoPFTauHPS27_eta2p1_CrossL1_ = false;
     loaded_HLT_IsoMu20_eta2p1_TightChargedIsoPFTauHPS27_eta2p1_TightID_CrossL1_ = false;
     loaded_HLT_IsoMu24_ = false;
+    loaded_HLT_IsoTkMu24_ = false;
     loaded_HLT_IsoMu24_TwoProngs35_ = false;
     loaded_HLT_IsoMu24_eta2p1_ = false;
     loaded_HLT_IsoMu24_eta2p1_MediumChargedIsoPFTau50_Trk30_eta2p1_1pr_ = false;
@@ -3705,6 +3712,7 @@ void Nano::GetEntry(unsigned int idx) {
     loaded_HLT_Photon20_ = false;
     loaded_HLT_Photon200_ = false;
     loaded_HLT_Photon20_HoverELoose_ = false;
+    loaded_HLT_Photon250_NoHE_ = false;
     loaded_HLT_Photon300_NoHE_ = false;
     loaded_HLT_Photon30_HoverELoose_ = false;
     loaded_HLT_Photon33_ = false;
@@ -4284,6 +4292,7 @@ void Nano::GetEntry(unsigned int idx) {
     loaded_PV_z_ = false;
     loaded_Photon_charge_ = false;
     loaded_Photon_cleanmask_ = false;
+    loaded_Photon_cutBased_ = false;
     loaded_Photon_cutBasedBitmap_ = false;
     loaded_Photon_cutBasedV1Bitmap_ = false;
     loaded_Photon_eCorr_ = false;
@@ -8383,6 +8392,14 @@ const bool &Nano::HLT_IsoMu24() {
     }
     return HLT_IsoMu24_;
 }
+const bool &Nano::HLT_IsoTkMu24() {
+    if (!loaded_HLT_IsoTkMu24_) {
+        if (!b_HLT_IsoTkMu24_) throw std::runtime_error("HLT_IsoTkMu24 branch doesn't exist");
+        b_HLT_IsoTkMu24_->GetEntry(index);
+        loaded_HLT_IsoTkMu24_ = true;
+    }
+    return HLT_IsoTkMu24_;
+}
 const bool &Nano::HLT_IsoMu24_TwoProngs35() {
     if (!loaded_HLT_IsoMu24_TwoProngs35_) {
         if (!b_HLT_IsoMu24_TwoProngs35_) throw std::runtime_error("HLT_IsoMu24_TwoProngs35 branch doesn't exist");
@@ -10566,6 +10583,14 @@ const bool &Nano::HLT_Photon20_HoverELoose() {
         loaded_HLT_Photon20_HoverELoose_ = true;
     }
     return HLT_Photon20_HoverELoose_;
+}
+const bool &Nano::HLT_Photon250_NoHE() {
+    if (!loaded_HLT_Photon250_NoHE_) {
+        if (!b_HLT_Photon250_NoHE_) throw std::runtime_error("HLT_Photon250_NoHE branch doesn't exist");
+        b_HLT_Photon250_NoHE_->GetEntry(index);
+        loaded_HLT_Photon250_NoHE_ = true;
+    }
+    return HLT_Photon250_NoHE_;
 }
 const bool &Nano::HLT_Photon300_NoHE() {
     if (!loaded_HLT_Photon300_NoHE_) {
@@ -15329,6 +15354,15 @@ const vector<UChar_t> &Nano::Photon_cleanmask() {
     }
     return v_Photon_cleanmask_;
 }
+const vector<int> &Nano::Photon_cutBased() {
+    if (!loaded_Photon_cutBased_) {
+        if (!b_Photon_cutBased_) throw std::runtime_error("Photon_cutBased branch doesn't exist");
+        int bytes = b_Photon_cutBased_->GetEntry(index);
+        v_Photon_cutBased_ = vector<int>(Photon_cutBased_,Photon_cutBased_+bytes/sizeof(Photon_cutBased_[0]));
+        loaded_Photon_cutBased_ = true;
+    }
+    return v_Photon_cutBased_;
+}
 const vector<int> &Nano::Photon_cutBasedBitmap() {
     if (!loaded_Photon_cutBasedBitmap_) {
         if (!b_Photon_cutBasedBitmap_) throw std::runtime_error("Photon_cutBasedBitmap branch doesn't exist");
@@ -17332,6 +17366,7 @@ namespace tas {
     const bool &HLT_IsoMu20_eta2p1_TightChargedIsoPFTauHPS27_eta2p1_CrossL1() { return nt.HLT_IsoMu20_eta2p1_TightChargedIsoPFTauHPS27_eta2p1_CrossL1(); }
     const bool &HLT_IsoMu20_eta2p1_TightChargedIsoPFTauHPS27_eta2p1_TightID_CrossL1() { return nt.HLT_IsoMu20_eta2p1_TightChargedIsoPFTauHPS27_eta2p1_TightID_CrossL1(); }
     const bool &HLT_IsoMu24() { return nt.HLT_IsoMu24(); }
+    const bool &HLT_IsoTkMu24() { return nt.HLT_IsoTkMu24(); }
     const bool &HLT_IsoMu24_TwoProngs35() { return nt.HLT_IsoMu24_TwoProngs35(); }
     const bool &HLT_IsoMu24_eta2p1() { return nt.HLT_IsoMu24_eta2p1(); }
     const bool &HLT_IsoMu24_eta2p1_MediumChargedIsoPFTau50_Trk30_eta2p1_1pr() { return nt.HLT_IsoMu24_eta2p1_MediumChargedIsoPFTau50_Trk30_eta2p1_1pr(); }
@@ -17605,6 +17640,7 @@ namespace tas {
     const bool &HLT_Photon20() { return nt.HLT_Photon20(); }
     const bool &HLT_Photon200() { return nt.HLT_Photon200(); }
     const bool &HLT_Photon20_HoverELoose() { return nt.HLT_Photon20_HoverELoose(); }
+    const bool &HLT_Photon250_NoHE() { return nt.HLT_Photon250_NoHE(); }
     const bool &HLT_Photon300_NoHE() { return nt.HLT_Photon300_NoHE(); }
     const bool &HLT_Photon30_HoverELoose() { return nt.HLT_Photon30_HoverELoose(); }
     const bool &HLT_Photon33() { return nt.HLT_Photon33(); }
@@ -18184,6 +18220,7 @@ namespace tas {
     const float &PV_z() { return nt.PV_z(); }
     const vector<int> &Photon_charge() { return nt.Photon_charge(); }
     const vector<UChar_t> &Photon_cleanmask() { return nt.Photon_cleanmask(); }
+    const vector<int> &Photon_cutBased() { return nt.Photon_cutBased(); }
     const vector<int> &Photon_cutBasedBitmap() { return nt.Photon_cutBasedBitmap(); }
     const vector<int> &Photon_cutBasedV1Bitmap() { return nt.Photon_cutBasedV1Bitmap(); }
     const vector<float> &Photon_eCorr() { return nt.Photon_eCorr(); }
@@ -18722,6 +18759,7 @@ namespace tas {
         else if (name == "Muon_pdgId") return nt.Muon_pdgId();
         else if (name == "Muon_tightCharge") return nt.Muon_tightCharge();
         else if (name == "Photon_charge") return nt.Photon_charge();
+        else if (name == "Photon_cutBased") return nt.Photon_cutBased();
         else if (name == "Photon_cutBasedBitmap") return nt.Photon_cutBasedBitmap();
         else if (name == "Photon_cutBasedV1Bitmap") return nt.Photon_cutBasedV1Bitmap();
         else if (name == "Photon_electronIdx") return nt.Photon_electronIdx();
@@ -19065,6 +19103,7 @@ namespace tas {
         else if (name == "HLT_IsoMu20_eta2p1_TightChargedIsoPFTauHPS27_eta2p1_CrossL1") return nt.HLT_IsoMu20_eta2p1_TightChargedIsoPFTauHPS27_eta2p1_CrossL1();
         else if (name == "HLT_IsoMu20_eta2p1_TightChargedIsoPFTauHPS27_eta2p1_TightID_CrossL1") return nt.HLT_IsoMu20_eta2p1_TightChargedIsoPFTauHPS27_eta2p1_TightID_CrossL1();
         else if (name == "HLT_IsoMu24") return nt.HLT_IsoMu24();
+        else if (name == "HLT_IsoTkMu24") return nt.HLT_IsoTkMu24();
         else if (name == "HLT_IsoMu24_TwoProngs35") return nt.HLT_IsoMu24_TwoProngs35();
         else if (name == "HLT_IsoMu24_eta2p1") return nt.HLT_IsoMu24_eta2p1();
         else if (name == "HLT_IsoMu24_eta2p1_MediumChargedIsoPFTau50_Trk30_eta2p1_1pr") return nt.HLT_IsoMu24_eta2p1_MediumChargedIsoPFTau50_Trk30_eta2p1_1pr();
@@ -19338,6 +19377,7 @@ namespace tas {
         else if (name == "HLT_Photon20") return nt.HLT_Photon20();
         else if (name == "HLT_Photon200") return nt.HLT_Photon200();
         else if (name == "HLT_Photon20_HoverELoose") return nt.HLT_Photon20_HoverELoose();
+        else if (name == "HLT_Photon250_NoHE") return nt.HLT_Photon250_NoHE();
         else if (name == "HLT_Photon300_NoHE") return nt.HLT_Photon300_NoHE();
         else if (name == "HLT_Photon30_HoverELoose") return nt.HLT_Photon30_HoverELoose();
         else if (name == "HLT_Photon33") return nt.HLT_Photon33();

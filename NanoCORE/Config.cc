@@ -8,23 +8,16 @@ void GlobalConfig::GetConfigsFromDatasetName(std::string dsname)
 // bool isData = dsname.Contains("Run201") || dsname.Contains("run2_data");
 
   if (dsname.find("Run2016") != std::string::npos
-      || dsname.find("Moriond17") != std::string::npos
       || dsname.find("RunIISummer16") != std::string::npos
-      || dsname.find("RunIISpring16") != std::string::npos
-      || dsname.find("run2_data2016") != std::string::npos
-      || dsname.find("run2_moriond17") != std::string::npos
-      || dsname.find("run2_mc2016") != std::string::npos
+      || dsname.find("_2016/") != std::string::npos
       ) year = 2016;
   if (dsname.find("Run2017") != std::string::npos
       || dsname.find("RunIIFall17") != std::string::npos
-      || dsname.find("_mc2017_") != std::string::npos
-      || dsname.find("run2_mc2017") != std::string::npos
+      || dsname.find("_2017/") != std::string::npos
       ) year = 2017;
   if (dsname.find("Run2018") != std::string::npos
-      || dsname.find("RunIISpring18") != std::string::npos
-      || dsname.find("RunIISummer18") != std::string::npos
       || dsname.find("RunIIAutumn18") != std::string::npos
-      || dsname.find("run2_mc2018") != std::string::npos
+      || dsname.find("_2018/") != std::string::npos
       ) year = 2018;
 
   std::cout << ">>> ------------ GlobalConfig ------------" << std::endl;

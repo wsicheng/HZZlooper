@@ -1571,6 +1571,9 @@ protected:
     bool HLT_IsoMu24_;
     TBranch *b_HLT_IsoMu24_;
     bool loaded_HLT_IsoMu24_;
+    bool HLT_IsoTkMu24_;
+    TBranch *b_HLT_IsoTkMu24_;
+    bool loaded_HLT_IsoTkMu24_;
     bool HLT_IsoMu24_TwoProngs35_;
     TBranch *b_HLT_IsoMu24_TwoProngs35_;
     bool loaded_HLT_IsoMu24_TwoProngs35_;
@@ -2390,6 +2393,9 @@ protected:
     bool HLT_Photon20_HoverELoose_;
     TBranch *b_HLT_Photon20_HoverELoose_;
     bool loaded_HLT_Photon20_HoverELoose_;
+    bool HLT_Photon250_NoHE_;
+    TBranch *b_HLT_Photon250_NoHE_;
+    bool loaded_HLT_Photon250_NoHE_;
     bool HLT_Photon300_NoHE_;
     TBranch *b_HLT_Photon300_NoHE_;
     bool loaded_HLT_Photon300_NoHE_;
@@ -4239,6 +4245,10 @@ protected:
     vector<UChar_t> v_Photon_cleanmask_;
     TBranch *b_Photon_cleanmask_;
     bool loaded_Photon_cleanmask_;
+    int Photon_cutBased_[36];
+    vector<int> v_Photon_cutBased_;
+    TBranch *b_Photon_cutBased_;
+    bool loaded_Photon_cutBased_;
     int Photon_cutBasedBitmap_[36];
     vector<int> v_Photon_cutBasedBitmap_;
     TBranch *b_Photon_cutBasedBitmap_;
@@ -5344,6 +5354,7 @@ public:
     const bool &HLT_IsoMu20_eta2p1_TightChargedIsoPFTauHPS27_eta2p1_CrossL1();
     const bool &HLT_IsoMu20_eta2p1_TightChargedIsoPFTauHPS27_eta2p1_TightID_CrossL1();
     const bool &HLT_IsoMu24();
+    const bool &HLT_IsoTkMu24();
     const bool &HLT_IsoMu24_TwoProngs35();
     const bool &HLT_IsoMu24_eta2p1();
     const bool &HLT_IsoMu24_eta2p1_MediumChargedIsoPFTau50_Trk30_eta2p1_1pr();
@@ -5617,6 +5628,7 @@ public:
     const bool &HLT_Photon20();
     const bool &HLT_Photon200();
     const bool &HLT_Photon20_HoverELoose();
+    const bool &HLT_Photon250_NoHE();
     const bool &HLT_Photon300_NoHE();
     const bool &HLT_Photon30_HoverELoose();
     const bool &HLT_Photon33();
@@ -6196,6 +6208,7 @@ public:
     const float &PV_z();
     const vector<int> &Photon_charge();
     const vector<UChar_t> &Photon_cleanmask();
+    const vector<int> &Photon_cutBased();
     const vector<int> &Photon_cutBasedBitmap();
     const vector<int> &Photon_cutBasedV1Bitmap();
     const vector<float> &Photon_eCorr();
@@ -6845,6 +6858,7 @@ namespace tas {
     const bool &HLT_IsoMu20_eta2p1_TightChargedIsoPFTauHPS27_eta2p1_CrossL1(); // Trigger/flag bit
     const bool &HLT_IsoMu20_eta2p1_TightChargedIsoPFTauHPS27_eta2p1_TightID_CrossL1(); // Trigger/flag bit
     const bool &HLT_IsoMu24(); // Trigger/flag bit
+    const bool &HLT_IsoTkMu24(); // Trigger/flag bit
     const bool &HLT_IsoMu24_TwoProngs35(); // Trigger/flag bit
     const bool &HLT_IsoMu24_eta2p1(); // Trigger/flag bit
     const bool &HLT_IsoMu24_eta2p1_MediumChargedIsoPFTau50_Trk30_eta2p1_1pr(); // Trigger/flag bit
@@ -7118,6 +7132,7 @@ namespace tas {
     const bool &HLT_Photon20(); // Trigger/flag bit
     const bool &HLT_Photon200(); // Trigger/flag bit
     const bool &HLT_Photon20_HoverELoose(); // Trigger/flag bit
+    const bool &HLT_Photon250_NoHE(); // Trigger/flag bit
     const bool &HLT_Photon300_NoHE(); // Trigger/flag bit
     const bool &HLT_Photon30_HoverELoose(); // Trigger/flag bit
     const bool &HLT_Photon33(); // Trigger/flag bit
@@ -7697,6 +7712,7 @@ namespace tas {
     const float &PV_z(); // main primary vertex position z coordinate
     const vector<int> &Photon_charge(); // electric charge
     const vector<UChar_t> &Photon_cleanmask(); // simple cleaning mask with priority to leptons
+    const vector<int> &Photon_cutBased(); // cut-based ID for 2016, (0:fail, 1:loose, 2:medium, 3:tight)
     const vector<int> &Photon_cutBasedBitmap(); // cut-based ID bitmap, 2^(0:loose, 1:medium, 2:tight)
     const vector<int> &Photon_cutBasedV1Bitmap(); // cut-based ID bitmap, Fall17 V1, 2^(0:loose, 1:medium, 2:tight)
     const vector<float> &Photon_eCorr(); // ratio of the calibrated energy/miniaod energy

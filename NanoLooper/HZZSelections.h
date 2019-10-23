@@ -6,16 +6,19 @@
 #include "PhysicsObjects.h"
 
 const float k_minPt_photon = 55;
-const float k_minPt_lep_loose = 10;
+const float k_minPt_el_loose = 10;
+const float k_minPt_mu_loose = 3;
 const float k_minPt_lep_tight = 25;
 const float k_minPt_jet = 30;
 const float k_maxAbsEta_jet = 4.7;
 
-const float MZ = 91.1876;
+const float mZ = 91.1876;
 
 enum ID_level { idVeto, idLoose, idMedium, idTight };
 enum jet_cat { eq0j, geq1j, vbf };
 
+float getDileptonMT(const TLorentzVector& boson, const TLorentzVector& metvec);
+bool passTriggerSelections(int trigtype);
 
 vector<Jet> getJets(bool reapplyJEC = false, bool isSim = true);
 vector<Muon> getMuons(int id_level = idTight);

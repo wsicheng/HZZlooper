@@ -18,16 +18,120 @@ inline bool isCloseObject(const float eta1, const float phi1, const float eta2, 
 using namespace std;
 using namespace tas;
 
+
+bool passTriggerSelections(int trigtype) {
+  if (!gconf.is_data) return true;  // not using the trigger emulatino in MC
+
+  if (trigtype == 1) {
+    // Muon triggers
+    switch (gconf.year) {
+      case 2016:
+        return ( HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL() || HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ() ||
+                 HLT_IsoMu24() || HLT_IsoTkMu24());
+      case 2017:
+        return ( HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ() ||
+                 ((run() >= 299337)? HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8() : false) ||
+                 HLT_IsoMu24() || HLT_IsoMu27());
+      case 2018:
+      default:
+        return ( HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8() ||
+                 HLT_IsoMu24());
+    }
+  } else if (trigtype == 2) {
+    // Electron triggers
+    switch (gconf.year) {
+      case 2016:
+        return ( HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ() ||
+                 HLT_Ele27_WPTight_Gsf() );
+      case 2017:
+      case 2018:
+      default:
+        return ( HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ() ||
+                 ((run() >= 302026)? HLT_Ele32_WPTight_Gsf() : HLT_Ele35_WPTight_Gsf()) ||
+                 HLT_Ele32_WPTight_Gsf_L1DoubleEG() );
+    }
+  } else if (trigtype == 3) {
+    // emu triggers
+    switch (gconf.year) {
+      case 2016:
+      case 2017:
+      case 2018:
+      default:
+        return (
+            HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL() || HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ() ||
+            HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL() || HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ() ||
+            HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL()  || HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ()  );
+    }
+  } else if (trigtype == 4) {
+    // Photon triggers
+    bool prescaled = false;
+    switch (gconf.year) {
+      case 2016:
+        // prescaled photon triggers
+        if (false) {
+          prescaled = (
+              HLT_Photon50_R9Id90_HE10_IsoM() ||  // eff lumi: 0.
+              HLT_Photon50_R9Id90_HE10_IsoM_EBOnly_PFJetsMJJ300DEta3_PFMET50() ||
+              HLT_Photon75_R9Id90_HE10_IsoM() ||
+              HLT_Photon75_R9Id90_HE10_IsoM_EBOnly_CaloMJJ300_PFJetsMJJ400DEta3() ||
+              HLT_Photon75_R9Id90_HE10_IsoM_EBOnly_CaloMJJ400_PFJetsMJJ600DEta3() ||
+              HLT_Photon75_R9Id90_HE10_IsoM_EBOnly_PFJetsMJJ300DEta3() ||
+              HLT_Photon75_R9Id90_HE10_IsoM_EBOnly_PFJetsMJJ600DEta3() ||
+              HLT_Photon90_R9Id90_HE10_IsoM() ||
+              HLT_Photon120_R9Id90_HE10_IsoM() );
+        }
+
+        // unprescaled in 2016, prescaled in 2017 & 2018
+        return ( prescaled || HLT_Photon165_R9Id90_HE10_IsoM() || HLT_Photon250_NoHE() || HLT_Photon300_NoHE());
+        // HLT_Photon175() || HLT_Photon200()  // unprescaled, but not use
+        // HLT_Photon250_NoHE(); // in 2016 only that doesn't exist
+      case 2017:
+      case 2018:
+      default:
+        if (false) {
+          prescaled = (
+              HLT_Photon50_R9Id90_HE10_IsoM() ||  // eff lumi: 0.
+              HLT_Photon50_R9Id90_HE10_IsoM_EBOnly_PFJetsMJJ300DEta3_PFMET50() ||
+              HLT_Photon75_R9Id90_HE10_IsoM() ||
+              HLT_Photon75_R9Id90_HE10_IsoM_EBOnly_CaloMJJ300_PFJetsMJJ400DEta3() ||
+              HLT_Photon75_R9Id90_HE10_IsoM_EBOnly_CaloMJJ400_PFJetsMJJ600DEta3() ||
+              HLT_Photon75_R9Id90_HE10_IsoM_EBOnly_PFJetsMJJ300DEta3() ||
+              HLT_Photon75_R9Id90_HE10_IsoM_EBOnly_PFJetsMJJ600DEta3() ||
+              HLT_Photon90_R9Id90_HE10_IsoM() ||
+              HLT_Photon120_R9Id90_HE10_IsoM() );
+        }
+
+        // unprescaled in 2016, prescaled in 2017 & 2018
+        return ( prescaled || HLT_Photon300_NoHE() );
+        // HLT_Photon175() || HLT_Photon200()  // unprescaled, but not use
+    }
+    // Lepton triggers that doesn't exist
+    // HLT_IsoTkMu24() ||
+    // HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL() ||
+    // HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ() ||
+  }
+
+  return false;
+}
+
+
+float getDileptonMT(const TLorentzVector& boson, const TLorentzVector& metvec) {
+  double ptll = boson.Pt(), mll = boson.M(), met = metvec.Pt();
+  double term1 = sqrt(ptll*ptll + mll*mll) + sqrt(met*met + mZ*mZ);
+  double term2 = (boson + metvec).Pt();
+  return sqrt( term1*term1 - term2*term2 );
+}
+
 void giveMassToPhoton(TLorentzVector& boson, TH1* h_weight) {
-  double mass = MZ;
+  double mass = mZ;
   if (h_weight != nullptr) {
     do {
       mass = h_weight->GetRandom();
-    } while (fabs(mass-MZ) > 15);
+    } while (fabs(mass-mZ) > 15);
   }
-
   boson.SetPtEtaPhiE(boson.Pt(), boson.Eta(), boson.Phi(), sqrt(pow(mass,2)+pow(boson.P(),2)) );
 }
+
 
 vector<Electron> getElectrons(int id_level) {
 
@@ -39,7 +143,7 @@ vector<Electron> getElectrons(int id_level) {
     double const absEtaSc = std::abs(etaSc);
     bool const passLooseId = (Electron_cutBased()[i] >= 2);
 
-    if (Electron_pt()[i] < k_minPt_lep_loose or absEtaSc > 2.5 or not passLooseId)
+    if (Electron_pt()[i] < k_minPt_el_loose or absEtaSc > 2.5 or not passLooseId)
       continue;
 
     Electron electron;
@@ -66,7 +170,7 @@ vector<Electron> getElectrons(int id_level) {
   switch (id_level) {
     case idLoose:
       std::sort(looseElectrons.begin(), looseElectrons.end(), PtOrdered);
-      return tightElectrons;
+      return looseElectrons;
     case idTight:
       std::sort(tightElectrons.begin(), tightElectrons.end(), PtOrdered);
       return tightElectrons;
@@ -99,7 +203,7 @@ std::optional<GenParticle> FindGenMatchMuon(Muon const &muon, double maxDR) {
   } else {
     return {};
   }
-} 
+}
 
 void ApplyRochesterCorrectionToMuon(Muon *muon, int trackerLayers, bool isSim) {
 
@@ -123,7 +227,7 @@ void ApplyRochesterCorrectionToMuon(Muon *muon, int trackerLayers, bool isSim) {
   //   scaleFactor = rochesterCorrection_->kScaleDT(
   //     muon->charge, muon->p4.Pt(), muon->p4.Eta(), muon->p4.Phi());
   // }
-  
+
   muon->p4.SetPtEtaPhiM(muon->p4.Pt() * scaleFactor, muon->p4.Eta(),
                         muon->p4.Phi(), muon->p4.M());  // Q: no scale for mass?
 }
@@ -147,7 +251,7 @@ vector<Muon> getMuons(int id_level) {
 
     // ApplyRochesterCorrectionToMuon(&muon, Muon_nTrackerLayers()[i]);
 
-    if (muon.p4.Pt() < k_minPt_lep_loose)  // minPtLoose
+    if (muon.p4.Pt() < k_minPt_mu_loose)  // minPtLoose
       continue;
 
     looseMuons.emplace_back(muon);
@@ -182,11 +286,11 @@ vector<Photon> getPhotons(int id_level) {
 
   for (unsigned i = 0; i < Photon_pt().size(); ++i) {
     // Tight ID
-    bool const passId = (Photon_cutBasedBitmap()[i] & 0b0100);
-    
+    const bool passId = (gconf.year == 2016)? (Photon_cutBased()[i] >= 3) : (Photon_cutBasedBitmap()[i] & 0b0100);
+
     if (Photon_pt()[i] < k_minPt_photon or not passId)
       continue;
-    
+
     // Only consider photons in the barrel
     if (!Photon_isScEtaEB()[i])
       continue;
@@ -256,7 +360,7 @@ float getJetCorrectionFactorFromFile(int jetidx, Jet injet, bool applyJER) {
 
 
       if (genJet) {
-        double const jerFactor = 1. + 
+        double const jerFactor = 1. +
           (jerSF - 1.) * (corrPt - genJet->p4.Pt()) / corrPt;
         corrFactor *= jerFactor;
       } else {
@@ -340,4 +444,3 @@ vector<Jet> getJets(bool reapplyJEC, bool isSim) {
 
   return jets;
 }
-
