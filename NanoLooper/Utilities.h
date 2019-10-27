@@ -12,7 +12,7 @@
 #include <map>
 #include <string>
 
-namespace utils {
+namespace {
 
 // Histogram manipulation
 inline void moveOverFlowToLastBin1D(TH1* hist) {
@@ -113,9 +113,9 @@ template<class LorentzVectorType>
 bool isCloseObject(const LorentzVectorType& p1, const LorentzVectorType& p2, const float conesize = 0.4, float* deltaR = nullptr)
 {
   const float PI = TMath::Pi();
-  float deltaEta = fabs(p1.eta() - p2.eta());
+  float deltaEta = fabs(p1.Eta() - p2.Eta());
   if (deltaEta > conesize) return false;
-  float deltaPhi = fabs(p1.phi() - p2.phi());
+  float deltaPhi = fabs(p1.Phi() - p2.Phi());
   if (deltaPhi > PI) deltaPhi = 2*PI - deltaPhi;
   if (deltaPhi > conesize) return false;
   float deltaR2 = deltaEta*deltaEta + deltaPhi*deltaPhi;

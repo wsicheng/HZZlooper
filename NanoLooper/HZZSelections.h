@@ -20,7 +20,7 @@ enum jet_cat { eq0j, geq1j, vbf };
 float getDileptonMT(const TLorentzVector& boson, const TLorentzVector& metvec);
 bool passTriggerSelections(int trigtype);
 
-vector<Jet> getJets(bool reapplyJEC = false, bool isSim = true);
+vector<Jet> getJets(const vector<Muon>& mus, const vector<Electron>& els, const vector<Photon>& phs, bool reapplyJEC = false, bool isSim = true);
 vector<Muon> getMuons(int id_level = idTight);
 vector<Photon> getPhotons(int id_level = idTight);
 vector<Electron> getElectrons(int id_level = idTight);

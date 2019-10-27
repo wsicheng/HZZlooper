@@ -20,6 +20,9 @@ void GlobalConfig::GetConfigsFromDatasetName(std::string dsname)
       || dsname.find("_2018/") != std::string::npos
       ) year = 2018;
 
+  GetConfigs();
+  GetSampleType(dsname);
+
   std::cout << ">>> ------------ GlobalConfig ------------" << std::endl;
   if (year <= 0) {
     std::cout << ">>> [!] Couldn't figure out year, so setting it to 2017. Make sure this is what you want!" << std::endl;
@@ -27,20 +30,20 @@ void GlobalConfig::GetConfigsFromDatasetName(std::string dsname)
   } else {
     std::cout << ">>> Figured out that the year is " << year << "." << std::endl;
   }
+  std::cout << ">>> Running sample as " << ((is_data)? "data" : "MC with samptype as "+samptype) << "." << std::endl;
   std::cout << ">>> --------------------------------------" << std::endl;
-
-  GetConfigs();
-  GetSampleType(dsname);
 }
 
 void GlobalConfig::GetSampleType(std::string dsname) {
 
   if (dsname.find("data") != std::string::npos ||
-      dsname.find("leMuon") != std::string::npos ||
-      dsname.find("leElectron") != std::string::npos ||
-      dsname.find("leEG") != std::string::npos ||
-      dsname.find("EGamma") != std::string::npos ||
-      dsname.find("SinglePhoton") != std::string::npos
+      dsname.find("/DoubleMuon") != std::string::npos ||
+      dsname.find("/DoubleEG") != std::string::npos ||
+      dsname.find("/MuonEG") != std::string::npos ||
+      dsname.find("/EGamma") != std::string::npos ||
+      dsname.find("/SingleMuon") != std::string::npos ||
+      dsname.find("/SingleElectron") != std::string::npos ||
+      dsname.find("/SinglePhoton") != std::string::npos
       )
     is_data = true;
 

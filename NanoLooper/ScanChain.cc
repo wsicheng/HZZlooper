@@ -25,7 +25,7 @@
 #include "Utilities.h"
 
 #define SUM(vec) std::accumulate((vec).begin(), (vec).end(), 0);
-#define SUM_GT(vec,num) std::accumulate((vec).begin(), (vec).end(), 0, [](float x,float y){return ((y > (num)) ? x+y : x); });
+#define SUM_GT(vec,num) std::accumulate((vec).begin(), (vec).end(), 0, [](float x,float y) { return ((y > (num)) ? x+y : x); });
 #define COUNT_GT(vec,num) std::count_if((vec).begin(), (vec).end(), [](float x) { return x > (num); });
 #define COUNT_LT(vec,num) std::count_if((vec).begin(), (vec).end(), [](float x) { return x < (num); });
 
@@ -43,7 +43,6 @@ struct debugger { template<typename T> debugger& operator , (const T& v) { cerr<
 
 using namespace std;
 using namespace tas;
-using namespace utils;
 
 // turn on to apply json file to data
 const bool applyGoodRunList = true;
@@ -68,7 +67,7 @@ int ScanChain(TChain *ch, string sample, string outdir) {
 
   // set configuration parameters
   gconf.GetConfigs(2017);
-  gconf.GetSampleType(sample);
+  gconf.GetSampleType("/"+sample);
 
   if (applyGoodRunList && gconf.is_data) {
     const char* json_file = "../NanoCORE/goodrun_files/Cert_271036-325175_13TeV_Combined161718_JSON_snt.txt";
@@ -83,6 +82,8 @@ int ScanChain(TChain *ch, string sample, string outdir) {
 
     tree->SetCacheSize(128*1024*1024);
     tree->SetCacheLearnEntries(100);
+
+    gconf.GetConfigsFromDatasetName(filename.Data());
 
     // auto psRead = new TTreePerfStats("readPerf", tree);
     nt.Init(tree);
@@ -114,15 +115,18 @@ int ScanChain(TChain *ch, string sample, string outdir) {
       auto tightElectrons = getElectrons();
       auto tightMuons = getMuons();
       auto photons = getPhotons();
-      auto jets = getJets();
 
-      bool isPhotonDatadriven = false;  // 
+      bool isPhotonDatadriven = false;  //
       bool isEE = (tightElectrons.size() >= 2 && !isPhotonDatadriven); //2 good electrons
       bool isMuMu = (tightMuons.size() >= 2 && !isPhotonDatadriven); //2 good muons
       bool isGamma = (photons.size() == 1 && isPhotonDatadriven); //1 good photon
 
-      if(!isEE && !isMuMu && !isGamma) //not a good lepton pair or photon (if datadriven)
+      if (!isEE && !isMuMu && !isGamma) //not a good lepton pair or photon (if datadriven)
         continue;
+
+      if (isGamma && !passTriggerSelections(4)) continue;
+      else if (isEE && !passTriggerSelections(2)) continue;
+      else if (isMuMu && !passTriggerSelections(1)) continue;
 
       std::vector<Lepton> tightLeptons;
 
@@ -144,24 +148,6 @@ int ScanChain(TChain *ch, string sample, string outdir) {
         boson = tightLeptons[0].p4 + tightLeptons[1].p4;
       }
 
-      int jetcat = geq1j;
-      if (jets.size() == 0)
-        jetcat = eq0j;
-      else if (PassVBFcuts(jets, boson))
-        jetcat = vbf;
-
-      TLorentzVector met_p4;
-      met_p4.SetPtEtaPhiM(MET_pt(), 0., MET_phi(), 0.);
-
-      float met_sig = MET_significance();
-
-      if (MET_pt() < 80) continue;
-      if (fabs(boson.M() - MZ) > 15) continue;
-      if (boson.Pt() < 55) continue;
-
-      float deltaPhi_MET_Boson = deltaPhi(boson.Phi(), MET_phi());
-      if (deltaPhi_MET_Boson < 0.5) continue;
-      
       auto looseElectrons = getElectrons(ID_level::idLoose);
       auto looseMuons = getMuons(ID_level::idLoose);
 
@@ -176,13 +162,38 @@ int ScanChain(TChain *ch, string sample, string outdir) {
 
       if (!passLeptonVeto) continue;
 
+      auto jets = getJets(looseMuons, looseElectrons, photons);
+
       bool passBTagVeto = true;
       for (auto const &jet : jets) {
-        if (jet.bTag > gconf.WP_DeepCSV_medium) {
+        if (jet.bTag > gconf.WP_DeepCSV_loose && fabs(jet.p4.Eta()) < 2.5) {
           passBTagVeto = false;
           break;
         }
       }
+
+      string jetcat = "geq1j";
+      if (jets.size() == 0)
+        jetcat = "eq0j";
+      else if (PassVBFcuts(jets, boson))
+        jetcat = "vbf";
+
+      string lepcat = "gamma";
+      if (isEE) lepcat = "ee";
+      else if (isMuMu) lepcat = "mumu";
+
+      TLorentzVector met_p4;
+      met_p4.SetPtEtaPhiM(MET_pt(), 0., MET_phi(), 0.);
+
+      // float met_sig = MET_significance();
+
+      // if (MET_pt() < 125) continue;
+      if (fabs(boson.M() - mZ) > 15) continue;
+      if (boson.Pt() < 55) continue;
+
+      float deltaPhi_MET_Boson = deltaPhi(boson.Phi(), MET_phi());
+      if (deltaPhi_MET_Boson < 0.5) continue;
+
 
       if (!passBTagVeto) continue;
 
@@ -196,13 +207,38 @@ int ScanChain(TChain *ch, string sample, string outdir) {
       }
       if (!passDeltaPhiJetMET) continue;
 
-      if (MET_pt() < 80) continue;
+      if (MET_pt() < 125) continue;
 
+      // Events passes all selections
 
-      plot1d("h_met",    MET_pt()  , 1, hvec, ";E_{T}^{miss} [GeV]"  , 30,  0, 750);
-      plot1d("h_metphi", MET_phi() , 1, hvec, ";#phi(E_{T}^{miss})"  , 34, -3.4, 3.4);
-      plot1d("h_metsig", met_sig   , 1, hvec, ";#sigma(E_{T}^{miss}) " , 20,  0, 40);
-      plot1d("h_mll",    boson.M() , 1, hvec, ";M_{ll} [GeV]"        , 20,  0, 500);
+      float mtll = getDileptonMT(boson, met_p4);
+
+      auto fillhists = [&](string s) {
+        plot1d("h_njets"+s, jets.size(), 1, hvec, ";N(jets)"  , 6,  0, 6);
+        plot1d("h_met"+s,    MET_pt()  , 1, hvec, ";E_{T}^{miss} [GeV]"  , 30,  0, 750);
+        plot1d("h_metphi"+s, MET_phi() , 1, hvec, ";#phi(E_{T}^{miss})"  , 34, -3.4, 3.4);
+        // plot1d("h_metsig"+s, met_sig   , 1, hvec, ";#sigma(E_{T}^{miss}) " , 20,  0, 40);
+        plot1d("h_mll"+s,    boson.M() , 1, hvec, ";M_{ll} [GeV]"        , 500,  0, 500);
+
+        // Z quantities
+        if (isEE || isMuMu) {
+          plot1d("h_Zmass"+s, boson.M()  , 1, hvec, ";M(Z) [GeV]"        , 20,  0, 500);
+          plot1d("h_Zpt"+s,   boson.Pt() , 1, hvec, ";p_{T}(Z) [GeV]"    , 20,  0, 500);
+          plot1d("h_Zeta"+s,  boson.Eta(), 1, hvec, ";#eta(Z) [GeV]"     , 40,  -5, 5);
+        }
+
+        plot1d("h_mtll"+s, mtll  , 1, hvec, ";M_{T}(ll) [GeV]"        , 60,  0, 1500);
+
+        const vector<float> mtbin1 = {0, 75, 150, 225, 300, 375, 450, 525, 600, 725, 850, 975, 1100, 1350, 1600, 2100, 3000};
+        plot1d("h_mtll_b1"+s,   mtll , 1, hvec, ";M_{T}(ll) [GeV]" , mtbin1.size()-1, mtbin1.data());
+        const vector<float> mtbin3 = {0, 75, 150, 225, 300, 375, 450, 525, 600, 725, 850, 975, 1100, 1350, 1600, 2100, 3000};
+        plot1d("h_mtll_b3"+s,   mtll , 1, hvec, ";M_{T}(ll) [GeV]" , mtbin3.size()-1, mtbin3.data());
+      };
+
+      fillhists("");
+      fillhists("_"+jetcat);
+      fillhists("_"+lepcat);
+      fillhists("_"+jetcat+"_"+lepcat);
 
       // int njets, nbtags;
       // float ht;
@@ -243,6 +279,18 @@ int ScanChain(TChain *ch, string sample, string outdir) {
       int lastbin = h.second->GetNbinsX(); // to move the overflow bin to the last bin
       h.second->SetBinContent(lastbin, h.second->Integral(lastbin, -1));
     }
+    string dirname = "hzz2l2nu";
+    for (string dirsuf : {"_eq0j_ee", "_eq0j_mumu", "_geq1j_ee", "_geq1j_mumu", "_vbf_ee", "_vbf_mumu",
+            "_ee", "_mumu", "_eq0j", "_geq1j",  "_vbf" }) {
+      if (h.first.find(dirsuf) != string::npos) {
+        dirname += dirsuf;
+        break;
+      }
+    }
+    TDirectory* dir = (TDirectory*) fout->Get(dirname.c_str());
+    if (dir == 0) dir = fout->mkdir(dirname.c_str());
+    dir->cd();
+
     h.second->Write();
   }
 

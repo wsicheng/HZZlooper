@@ -411,7 +411,7 @@ bool PassVBFcuts(const vector<Jet> &selJets, const TLorentzVector &boson) {
   return false;
 }
 
-vector<Jet> getJets(bool reapplyJEC, bool isSim) {
+vector<Jet> getJets(const vector<Muon>& mus, const vector<Electron>& els, const vector<Photon>& phs, bool reapplyJEC, bool isSim) {
   vector<Jet> jets;
 
   for (unsigned i = 0; i < Jet_pt().size(); ++i) {
@@ -420,14 +420,26 @@ vector<Jet> getJets(bool reapplyJEC, bool isSim) {
 
     Jet jet;
     jet.p4.SetPtEtaPhiM(Jet_pt()[i], Jet_eta()[i], Jet_phi()[i], Jet_mass()[i]);
+
+    // Perform angular cleaning w.r.t. recognized leptons and photons
+    for (auto lep : mus) {
+      if (isCloseObject(jet.p4.Eta(), jet.p4.Phi(), lep.p4.Eta(), lep.p4.Phi(), 0.4))
+        goto end_of_loop_jets;
+    }
+    for (auto lep : els) {
+      if (isCloseObject(jet.p4.Eta(), jet.p4.Phi(), lep.p4.Eta(), lep.p4.Phi(), 0.4))
+        goto end_of_loop_jets;
+    }
+    for (auto photon : phs) {
+      if (isCloseObject(jet.p4.Eta(), jet.p4.Phi(), photon.p4.Eta(), photon.p4.Phi(), 0.4))
+        goto end_of_loop_jets;
+    }
+
     jet.bTag = Jet_btagDeepFlavB()[i];
     if (!gconf.is_data)
       jet.hadronFlavour = Jet_hadronFlavour()[i];
     else
       jet.hadronFlavour = 0;
-
-    // Perform angular cleaning
-    // if (IsDuplicate(jet.p4, 0.4)) continue;
 
     // if (reapplyJEC)
     //   jet.p4 *= getJetCorrectionFactorFromFile();
@@ -437,6 +449,8 @@ vector<Jet> getJets(bool reapplyJEC, bool isSim) {
       continue;
 
     jets.emplace_back(jet);
+
+ end_of_loop_jets:;
   }
 
   // Make sure jets are sorted in pt
