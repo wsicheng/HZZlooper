@@ -72,6 +72,8 @@ void GlobalConfig::GetConfigs(int in_year)
   }
 
   if (year == 2016 && nanoAOD_ver < 0) {
+    lumi = 35.922;
+
     jecEraB = jecEraC = jecEraD = "Summer16_23Sep2016BCDV4_DATA";
     jecEraE = jecEraF = "Summer16_23Sep2016EFV4_DATA";
     jecEraG = "Summer16_23Sep2016GV4_DATA";
@@ -94,6 +96,8 @@ void GlobalConfig::GetConfigs(int in_year)
     fn_btagSF_CSVv2 = "CSVv2_Moriond17_B_H.csv";
   }
   if (year == 2016 && nanoAOD_ver >= 0) {
+    lumi = 35.922;
+
     jecEraB = jecEraC = jecEraD = "Summer16_07Aug2017BCD_V11_DATA";
     jecEraE = jecEraF = "Summer16_07Aug2017EF_V11_DATA";
     jecEraG = jecEraH = "Summer16_07Aug2017GH_V11_DATA";
@@ -112,6 +116,8 @@ void GlobalConfig::GetConfigs(int in_year)
     fn_btagSF_CSVv2 = "CSVv2_Moriond17_B_H.csv";               // not supported
   }
   else if (year == 2017) {
+    lumi = 41.529;
+
     jecEraB = "Fall17_17Nov2017B_V32_DATA";
     jecEraC = "Fall17_17Nov2017C_V32_DATA";
     jecEraD = jecEraE = "Fall17_17Nov2017DE_V32_DATA";
@@ -135,6 +141,8 @@ void GlobalConfig::GetConfigs(int in_year)
     fn_btagSF_CSVv2 = "CSVv2_94XSF_V2_B_F.csv";
   }
   else if (year == 2018) {
+    lumi = 59.97;
+
     jecEraA = "Autumn18_RunA_V8_DATA";
     jecEraB = "Autumn18_RunB_V8_DATA";
     jecEraC = "Autumn18_RunC_V8_DATA";

@@ -138,37 +138,32 @@ ds17 = data17 + mc17
 
 merge_map = {
     'Wjets' : [ 'WJetsToLNu_HT-100To200', 'WJetsToLNu_HT-200To400',
-    'WJetsToLNu_HT-400To600', 'WJetsToLNu_HT-600To800', 'WJetsToLNu_HT-800To1200',
-    'WJetsToLNu_HT-1200To2500', 'WJetsToLNu_HT-2500ToInf',], 
-    'allData' : [ 'SinglePhoton', 'SingleElectron', 'SingleMuon',
-                  'DoubleEG', 'DoubleMuon', 'MuonEG' ],
-    'diboson' : ['ZZTo2L2Nu', 'ZZTo2L2Q', 'ZZTo4L', 'WZTo3LNu', 'WZTo2L2Q', 'WWTo2L2Nu',],
-    'ggTo2L2Nu' : ['GluGluToContinToZZTo2e2nu', 'GluGluToContinToZZTo2mu2nu',],
-    'ttbar' : ['TT',],
+                'WJetsToLNu_HT-400To600', 'WJetsToLNu_HT-600To800', 'WJetsToLNu_HT-800To1200',
+                'WJetsToLNu_HT-1200To2500', 'WJetsToLNu_HT-2500ToInf',], 
+    # 'WJetsToLNu_LO', 'WJetsToLNu',
+    'ZZto2L2X' : ['ZZTo2L2Nu', 'ZZTo2L2Q', 'ZZTo4L',],
+    'WZ' : ['WZTo3LNu', 'WZTo2L2Q', ],
+    'contin2L2Nu' : ['GluGluToContinToZZTo2e2nu', 'GluGluToContinToZZTo2mu2nu',],
+    'ggZZto2L2Nu' : ['GGToZZTo2E2Nu_BSI', 'GGToZZTo2Mu2Nu_BSI',], # what's the difference?
+    # 'ttbar' : ['TT',],
     'DYjets' : ['DYJetsToLL_M-50',],
-    # 'WJetsToLNu_LO',
-    # 'WJetsToLNu',
-    # 'TTWJetsToLNu',
-    # 'TTZToLLNuNu_M-10',
-    'signleTop' : ['ST_s-channel', 'ST_t-channel_top', 'ST_t-channel_antitop',
+    'ttV' : ['TTWJetsToLNu', 'TTZToLLNuNu_M-10',],
+    'singleTop' : ['ST_s-channel', 'ST_t-channel_top', 'ST_t-channel_antitop',
                    'ST_tW_top', 'ST_tW_antitop',],
     'triBoson' : ['WWW', 'WWZ', 'WZZ', 'ZZZ',],
-    # 'GGToHToZZTo2E2Nu',
-    # 'GGToZZTo2E2Nu_BSI',
-    # 'GGToHToZZTo2Mu2Nu',
-    # 'GGToZZTo2Mu2Nu_BSI',
+    'ggH' : ['GGToHToZZTo2E2Nu', 'GGToHToZZTo2Mu2Nu',],
     'gjets' : ['GJets_HT-40To100', 'GJets_HT-100To200', 'GJets_HT-200To400',
                'GJets_HT-400To600', 'GJets_HT-600ToInf',],
     'qcd' : [ 'QCD_HT50to100', 'QCD_HT100to200', 'QCD_HT200to300', 'QCD_HT300to500',
               'QCD_HT500to700', 'QCD_HT700to1000', 'QCD_HT1000to1500', 'QCD_HT1500to2000', 
               'QCD_HT2000toInf',],
-    # 'TTGJets',
-    # 'TGJets',
-    # 'ZGTo2LG',
-    # 'ZNuNuGJets',
-    # 'WGToLNuG',
-    # 'ZGTo2NuG',
-    # 'ZGTo2NuG_PtG-130',
+    'gammaX' : ['TTGJets', 'TGJets', 'ZGTo2LG', 'ZNuNuGJets', 'WGToLNuG', 'ZGTo2NuG', 'ZGTo2NuG_PtG-130',],
+
+    'allData' : [ 'SinglePhoton', 'SingleElectron', 'SingleMuon',
+                  'DoubleEG', 'DoubleMuon', 'MuonEG' ],
+    'TopnW' : [ 'TT', 'Wjets', 'WWTo2L2Nu',],
+    'ZZ' : ['ZZto2L2X', 'ggZZto2L2Nu'],
+
 }
 
 
@@ -181,7 +176,7 @@ def getFileListData(dsloc, dslist, dataname='data'):
     for dsname in dslist:
         with open(dsloc+dsname+'.yaml', 'r') as ddf:
             ds = yaml.safe_load(ddf)
-            ds_flists[dataname] += ds['files']
+            ds_flists[dataname] += (ds['files'], 0)
 
     return ds_flists
     
@@ -192,7 +187,10 @@ def getFileList(dsloc, dslist):
     for dsname in dslist:
         with open(dsloc+dsname+'.yaml', 'r') as ddf:
             ds = yaml.safe_load(ddf)
-            ds_flists[dsname] = ds['files']
+            if 'num_events' in ds:
+                ds_flists[dsname] = (ds['files'], ds['num_events'])
+            else:
+                ds_flists[dsname] = (ds['files'], 0)
 
     return ds_flists
 
@@ -284,7 +282,7 @@ if __name__ == '__main__':
         for dsname in ['data17',]:
             njobs_total += 1
 
-            infilestr = ','.join(data_flists[dsname])
+            infilestr = ','.join(data_flists[dsname][0])
             argstr = '{0} {1} {2}'.format(infilestr, dsname, outdir)
             if not args.nolog: argstr += ' >& {}/logs/log_{}.txt'.format(outdir, dsname) 
             arglist.append(argstr)
@@ -293,14 +291,14 @@ if __name__ == '__main__':
                 print( '>>> Running data sample {} with 1 jobs!'.format(dsname) )
 
     # The samples that can be separated
-    for dsname, flist in samp_flists.items():
+    for dsname, (flist, nevt) in samp_flists.items():
         nfile_per_job = 20
         njobs = int(math.ceil(len(flist) / nfile_per_job))
         njobs_total += njobs
 
         for i in range(njobs):
             infilestr = ','.join(flist[ i*nfile_per_job : (i+1)*nfile_per_job ])
-            argstr = '{0} {1}_{3} {2}'.format(infilestr, dsname, outdir, i)
+            argstr = '{0} {1}_{3} {2} {4}'.format(infilestr, dsname, outdir, i, nevt)
             if not args.nolog: argstr += ' >& {}/logs/log_{}.txt'.format(outdir, dsname)
             arglist.append(argstr)
 
@@ -309,7 +307,7 @@ if __name__ == '__main__':
 
     for rs in pool.imap_unordered(runHZZlooper, arglist):
         if rs == 0: njobs_done += 1
-        else: print( '>>> Finish running {}/{} jobs!'.format(njobs_done, njobs_total) )
+        else: print( '>>> The {} job with sample {} doesn\'t return 0!'.format(njobs_done, rs.split(' ')[1]) )
 
         if verbose >= 1:
             print( '>>> Finish running {}/{} jobs!'.format(njobs_done, njobs_total) )

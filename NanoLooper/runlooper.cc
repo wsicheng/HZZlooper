@@ -5,7 +5,7 @@
 
 using namespace std;
 
-int ScanChain(TChain *ch, string sample, string outdir);  // Header for ScanChain.cc
+int ScanChain(TChain *ch, string sample, string outdir, int nEventsSample = -1);  // Header for ScanChain.cc
 
 TString parseArg(const TString& input, TString arg, const TString dfval="") {
   if (!arg.EndsWith("=")) arg += "=";
@@ -23,14 +23,16 @@ int main(int argc, char** argv)
 {
 
   if (argc < 4) {
-    cout << "   Usage: runStopLooper <input_files> <sample> <output_dir>" << endl;
+    cout << "   Usage: runStopLooper <input_files> <sample> <output_dir> [nevt_samp]" << endl;
     return 1;
   }
 
   string infile_str(argv[1]);
   string sample(argv[2]);
   string output_dir(argv[3]);
-  if (argc > 4) string extrargs(argv[4]);
+  string nevt_samp;
+  if (argc > 4) nevt_samp = string(argv[4]);
+  if (argc > 5) string extrargs(argv[5]);
 
   TChain *ch = new TChain("Events");
   // TString infile = Form("%s/%s*.root", input_dir.c_str(), sample.c_str());
@@ -54,7 +56,8 @@ int main(int argc, char** argv)
     return 2;
   }
 
-  ScanChain(ch, sample, output_dir);
+  int nEvtSamp = (argc > 4)? stoi(nevt_samp) : -1;
+  ScanChain(ch, sample, output_dir, nEvtSamp);
 
   return 0;
 }

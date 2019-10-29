@@ -23,6 +23,7 @@
 #include "PhysicsObjects.h"
 #include "HZZSelections.h"
 #include "Utilities.h"
+#include "config/list_xsecs.icc"
 
 #define SUM(vec) std::accumulate((vec).begin(), (vec).end(), 0);
 #define SUM_GT(vec,num) std::accumulate((vec).begin(), (vec).end(), 0, [](float x,float y) { return ((y > (num)) ? x+y : x); });
@@ -47,7 +48,7 @@ using namespace tas;
 // turn on to apply json file to data
 const bool applyGoodRunList = true;
 
-int ScanChain(TChain *ch, string sample, string outdir) {
+int ScanChain(TChain *ch, string sample, string outdir, int nEventsSample = -1) {
 
   TFile* fout = new TFile(Form("%s/%s.root", outdir.c_str(), sample.c_str()), "RECREATE");
   // H1(met, 50, 0, -1);
@@ -73,6 +74,31 @@ int ScanChain(TChain *ch, string sample, string outdir) {
     const char* json_file = "../NanoCORE/goodrun_files/Cert_271036-325175_13TeV_Combined161718_JSON_snt.txt";
     cout << ">>> Loading goodrun json file: " << json_file << endl;
     set_goodrun_file(json_file);
+  }
+
+  float scaleToLumi = 1;
+  if (!gconf.is_data) {
+    if (nEventsSample <= 0) {
+      cerr << ">>> WARNING! The input total number of sample " << sample << " is invalid!! Setting it 1000." << endl;
+      nEventsSample = 1000;
+    }
+    scaleToLumi = gconf.lumi * 1000 / nEventsSample;
+    if (auto itxs = default_xsec_list.find(sample); itxs != default_xsec_list.end()) {
+      scaleToLumi *= itxs->second;
+    } else {
+      bool found = false;
+      for (auto& xs : default_xsec_list) {
+        if (sample.find(xs.first) == 0) {
+          scaleToLumi *= xs.second;
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
+        cerr << ">>> WARNING! Cannot find the xsec in the default list for sample " << sample << "!! Exiting!" << endl;
+        exit(4);
+      }
+    }
   }
 
   while ( (currentFile = (TFile*)fileIter.Next()) ) {
@@ -116,20 +142,39 @@ int ScanChain(TChain *ch, string sample, string outdir) {
       auto tightMuons = getMuons();
       auto photons = getPhotons();
 
-      bool isPhotonDatadriven = false;  //
-      bool isEE = (tightElectrons.size() >= 2 && !isPhotonDatadriven); //2 good electrons
-      bool isMuMu = (tightMuons.size() >= 2 && !isPhotonDatadriven); //2 good muons
-      bool isGamma = (photons.size() == 1 && isPhotonDatadriven); //1 good photon
+      // bool isPhotonDatadriven = false;  //
+      // bool isEE = (tightElectrons.size() >= 2 && !isPhotonDatadriven); //2 good electrons
+      // bool isMuMu = (tightMuons.size() >= 2 && !isPhotonDatadriven); //2 good muons
+      // bool isGamma = (photons.size() == 1 && isPhotonDatadriven); //1 good photon
+
+      bool isEE = (tightElectrons.size() == 2); //2 good electrons
+      bool isMuMu = (tightMuons.size() == 2); //2 good muons
+      bool isGamma = (photons.size() == 1); //1 good photon
 
       if (!isEE && !isMuMu && !isGamma) //not a good lepton pair or photon (if datadriven)
         continue;
+
+      // if (isGamma) continue;  // don't study photon for now
 
       if (isGamma && !passTriggerSelections(4)) continue;
       else if (isEE && !passTriggerSelections(2)) continue;
       else if (isMuMu && !passTriggerSelections(1)) continue;
 
-      std::vector<Lepton> tightLeptons;
+      bool passLeptonVeto = true;
+      auto looseElectrons = getElectrons(ID_level::idLoose);
+      auto looseMuons = getMuons(ID_level::idLoose);
+      if (isGamma)
+        passLeptonVeto = (looseElectrons.empty() and looseMuons.empty());
+      else if (isEE)
+        passLeptonVeto = (looseElectrons.size() == 2 and looseMuons.empty());
+      else if (isMuMu)
+        passLeptonVeto = (looseElectrons.empty() and looseMuons.size() == 2);
 
+      if (!passLeptonVeto) continue;
+      // Add track+tau veto also?? <-- to be studied
+
+
+      std::vector<Lepton> tightLeptons;
       if (isMuMu) {
         for (auto const &mu : tightMuons) {
           tightLeptons.emplace_back(mu);
@@ -141,27 +186,14 @@ int ScanChain(TChain *ch, string sample, string outdir) {
       }
 
       TLorentzVector boson;
-      if (isPhotonDatadriven) {
+      if (isGamma) {
         boson = photons[0].p4;
         giveMassToPhoton(boson);
       } else {
         boson = tightLeptons[0].p4 + tightLeptons[1].p4;
       }
 
-      auto looseElectrons = getElectrons(ID_level::idLoose);
-      auto looseMuons = getMuons(ID_level::idLoose);
-
-      bool passLeptonVeto = true;
-
-      if (isPhotonDatadriven)
-        passLeptonVeto = (looseElectrons.empty() and looseMuons.empty());
-      else if (isEE)
-        passLeptonVeto = (looseElectrons.size() == 2 and looseMuons.empty());
-      else if (isMuMu)
-        passLeptonVeto = (looseElectrons.empty() and looseMuons.size() == 2);
-
-      if (!passLeptonVeto) continue;
-
+      // vector<Particle*> isoobjs;
       auto jets = getJets(looseMuons, looseElectrons, photons);
 
       bool passBTagVeto = true;
@@ -213,26 +245,35 @@ int ScanChain(TChain *ch, string sample, string outdir) {
 
       float mtll = getDileptonMT(boson, met_p4);
 
-      auto fillhists = [&](string s) {
-        plot1d("h_njets"+s, jets.size(), 1, hvec, ";N(jets)"  , 6,  0, 6);
-        plot1d("h_met"+s,    MET_pt()  , 1, hvec, ";E_{T}^{miss} [GeV]"  , 30,  0, 750);
-        plot1d("h_metphi"+s, MET_phi() , 1, hvec, ";#phi(E_{T}^{miss})"  , 34, -3.4, 3.4);
-        // plot1d("h_metsig"+s, met_sig   , 1, hvec, ";#sigma(E_{T}^{miss}) " , 20,  0, 40);
-        plot1d("h_mll"+s,    boson.M() , 1, hvec, ";M_{ll} [GeV]"        , 500,  0, 500);
+      float weight = scaleToLumi;
 
+      auto fillhists = [&](string s) {
+        plot1d("h_njets"+s,  jets.size(), weight, hvec, ";N(jets)"  , 6,  0, 6);
+        plot1d("h_met"+s,    MET_pt()  , weight, hvec, ";E_{T}^{miss} [GeV]"  , 30,  0, 750);
+        plot1d("h_metphi"+s, MET_phi() , weight, hvec, ";#phi(E_{T}^{miss})"  , 34, -3.4, 3.4);
+        // plot1d("h_metsig"+s, met_sig   , weight, hvec, ";#sigma(E_{T}^{miss}) " , 20,  0, 40);
         // Z quantities
         if (isEE || isMuMu) {
-          plot1d("h_Zmass"+s, boson.M()  , 1, hvec, ";M(Z) [GeV]"        , 20,  0, 500);
-          plot1d("h_Zpt"+s,   boson.Pt() , 1, hvec, ";p_{T}(Z) [GeV]"    , 20,  0, 500);
-          plot1d("h_Zeta"+s,  boson.Eta(), 1, hvec, ";#eta(Z) [GeV]"     , 40,  -5, 5);
+          plot1d("h_mll"+s,    boson.M() , weight, hvec, ";M_{ll} [GeV]"        , 50,  0, 500);
+          plot1d("h_ptll"+s,  boson.Pt() , weight, hvec, ";p_{T}(ll) [GeV]" , 40,  0, 800);
+          plot1d("h_etall"+s, boson.Eta(), weight, hvec, ";#eta(ll) [GeV]"     , 40,  -5, 5);
+
+          plot1d("h_lep1pt"+s,   tightLeptons[0].p4.Pt() , weight, hvec, ";p_{T}(lep1) [GeV]"  , 25,  0, 500);
+          plot1d("h_lep2pt"+s,   tightLeptons[1].p4.Pt() , weight, hvec, ";p_{T}(lep2) [GeV]"  , 20,  0, 400);
+          plot1d("h_lep1eta"+s,  tightLeptons[0].p4.Eta() , weight, hvec, ";#eta(lep1)"        , 36, -2.4, 2.4);
+          plot1d("h_lep2eta"+s,  tightLeptons[1].p4.Eta() , weight, hvec, ";#eta(lep2)"        , 36, -2.4, 2.4);
+        } else if (isGamma) {
+          plot1d("h_Zmass"+s, boson.M()  , weight, hvec, ";fake M(#gamma)[GeV]"       , 20,  0, 500);
+          plot1d("h_ptgamma"+s, boson.Pt()  , weight, hvec, ";p_{T}(#gamma) [GeV]"    , 40,  0, 800);
+          plot1d("h_etagamma"+s, boson.Eta(), weight, hvec, ";#eta(#gamma) [GeV]"     , 40,  -5, 5);
         }
 
-        plot1d("h_mtll"+s, mtll  , 1, hvec, ";M_{T}(ll) [GeV]"        , 60,  0, 1500);
+        plot1d("h_mtll"+s, mtll  , weight, hvec, ";M_{T}(ll) [GeV]"        , 60,  0, 1500);
 
         const vector<float> mtbin1 = {0, 75, 150, 225, 300, 375, 450, 525, 600, 725, 850, 975, 1100, 1350, 1600, 2100, 3000};
-        plot1d("h_mtll_b1"+s,   mtll , 1, hvec, ";M_{T}(ll) [GeV]" , mtbin1.size()-1, mtbin1.data());
+        plot1d("h_mtll_b1"+s,   mtll , weight, hvec, ";M_{T}(ll) [GeV]" , mtbin1.size()-1, mtbin1.data());
         const vector<float> mtbin3 = {0, 75, 150, 225, 300, 375, 450, 525, 600, 725, 850, 975, 1100, 1350, 1600, 2100, 3000};
-        plot1d("h_mtll_b3"+s,   mtll , 1, hvec, ";M_{T}(ll) [GeV]" , mtbin3.size()-1, mtbin3.data());
+        plot1d("h_mtll_b3"+s,   mtll , weight, hvec, ";M_{T}(ll) [GeV]" , mtbin3.size()-1, mtbin3.data());
       };
 
       fillhists("");

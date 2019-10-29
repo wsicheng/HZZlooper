@@ -16,6 +16,7 @@ class GlobalConfig {
   int year = 0;
   int nanoAOD_ver = 0; // 74, 80, 94, 101, ...
   bool is_data = 0;
+  float lumi = 0;
   std::string samptype = "";  // to be moved to enum
   std::string analysis = ""; 
 
