@@ -18,6 +18,8 @@ inline bool isCloseObject(const float eta1, const float phi1, const float eta2, 
 using namespace std;
 using namespace tas;
 
+RoccoR* muoncorr = nullptr;
+TRandom3* randomGenerator = nullptr;
 
 bool passTriggerSelections(int trigtype) {
   if (!gconf.is_data) return true;  // not using the trigger emulatino in MC
@@ -133,7 +135,7 @@ void giveMassToPhoton(TLorentzVector& boson, TH1* h_weight) {
 }
 
 
-vector<Electron> getElectrons(int id_level) {
+std::tuple<vector<Electron>, vector<Electron>> getElectrons() {
 
   vector<Electron> looseElectrons;
   vector<Electron> tightElectrons;
@@ -166,73 +168,40 @@ vector<Electron> getElectrons(int id_level) {
     tightElectrons.emplace_back(electron);
   }
 
-  // Make sure the collections are ordered in pt
-  switch (id_level) {
-    case idLoose:
-      std::sort(looseElectrons.begin(), looseElectrons.end(), PtOrdered);
-      return looseElectrons;
-    case idTight:
-      std::sort(tightElectrons.begin(), tightElectrons.end(), PtOrdered);
-      return tightElectrons;
-  }
-  return tightElectrons;
+  std::sort(looseElectrons.begin(), looseElectrons.end(), PtOrdered);
+  std::sort(tightElectrons.begin(), tightElectrons.end(), PtOrdered);
+  return {tightElectrons, looseElectrons};
 }
 
 
-std::optional<GenParticle> FindGenMatchMuon(Muon const &muon, double maxDR) {
-
-  unsigned iClosest = -1;
-  float minDR = maxDR;
-
-  for (unsigned i = 0; i < GenPart_pdgId().size(); ++i) {
-    if (std::abs(GenPart_pdgId().at(i)) != 13)
-      // Only consider muons
-      continue;
-    if (isCloseObject(muon.p4.Eta(), muon.p4.Phi(), GenPart_eta().at(i), GenPart_phi().at(i), minDR, &minDR)) {
-      iClosest = i;
-    }
-  }
-
-  if (iClosest != unsigned(-1)) {
-    GenParticle matchedParticle{GenPart_pdgId().at(iClosest)};
-    matchedParticle.p4.SetPtEtaPhiM(
-        GenPart_pt().at(iClosest), GenPart_eta().at(iClosest), GenPart_phi().at(iClosest),
-        0.1057);
-
-    return matchedParticle;
-  } else {
-    return {};
-  }
-}
-
-void ApplyRochesterCorrectionToMuon(Muon *muon, int trackerLayers, bool isSim) {
+void ApplyRochesterCorrectionToMuon(Muon *muon, int idx) {
 
   // Apply the correction only in its domain of validity
   if (muon->p4.Pt() > 200. or std::abs(muon->p4.Eta()) > 2.4)
     return;
 
-  double scaleFactor = 1.;
+  double scale = 1.;
 
-  // if (isSim) {
-  //   auto const genMatch = FindGenMatchMuon(*muon, 0.01);
-  //   if (genMatch)
-  //     scaleFactor = rochesterCorrection_->kScaleFromGenMC(
-  //       muon->charge, muon->p4.Pt(), muon->p4.Eta(), muon->p4.Phi(),
-  //       trackerLayers, genMatch->p4.Pt(), randomGenerator_.Uniform());
-  //   else
-  //     scaleFactor = rochesterCorrection_->kScaleAndSmearMC(
-  //       muon->charge, muon->p4.Pt(), muon->p4.Eta(), muon->p4.Phi(),
-  //       trackerLayers, randomGenerator_.Uniform(), randomGenerator_.Uniform());
-  // } else {
-  //   scaleFactor = rochesterCorrection_->kScaleDT(
-  //     muon->charge, muon->p4.Pt(), muon->p4.Eta(), muon->p4.Phi());
-  // }
+  if (gconf.is_data) {
+    scale = muoncorr->kScaleDT(Muon_charge()[idx], Muon_pt()[idx], Muon_eta()[idx], Muon_phi()[idx]);
+  } else {
+    // Flavour of genParticle for MC matching to status==1 muons: 1 = prompt muon (including
+    // gamma*->mu mu), 15 = muon from prompt tau, 5 = muon from b, 4 = muon from c, 3 = muon from
+    // light or unknown, 0 = unmatched
+    if (Muon_genPartFlav().at(idx) > 0) {
+      scale = muoncorr->kSpreadMC(Muon_charge()[idx], Muon_pt()[idx], Muon_eta()[idx], Muon_phi()[idx],
+                                  GenPart_pt().at(Muon_genPartIdx()[idx]));
+    } else {
+      randomGenerator->SetSeed(int(100000 * (Muon_phi()[idx] + 3.2)));
+      scale = muoncorr->kSmearMC(Muon_charge()[idx], Muon_pt()[idx], Muon_eta()[idx], Muon_phi()[idx],
+                                 Muon_nTrackerLayers()[idx], randomGenerator->Uniform());
+    }
+  }
 
-  muon->p4.SetPtEtaPhiM(muon->p4.Pt() * scaleFactor, muon->p4.Eta(),
-                        muon->p4.Phi(), muon->p4.M());  // Q: no scale for mass?
+  muon->p4.SetPtEtaPhiM(Muon_pt()[idx] * scale, Muon_eta()[idx], Muon_phi()[idx], Muon_mass()[idx]);  // Q: no scale for mass?
 }
 
-vector<Muon> getMuons(int id_level) {
+std::tuple<vector<Muon>, vector<Muon>> getMuons(bool applyRocCorr, float* shiftx, float* shifty) {
 
   vector<Muon> looseMuons;
   vector<Muon> tightMuons;
@@ -245,11 +214,13 @@ vector<Muon> getMuons(int id_level) {
       continue;
 
     Muon muon;
-    muon.p4.SetPtEtaPhiM(Muon_pt()[i], Muon_eta()[i], Muon_phi()[i], Muon_mass()[i]);
-    muon.uncorrP4 = muon.p4;
+    muon.uncorrP4.SetPtEtaPhiM(Muon_pt()[i], Muon_eta()[i], Muon_phi()[i], Muon_mass()[i]);
     muon.charge = Muon_charge()[i];
 
-    // ApplyRochesterCorrectionToMuon(&muon, Muon_nTrackerLayers()[i]);
+    if (applyRocCorr)
+      ApplyRochesterCorrectionToMuon(&muon, i);
+    else
+      muon.p4 = muon.uncorrP4;
 
     if (muon.p4.Pt() < k_minPt_mu_loose)  // minPtLoose
       continue;
@@ -257,7 +228,10 @@ vector<Muon> getMuons(int id_level) {
     looseMuons.emplace_back(muon);
 
     // Propagate changes in momenta of loose muons into ptmiss
-    // AddMomentumShift(muon.uncorrP4, muon.p4);
+    if (applyRocCorr) {
+      if (shiftx) *shiftx = muon.p4.Px() - muon.uncorrP4.Px();
+      if (shifty) *shifty = muon.p4.Py() - muon.uncorrP4.Py();
+    }
 
     bool const passTightId = Muon_tightId()[i];
 
@@ -267,21 +241,13 @@ vector<Muon> getMuons(int id_level) {
     tightMuons.emplace_back(muon);
   }
 
-
-  // Make sure the collections are sorted in pt
-  switch (id_level) {
-    case idLoose:
-      std::sort(looseMuons.begin(), looseMuons.end(), PtOrdered);
-      return looseMuons;
-    case idTight:
-      std::sort(tightMuons.begin(), tightMuons.end(), PtOrdered);
-      return tightMuons;
-  }
-  return tightMuons;
+  std::sort(looseMuons.begin(), looseMuons.end(), PtOrdered);
+  std::sort(tightMuons.begin(), tightMuons.end(), PtOrdered);
+  return {tightMuons, looseMuons};
 
 }
 
-vector<Photon> getPhotons(int id_level) {
+vector<Photon> getPhotons() {
   vector<Photon> photons;
 
   for (unsigned i = 0; i < Photon_pt().size(); ++i) {
@@ -314,7 +280,7 @@ vector<Photon> getPhotons(int id_level) {
 float getJetCorrectionFactorFromFile(int jetidx, Jet injet, bool applyJER) {
 
     double corrFactor = 1.;
-    const double corrPt = injet.p4.Pt();  // pt with nominal JEC
+    // const double corrPt = injet.p4.Pt();  // pt with nominal JEC
 
     /*
     // Evaluate JEC uncertainty

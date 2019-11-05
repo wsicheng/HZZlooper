@@ -71,7 +71,7 @@ int ScanChain(TChain *ch, string sample, string outdir, int nEventsSample = -1) 
   gconf.GetSampleType("/"+sample);
 
   if (applyGoodRunList && gconf.is_data) {
-    const char* json_file = "../NanoCORE/goodrun_files/Cert_271036-325175_13TeV_Combined161718_JSON_snt.txt";
+    const char* json_file = "../NanoCORE/data/goodrun/Cert_271036-325175_13TeV_Combined161718_JSON_snt.txt";
     cout << ">>> Loading goodrun json file: " << json_file << endl;
     set_goodrun_file(json_file);
   }
@@ -101,6 +101,9 @@ int ScanChain(TChain *ch, string sample, string outdir, int nEventsSample = -1) 
     }
   }
 
+  muoncorr = new RoccoR();
+  randomGenerator = new TRandom3();
+
   while ( (currentFile = (TFile*)fileIter.Next()) ) {
     TFile *file = TFile::Open( currentFile->GetTitle() );
     TTree *tree = (TTree*)file->Get("Events");
@@ -110,6 +113,9 @@ int ScanChain(TChain *ch, string sample, string outdir, int nEventsSample = -1) 
     tree->SetCacheLearnEntries(100);
 
     gconf.GetConfigsFromDatasetName(filename.Data());
+
+    muoncorr->reset();
+    muoncorr->init(Form("../NanoCORE/data/RocesterCorrection/RoccoR%d.txt", gconf.year));
 
     // auto psRead = new TTreePerfStats("readPerf", tree);
     nt.Init(tree);
@@ -138,8 +144,8 @@ int ScanChain(TChain *ch, string sample, string outdir, int nEventsSample = -1) 
 
       nPassedTotal++;
 
-      auto tightElectrons = getElectrons();
-      auto tightMuons = getMuons();
+      auto [tightElectrons, looseElectrons] = getElectrons();
+      auto [tightMuons, looseMuons] = getMuons();
       auto photons = getPhotons();
 
       // bool isPhotonDatadriven = false;  //
@@ -161,8 +167,6 @@ int ScanChain(TChain *ch, string sample, string outdir, int nEventsSample = -1) 
       else if (isMuMu && !passTriggerSelections(1)) continue;
 
       bool passLeptonVeto = true;
-      auto looseElectrons = getElectrons(ID_level::idLoose);
-      auto looseMuons = getMuons(ID_level::idLoose);
       if (isGamma)
         passLeptonVeto = (looseElectrons.empty() and looseMuons.empty());
       else if (isEE)
@@ -337,6 +341,9 @@ int ScanChain(TChain *ch, string sample, string outdir, int nEventsSample = -1) 
 
   // fout->Write();
   fout->Close();
+
+  delete fout; fout = nullptr;
+  delete muoncorr; muoncorr = nullptr;
 
   cout << "\n---------------------------------" << endl;
   cout << nEventsTotal << " Events Processed, where " << nDuplicates << " duplicates were skipped, and ";
