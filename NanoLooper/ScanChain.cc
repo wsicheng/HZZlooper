@@ -207,6 +207,7 @@ int ScanChain(TChain *ch, string sample, string outdir, int nEventsSample = -1) 
           break;
         }
       }
+      if (!passBTagVeto) continue;
 
       string jetcat = "geq1j";
       if (jets.size() == 0)
@@ -224,14 +225,21 @@ int ScanChain(TChain *ch, string sample, string outdir, int nEventsSample = -1) 
       // float met_sig = MET_significance();
 
       // if (MET_pt() < 125) continue;
-      if (fabs(boson.M() - mZ) > 15) continue;
+      auto fill_mll_hists = [&](string s) {
+        if (!isMuMu && !isEE) return;
+        plot1d("h_mll_"+s, boson.M() , scaleToLumi, hvec, ";M_{ll} [GeV]" , 50,  0, 500);
+        plot1d(Form("h_mll_%s_%s", s.c_str(), lepcat.c_str()), boson.M() , scaleToLumi, hvec, ";M_{ll} [GeV]" , 50,  0, 500);
+        plot1d(Form("h_mll_%s_%s_%s", s.c_str(), jetcat.c_str(), lepcat.c_str()), boson.M() , scaleToLumi, hvec, ";M_{ll} [GeV]" , 50,  0, 500);
+      };
+      fill_mll_hists("full");
+
       if (boson.Pt() < 55) continue;
+      fill_mll_hists("Zpt55");
+
+      if (fabs(boson.M() - mZ) > 15) continue;
 
       float deltaPhi_MET_Boson = deltaPhi(boson.Phi(), MET_phi());
       if (deltaPhi_MET_Boson < 0.5) continue;
-
-
-      if (!passBTagVeto) continue;
 
       bool passDeltaPhiJetMET = true;
 
@@ -326,7 +334,7 @@ int ScanChain(TChain *ch, string sample, string outdir, int nEventsSample = -1) 
     }
     string dirname = "hzz2l2nu";
     for (string dirsuf : {"_eq0j_ee", "_eq0j_mumu", "_geq1j_ee", "_geq1j_mumu", "_vbf_ee", "_vbf_mumu",
-            "_ee", "_mumu", "_eq0j", "_geq1j",  "_vbf" }) {
+            "_eq0j_gamma",  "_geq1j_gamma",  "_vbf_gamma", "_ee", "_mumu", "_eq0j", "_geq1j",  "_vbf" }) {
       if (h.first.find(dirsuf) != string::npos) {
         dirname += dirsuf;
         break;

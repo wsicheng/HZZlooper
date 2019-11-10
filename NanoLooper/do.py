@@ -13,7 +13,7 @@ dryrun = False
 
 # File location
 proddir = '/pnfs/iihe/cms/store/group/HZZ2l2nu/Production/'
-dir17 = proddir+'2019-10-07_2017/DDF/'
+dir17 = proddir+'2019-11-01_2017/DDF/'
 dir16p2 = proddir+'2019-09-05_2016/DDF/'
 dir16p1 = proddir+'2019-08-16_2016/DDF/'
 
@@ -72,68 +72,6 @@ data16p1 = [
     'MuonEG',
 ]
 
-mc16p1 = [
-    'ZZTo2L2Nu',
-    'ZZTo2L2Q',
-    'ZZTo4L',
-    'GluGluToContinToZZTo2e2nu',
-    'GluGluToContinToZZTo2mu2nu',
-    'WZTo3LNu',
-    'WZTo2L2Q',
-    'TT',
-    'DYJetsToLL_M-50',
-    'WJetsToLNu',
-    'TTWJetsToLNu',
-    'TTZToLLNuNu_M-10',
-    'ST_s-channel',
-    'ST_t-channel_top',
-    'ST_t-channel_antitop',
-    'ST_tW_top',
-    'ST_tW_antitop',
-    'WWW',
-    'WWZ',
-    'WWTo2L2Nu',
-    'WZZ',
-    'ZZZ',
-    'GGToHToZZTo2E2Nu',
-    'GGToZZTo2E2Nu_BSI',
-    'GGToHToZZTo2Mu2Nu',
-    'GGToZZTo2Mu2Nu_BSI',
-]
-
-mc16p2 = [
-    'WJetsToLNu_LO',
-    'WJetsToLNu_HT-100To200',
-    'WJetsToLNu_HT-200To400',
-    'WJetsToLNu_HT-400To600',
-    'WJetsToLNu_HT-600To800',
-    'WJetsToLNu_HT-800To1200',
-    'WJetsToLNu_HT-1200To2500',
-    'WJetsToLNu_HT-2500ToInf',
-    'SinglePhoton',
-    'GJets_HT-40To100',
-    'GJets_HT-100To200',
-    'GJets_HT-200To400',
-    'GJets_HT-400To600',
-    'GJets_HT-600ToInf',
-    'QCD_HT50to100',
-    'QCD_HT100to200',
-    'QCD_HT200to300',
-    'QCD_HT300to500',
-    'QCD_HT500to700',
-    'QCD_HT700to1000',
-    'QCD_HT1000to1500',
-    'QCD_HT1500to2000',
-    'QCD_HT2000toInf',
-    'TTGJets',
-    'TGJets',
-    'ZGTo2LG',
-    'ZNuNuGJets',
-    'WGToLNuG',
-    'ZGTo2NuG',
-    'ZGTo2NuG_PtG-130',
-]
-
 ds17 = data17 + mc17
 
 merge_map = {
@@ -180,10 +118,16 @@ def getFileListData(dsloc, dslist, dataname='data'):
 
     return ds_flists
     
-def getFileList(dsloc, dslist):
-    ds_flists = {}
-
+def getSampList(dsloc):
     if dsloc[-1] != '/': dsloc += '/'
+    return [ fn.split('/')[-1][:-5] for fn in glob.glob(dsloc+'*.yaml')]
+
+def getFileList(dsloc, dslist=None):
+    if dsloc[-1] != '/': dsloc += '/'
+    if dslist == None:
+        dslist = getSampList(dsloc)
+
+    ds_flists = {}
     for dsname in dslist:
         with open(dsloc+dsname+'.yaml', 'r') as ddf:
             ds = yaml.safe_load(ddf)
@@ -249,21 +193,20 @@ if __name__ == '__main__':
         mergeOutputHists(outdir, lst_samp=lst_samp)
         exit(0)
 
-    dsloc = dir17
-    data17_flists = getFileListData(dsloc, data17, 'data17')
-    # mc17_flists = getFileList(dsloc, mc17)
-    # data_flists = getFileListData(dsloc, test17, 'data17')
+    ## Define amples to run over
 
-    mc16p1 = [ x for x in mc16p1 if x not in mc16p2 ]
-    samp16_flists = getFileList(dir16p1, mc16p1+data16p1) 
-    samp16_flists.update(getFileList(dir16p2, mc16p2))
+    # samp17_flists = getFileList(dir17, data17+mc17)
+
+    # mc16p1 = [ x for x in mc16p1 if x not in mc16p2 ]
+    samp16_flists = getFileList(dir16p1)
+    samp16_flists.update( getFileList(dir16p2) )
 
     # data_flists = data17_flists
     data_flists = {}
     samp_flists = {}
 
     samp_flists = samp16_flists
-    # samp_flists = getFileList(dir16p1,data16p1)
+    # samp_flists = getFileList(dir16p1, [ 'MuonEG',])
 
     rv = os.system('make -j 12')
     if rv != 0: exit()          # quit if make is not successful
@@ -307,13 +250,13 @@ if __name__ == '__main__':
 
     for rs in pool.imap_unordered(runHZZlooper, arglist):
         if rs == 0: njobs_done += 1
-        else: print( '>>> The {} job with sample {} doesn\'t return 0!'.format(njobs_done, rs.split(' ')[1]) )
+        else: print( '>>> The {}-th job return with {}!'.format(njobs_done, rs) )
 
         if verbose >= 1:
             print( '>>> Finish running {}/{} jobs!'.format(njobs_done, njobs_total) )
 
             
-    if njobs_done == njobs_total:
+    if njobs_done >= njobs_total-1:
         print( 'All {} job done!'.format(njobs_done) )
         if not args.nomerge:
             # mergeOutputHists(outdir,'',['allData',])
