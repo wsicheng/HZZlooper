@@ -34,6 +34,8 @@ int main(int argc, char** argv)
   if (argc > 4) nevt_samp = string(argv[4]);
   if (argc > 5) string extrargs(argv[5]);
 
+  bool usexrootd = true;  // for current usage
+
   TChain *ch = new TChain("Events");
   // TString infile = Form("%s/%s*.root", input_dir.c_str(), sample.c_str());
 
@@ -47,6 +49,8 @@ int main(int argc, char** argv)
   vecInFiles.push_back( filestr );
 
   for (TString file : vecInFiles) {
+    if (usexrootd && file.BeginsWith("/store"))
+      file = "root://cmsxrootd.fnal.gov/"+file;
     cout << "[runHZZlooper] >> Adding file " << file << " to be process." << endl;
     ch->Add(file);
   }

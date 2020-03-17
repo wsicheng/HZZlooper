@@ -19,10 +19,10 @@ endif
 #ifdef CMSSW_VERSION
 #	ROOFITINCLUDE = $(shell scramv1 tool info roofitcore | grep INCLUDE | sed 's/^INCLUDE=/-I/')
 #endif
-
 CC = g++
 SNTCORE = ../NanoCORE
-INCLUDE = $(shell root-config --cflags) -I$(SNTCORE)
+LIBBOOST=/cvmfs/cms.cern.ch/$(SCRAM_ARCH)/external/boost/1.67.0/include
+INCLUDE = $(shell root-config --cflags) -I$(SNTCORE) -I$(LIBBOOST)
 CFLAGS = -Wall -Wno-unused-function -g -O3 -fPIC $(INCLUDE) $(EXTRACFLAGS)
 ROOTLIBS = $(shell root-config --ldflags --cflags --libs) -lTMVA #-lEG -lGenVector
 DICTINCLUDE = $(ROOTSYS)/include/Math/QuantFuncMathCore.h $(ROOTSYS)/include/TLorentzVector.h $(ROOTSYS)/include/Math/Vector4D.h

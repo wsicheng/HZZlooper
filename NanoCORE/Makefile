@@ -1,5 +1,7 @@
 include Makefile.arch
 
+LIBBOOST=/cvmfs/cms.cern.ch/$(SCRAM_ARCH)/external/boost/1.67.0/include
+CXXFLAGS += -I$(LIBBOOST)
 SOURCES=$(wildcard *.cc)
 OBJECTS=$(SOURCES:.cc=.o)
 LIB=NANO_CORE.so
