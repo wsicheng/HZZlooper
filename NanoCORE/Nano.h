@@ -2375,6 +2375,15 @@ protected:
     bool HLT_Photon120_R9Id90_HE10_IsoM_;
     TBranch *b_HLT_Photon120_R9Id90_HE10_IsoM_;
     bool loaded_HLT_Photon120_R9Id90_HE10_IsoM_;
+    bool HLT_Photon22_R9Id90_HE10_IsoM_;
+    TBranch *b_HLT_Photon22_R9Id90_HE10_IsoM_;
+    bool loaded_HLT_Photon22_R9Id90_HE10_IsoM_;
+    bool HLT_Photon30_R9Id90_HE10_IsoM_;
+    TBranch *b_HLT_Photon30_R9Id90_HE10_IsoM_;
+    bool loaded_HLT_Photon30_R9Id90_HE10_IsoM_;
+    bool HLT_Photon36_R9Id90_HE10_IsoM_;
+    TBranch *b_HLT_Photon36_R9Id90_HE10_IsoM_;
+    bool loaded_HLT_Photon36_R9Id90_HE10_IsoM_;
     bool HLT_Photon150_;
     TBranch *b_HLT_Photon150_;
     bool loaded_HLT_Photon150_;
@@ -5622,6 +5631,9 @@ public:
     const bool &HLT_Photon120();
     const bool &HLT_Photon120EB_TightID_TightIso();
     const bool &HLT_Photon120_R9Id90_HE10_IsoM();
+    const bool &HLT_Photon22_R9Id90_HE10_IsoM();
+    const bool &HLT_Photon30_R9Id90_HE10_IsoM();
+    const bool &HLT_Photon36_R9Id90_HE10_IsoM();
     const bool &HLT_Photon150();
     const bool &HLT_Photon165_R9Id90_HE10_IsoM();
     const bool &HLT_Photon175();
@@ -7126,6 +7138,9 @@ namespace tas {
     const bool &HLT_Photon120(); // Trigger/flag bit
     const bool &HLT_Photon120EB_TightID_TightIso(); // Trigger/flag bit
     const bool &HLT_Photon120_R9Id90_HE10_IsoM(); // Trigger/flag bit
+    const bool &HLT_Photon22_R9Id90_HE10_IsoM(); // Trigger/flag bit
+    const bool &HLT_Photon30_R9Id90_HE10_IsoM(); // Trigger/flag bit
+    const bool &HLT_Photon36_R9Id90_HE10_IsoM(); // Trigger/flag bit
     const bool &HLT_Photon150(); // Trigger/flag bit
     const bool &HLT_Photon165_R9Id90_HE10_IsoM(); // Trigger/flag bit
     const bool &HLT_Photon175(); // Trigger/flag bit

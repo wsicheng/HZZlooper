@@ -15,7 +15,8 @@ class GlobalConfig {
  public:
   int year = 0;
   int nanoAOD_ver = 0; // 74, 80, 94, 101, ...
-  bool is_data = 0;
+  bool is_data = false;
+  bool is_signal = false;
   float lumi = 0;
   std::string samptype = "";  // to be moved to enum
   std::string analysis = ""; 
@@ -36,6 +37,10 @@ class GlobalConfig {
 
   //_________________________________
   // B-tag working points
+  float WP_DeepFlav_tight  = -1;
+  float WP_DeepFlav_medium = -1;
+  float WP_DeepFlav_loose  = -1;
+
   float WP_DeepCSV_tight  = -1;
   float WP_DeepCSV_medium = -1;
   float WP_DeepCSV_loose  = -1;
@@ -45,6 +50,7 @@ class GlobalConfig {
   float WP_CSVv2_loose  = -1;
 
   // btagSF version (filename)
+  std::string fn_btagSF_DeepFlav;
   std::string fn_btagSF_DeepCSV;
   std::string fn_btagSF_CSVv2;
 

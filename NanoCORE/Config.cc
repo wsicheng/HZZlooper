@@ -55,7 +55,14 @@ void GlobalConfig::GetSampleType(std::string dsname) {
   else if ( dsname.find("DYJets") != std::string::npos ) samptype = "DY";
   else if ( dsname.find("Jets") != std::string::npos ) samptype = "Wjets";
   else if ( dsname.find("WZ") != std::string::npos  ) samptype = "WZ";
+  else if ( dsname.find("ZZ") != std::string::npos  ) samptype = "ZZ";
+  else if ( dsname.find("ggH") != std::string::npos  ) samptype = "ggH";
+  else if ( dsname.find("VBF") != std::string::npos  ) samptype = "VBF";
   else std::cout << ">>> Cannot assigned sampletype for " << dsname << std::endl;
+
+  if ( dsname.find("GluGluHToZZ") != std::string::npos ) is_signal = 1;
+  else if ( dsname.find("ggHZZ") != std::string::npos ) is_signal = 1;
+  else if ( dsname.find("VBF") != std::string::npos ) is_signal = 1;
 
   if (verbose) {
     std::cout << ">>> The assigned sampletype based on " << dsname << " is " << samptype
@@ -84,6 +91,10 @@ void GlobalConfig::GetConfigs(int in_year)
     // https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80XReReco
     // Data: 23Sep2016 ReReco for B-G datasets
     // Monte Carlo: RunIISummer16 for Fullsim and Spring16 for Fastsim
+    WP_DeepFlav_tight  = 0.7221;
+    WP_DeepFlav_medium = 0.3093;
+    WP_DeepFlav_loose  = 0.0614;
+    fn_btagSF_DeepFlav = "DeepJet_2016LegacySF_WP_V1.csv";
 
     WP_DeepCSV_tight  = 0.8958;
     WP_DeepCSV_medium = 0.6324;
@@ -105,10 +116,15 @@ void GlobalConfig::GetConfigs(int in_year)
 
     // B-tag working points
     // 94X WPs shall be very close to those in 80X, if not the same
+    WP_DeepFlav_tight  = 0.7221;
+    WP_DeepFlav_medium = 0.3093;
+    WP_DeepFlav_loose  = 0.0614;
+    fn_btagSF_DeepFlav = "DeepJet_2016LegacySF_WP_V1.csv";
+
     WP_DeepCSV_tight  = 0.8953;
     WP_DeepCSV_medium = 0.6321;
     WP_DeepCSV_loose  = 0.2217;
-    fn_btagSF_DeepCSV = "DeepCSV_2016LegacySF_V1.csv";
+    fn_btagSF_DeepCSV = "DeepCSV_2016LegacySF_WP_V1.csv";
 
     WP_CSVv2_tight  = 0.9535;
     WP_CSVv2_medium = 0.8484;
@@ -130,10 +146,15 @@ void GlobalConfig::GetConfigs(int in_year)
     // Data: 17Nov2017 ReReco for B-F dataset
     // Monte Carlo: RunIIFall17
 
+    WP_DeepFlav_tight  = 0.7489;
+    WP_DeepFlav_medium = 0.3033;
+    WP_DeepFlav_loose  = 0.0521;
+    fn_btagSF_DeepFlav = "DeepJet_94XSF_WP_V3_B_F.csv";
+
     WP_DeepCSV_tight  = 0.8001;
     WP_DeepCSV_medium = 0.4941;
     WP_DeepCSV_loose  = 0.1522;
-    fn_btagSF_DeepCSV = "DeepCSV_94XSF_V4_B_F.csv";
+    fn_btagSF_DeepCSV = "DeepCSV_94XSF_WP_V4_B_F.csv";
 
     WP_CSVv2_tight  = 0.9693;
     WP_CSVv2_medium = 0.8838;
@@ -151,15 +172,25 @@ void GlobalConfig::GetConfigs(int in_year)
 
     // B-tag working points
     // https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation102X
+    // pfDeepFlavourJetTags:probb + probbb + problepb
+    WP_DeepFlav_tight  = 0.7264;
+    WP_DeepFlav_medium = 0.2770;
+    WP_DeepFlav_loose  = 0.0494;
+    fn_btagSF_DeepFlav = "DeepJet_102XSF_WP_V1.csv";
+
     WP_DeepCSV_tight  = 0.7527;
     WP_DeepCSV_medium = 0.4184;
     WP_DeepCSV_loose  = 0.1241;
-    fn_btagSF_DeepCSV = "DeepCSV_102XSF_V1.csv";
+    fn_btagSF_DeepCSV = "DeepCSV_102XSF_WP_V1.csv";
 
     WP_CSVv2_tight  = 0.9693; // CSVv2 is no longer supported for 2018
     WP_CSVv2_medium = 0.8838;
     WP_CSVv2_loose  = 0.5803;
     fn_btagSF_CSVv2 = "CSVv2_94XSF_V2_B_F.csv";               // not supported
+  }
+  else {
+    std::cout << ">>> Cannot configure for year " << year << "!! Values remain unset!" << std::endl;
+    return;
   }
 
 }

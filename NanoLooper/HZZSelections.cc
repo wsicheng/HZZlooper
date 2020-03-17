@@ -72,15 +72,15 @@ bool passTriggerSelections(int trigtype) {
         // prescaled photon triggers
         if (false) {
           prescaled = (
-              HLT_Photon50_R9Id90_HE10_IsoM() ||  // eff lumi: 0.
-              HLT_Photon50_R9Id90_HE10_IsoM_EBOnly_PFJetsMJJ300DEta3_PFMET50() ||
+              HLT_Photon22_R9Id90_HE10_IsoM() ||
+              HLT_Photon30_R9Id90_HE10_IsoM() ||
+              HLT_Photon36_R9Id90_HE10_IsoM() ||
+              HLT_Photon50_R9Id90_HE10_IsoM() ||
               HLT_Photon75_R9Id90_HE10_IsoM() ||
-              HLT_Photon75_R9Id90_HE10_IsoM_EBOnly_CaloMJJ300_PFJetsMJJ400DEta3() ||
-              HLT_Photon75_R9Id90_HE10_IsoM_EBOnly_CaloMJJ400_PFJetsMJJ600DEta3() ||
-              HLT_Photon75_R9Id90_HE10_IsoM_EBOnly_PFJetsMJJ300DEta3() ||
-              HLT_Photon75_R9Id90_HE10_IsoM_EBOnly_PFJetsMJJ600DEta3() ||
               HLT_Photon90_R9Id90_HE10_IsoM() ||
-              HLT_Photon120_R9Id90_HE10_IsoM() );
+              HLT_Photon120_R9Id90_HE10_IsoM() ||
+              HLT_Photon165_R9Id90_HE10_IsoM()
+              );
         }
 
         // unprescaled in 2016, prescaled in 2017 & 2018
@@ -107,6 +107,7 @@ bool passTriggerSelections(int trigtype) {
         return ( prescaled || HLT_Photon300_NoHE() );
         // HLT_Photon175() || HLT_Photon200()  // unprescaled, but not use
     }
+
     // Lepton triggers that doesn't exist
     // HLT_IsoTkMu24() ||
     // HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL() ||
@@ -114,6 +115,42 @@ bool passTriggerSelections(int trigtype) {
   }
 
   return false;
+}
+
+double getPhotonTrigPrescale(double objpt) {
+  // precales are taken from http://homepage.iihe.ac.be/~mmahdavi/Analysis/trigsLums/trigsLumis_2016
+  // Take 10% more, so that we are on the plateau (the pT in the name is the one at the middle of the turn-on curve, so at 50% efficiency).
+  if (!gconf.is_data) return 1.0;
+
+  switch (gconf.year) {
+    case 2016:
+      if ( HLT_Photon250_NoHE() || HLT_Photon300_NoHE() )
+        return 1.0;
+
+      if ( objpt > 181.5 )
+        return (HLT_Photon165_R9Id90_HE10_IsoM())? 1.0 : 0.0;
+      else if ( objpt > 132. )
+        return (HLT_Photon120_R9Id90_HE10_IsoM())? 2.4773 : 0.0; // 1./(1.-0.59633)
+      else if ( objpt > 99. )
+        return (HLT_Photon90_R9Id90_HE10_IsoM())? 6.9483 : 0.0; // 1./(1.-0.85608)
+      else if ( objpt > 82.5 )
+        return (HLT_Photon75_R9Id90_HE10_IsoM())? 13.978 : 0.0; // 1./(1.-0.92846)
+      else if ( objpt > 55. )
+        return (HLT_Photon50_R9Id90_HE10_IsoM())? 71.736 : 0.0; // 1./(1.-0.98606)
+      else if ( objpt > 39.3 )
+        return (HLT_Photon36_R9Id90_HE10_IsoM())? 164.47 : 0.0; // 1./(1.-0.99392)
+      else if ( objpt > 33. )
+        return (HLT_Photon30_R9Id90_HE10_IsoM())? 367.65 : 0.0; // 1./(1.-0.99728)
+      else if ( objpt > 24.2 )
+        return (HLT_Photon22_R9Id90_HE10_IsoM())? 1851.9 : 0.0; // 1./(1.-0.99946)
+      break;
+    case 2017:
+    case 2018:
+    default:
+      break;
+  }
+
+  return 0.0;
 }
 
 
@@ -424,3 +461,4 @@ vector<Jet> getJets(const vector<Muon>& mus, const vector<Electron>& els, const 
 
   return jets;
 }
+

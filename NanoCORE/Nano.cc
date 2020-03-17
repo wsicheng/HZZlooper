@@ -1460,6 +1460,12 @@ void Nano::Init(TTree *tree) {
     if (b_HLT_Photon120EB_TightID_TightIso_) { b_HLT_Photon120EB_TightID_TightIso_->SetAddress(&HLT_Photon120EB_TightID_TightIso_); }
     b_HLT_Photon120_R9Id90_HE10_IsoM_ = tree->GetBranch("HLT_Photon120_R9Id90_HE10_IsoM");
     if (b_HLT_Photon120_R9Id90_HE10_IsoM_) { b_HLT_Photon120_R9Id90_HE10_IsoM_->SetAddress(&HLT_Photon120_R9Id90_HE10_IsoM_); }
+    b_HLT_Photon22_R9Id90_HE10_IsoM_ = tree->GetBranch("HLT_Photon22_R9Id90_HE10_IsoM");
+    if (b_HLT_Photon22_R9Id90_HE10_IsoM_) { b_HLT_Photon22_R9Id90_HE10_IsoM_->SetAddress(&HLT_Photon22_R9Id90_HE10_IsoM_); }
+    b_HLT_Photon30_R9Id90_HE10_IsoM_ = tree->GetBranch("HLT_Photon30_R9Id90_HE10_IsoM");
+    if (b_HLT_Photon30_R9Id90_HE10_IsoM_) { b_HLT_Photon30_R9Id90_HE10_IsoM_->SetAddress(&HLT_Photon30_R9Id90_HE10_IsoM_); }
+    b_HLT_Photon36_R9Id90_HE10_IsoM_ = tree->GetBranch("HLT_Photon36_R9Id90_HE10_IsoM");
+    if (b_HLT_Photon36_R9Id90_HE10_IsoM_) { b_HLT_Photon36_R9Id90_HE10_IsoM_->SetAddress(&HLT_Photon36_R9Id90_HE10_IsoM_); }
     b_HLT_Photon150_ = tree->GetBranch("HLT_Photon150");
     if (b_HLT_Photon150_) { b_HLT_Photon150_->SetAddress(&HLT_Photon150_); }
     b_HLT_Photon165_R9Id90_HE10_IsoM_ = tree->GetBranch("HLT_Photon165_R9Id90_HE10_IsoM");
@@ -3706,6 +3712,9 @@ void Nano::GetEntry(unsigned int idx) {
     loaded_HLT_Photon120_ = false;
     loaded_HLT_Photon120EB_TightID_TightIso_ = false;
     loaded_HLT_Photon120_R9Id90_HE10_IsoM_ = false;
+    loaded_HLT_Photon22_R9Id90_HE10_IsoM_ = false;
+    loaded_HLT_Photon30_R9Id90_HE10_IsoM_ = false;
+    loaded_HLT_Photon36_R9Id90_HE10_IsoM_ = false;
     loaded_HLT_Photon150_ = false;
     loaded_HLT_Photon165_R9Id90_HE10_IsoM_ = false;
     loaded_HLT_Photon175_ = false;
@@ -10535,6 +10544,30 @@ const bool &Nano::HLT_Photon120_R9Id90_HE10_IsoM() {
         loaded_HLT_Photon120_R9Id90_HE10_IsoM_ = true;
     }
     return HLT_Photon120_R9Id90_HE10_IsoM_;
+}
+const bool &Nano::HLT_Photon22_R9Id90_HE10_IsoM() {
+  if (!loaded_HLT_Photon22_R9Id90_HE10_IsoM_) {
+    if (!b_HLT_Photon22_R9Id90_HE10_IsoM_) throw std::runtime_error("HLT_Photon22_R9Id90_HE10_IsoM branch doesn't exist");
+    b_HLT_Photon22_R9Id90_HE10_IsoM_->GetEntry(index);
+    loaded_HLT_Photon22_R9Id90_HE10_IsoM_ = true;
+  }
+  return HLT_Photon22_R9Id90_HE10_IsoM_;
+}
+const bool &Nano::HLT_Photon30_R9Id90_HE10_IsoM() {
+  if (!loaded_HLT_Photon30_R9Id90_HE10_IsoM_) {
+    if (!b_HLT_Photon30_R9Id90_HE10_IsoM_) throw std::runtime_error("HLT_Photon30_R9Id90_HE10_IsoM branch doesn't exist");
+    b_HLT_Photon30_R9Id90_HE10_IsoM_->GetEntry(index);
+    loaded_HLT_Photon30_R9Id90_HE10_IsoM_ = true;
+  }
+  return HLT_Photon30_R9Id90_HE10_IsoM_;
+}
+const bool &Nano::HLT_Photon36_R9Id90_HE10_IsoM() {
+  if (!loaded_HLT_Photon36_R9Id90_HE10_IsoM_) {
+    if (!b_HLT_Photon36_R9Id90_HE10_IsoM_) throw std::runtime_error("HLT_Photon36_R9Id90_HE10_IsoM branch doesn't exist");
+    b_HLT_Photon36_R9Id90_HE10_IsoM_->GetEntry(index);
+    loaded_HLT_Photon36_R9Id90_HE10_IsoM_ = true;
+  }
+  return HLT_Photon36_R9Id90_HE10_IsoM_;
 }
 const bool &Nano::HLT_Photon150() {
     if (!loaded_HLT_Photon150_) {
@@ -17634,6 +17667,9 @@ namespace tas {
     const bool &HLT_Photon120() { return nt.HLT_Photon120(); }
     const bool &HLT_Photon120EB_TightID_TightIso() { return nt.HLT_Photon120EB_TightID_TightIso(); }
     const bool &HLT_Photon120_R9Id90_HE10_IsoM() { return nt.HLT_Photon120_R9Id90_HE10_IsoM(); }
+    const bool &HLT_Photon22_R9Id90_HE10_IsoM() { return nt.HLT_Photon22_R9Id90_HE10_IsoM(); }
+    const bool &HLT_Photon30_R9Id90_HE10_IsoM() { return nt.HLT_Photon30_R9Id90_HE10_IsoM(); }
+    const bool &HLT_Photon36_R9Id90_HE10_IsoM() { return nt.HLT_Photon36_R9Id90_HE10_IsoM(); }
     const bool &HLT_Photon150() { return nt.HLT_Photon150(); }
     const bool &HLT_Photon165_R9Id90_HE10_IsoM() { return nt.HLT_Photon165_R9Id90_HE10_IsoM(); }
     const bool &HLT_Photon175() { return nt.HLT_Photon175(); }
@@ -19371,6 +19407,9 @@ namespace tas {
         else if (name == "HLT_Photon120") return nt.HLT_Photon120();
         else if (name == "HLT_Photon120EB_TightID_TightIso") return nt.HLT_Photon120EB_TightID_TightIso();
         else if (name == "HLT_Photon120_R9Id90_HE10_IsoM") return nt.HLT_Photon120_R9Id90_HE10_IsoM();
+        else if (name == "HLT_Photon22_R9Id90_HE10_IsoM") return nt.HLT_Photon22_R9Id90_HE10_IsoM();
+        else if (name == "HLT_Photon30_R9Id90_HE10_IsoM") return nt.HLT_Photon30_R9Id90_HE10_IsoM();
+        else if (name == "HLT_Photon36_R9Id90_HE10_IsoM") return nt.HLT_Photon36_R9Id90_HE10_IsoM();
         else if (name == "HLT_Photon150") return nt.HLT_Photon150();
         else if (name == "HLT_Photon165_R9Id90_HE10_IsoM") return nt.HLT_Photon165_R9Id90_HE10_IsoM();
         else if (name == "HLT_Photon175") return nt.HLT_Photon175();
