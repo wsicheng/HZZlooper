@@ -30,7 +30,7 @@ DICTINCLUDE = $(ROOTSYS)/include/Math/QuantFuncMathCore.h $(ROOTSYS)/include/TLo
 LINKER = g++
 LINKERFLAGS = $(shell root-config --ldflags --libs) -lEG -lGenVector -lTMVA -lRooFit
 
-DIR = ./
+DIR = $(PWD)
 
 SOURCES = $(wildcard *.cc)
 OBJECTS = $(SOURCES:.cc=.o)
@@ -39,7 +39,7 @@ LIB = libHZZlooper.so
 COREDIR = ../NanoCORE
 CORESOURCES = $(wildcard $(COREDIR)/*.cc)
 COREOBJECTS = $(CORESOURCES:.cc=.o)
-CORELIB = $(COREDIR)/NANO_CORE.so
+CORELIB = NANO_CORE.so
 
 # TOOLSSOURCES = ../CORE/Tools/goodrun.cc ../CORE/Tools/dorky/dorky.cc
 # TOOLSOBJECTS = $(TOOLSSOURCES:.cc=.o)
@@ -53,10 +53,14 @@ EXE = runHZZlooper
 # how to make it
 #
 
-$(CORELIB): $(CORESOURCES)
+
+$(CORESOURCES):
 	$(QUIET) echo "Linking $@"; \
 	echo "Using Makefile from NanoCORE using $(MAKE) -j12"; \
-	cd $(COREDIR) && $(MAKE) -j12 && cd $(DIR);
+	cd $(COREDIR) && $(MAKE) -j12 && cd $(DIR); \
+
+$(CORELIB): $(CORESOURCE)
+	cp $(COREDIR)/$(CORELIB) .
 
 $(LIB):	$(OBJECTS)
 	$(QUIET) echo "Linking $@"; \
