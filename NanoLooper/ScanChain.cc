@@ -49,7 +49,9 @@ using namespace tas;
 // turn on to apply json file to data
 const bool applyGoodRunList = true;
 
-int ScanChain(TChain *ch, string sample, string outdir, int nEventsSample = -1) {
+const bool applySyncCuts = true;
+
+int ScanChain(TChain *ch, string sample, string outdir, int nevtsamp = -1) {
 
   TFile* fout = new TFile(Form("%s/%s.root", outdir.c_str(), sample.c_str()), "RECREATE");
   // H1(met, 50, 0, -1);
@@ -77,30 +79,9 @@ int ScanChain(TChain *ch, string sample, string outdir, int nEventsSample = -1) 
     set_goodrun_file(json_file);
   }
 
-  float scaleToLumi = 1;
-  if (!gconf.is_data) {
-    if (nEventsSample <= 0) {
-      cerr << ">>> WARNING! The input total number of sample " << sample << " is invalid!! Setting it 1000." << endl;
-      nEventsSample = 1000;
-    }
-    scaleToLumi = gconf.lumi * 1000 / nEventsSample;
-    if (auto itxs = default_xsec_list.find(sample); itxs != default_xsec_list.end()) {
-      scaleToLumi *= itxs->second;
-    } else {
-      bool found = false;
-      for (auto& xs : default_xsec_list) {
-        if (sample.find(xs.first) == 0) {
-          scaleToLumi *= xs.second;
-          found = true;
-          break;
-        }
-      }
-      if (!found) {
-        cerr << ">>> WARNING! Cannot find the xsec in the default list for sample " << sample << "!! Exiting!" << endl;
-        exit(4);
-      }
-    }
-  }
+  // double sum_weights(0.);
+  double sum_effevts(0.);
+  double sum_genwgts(0.);
 
   muoncorr = new RoccoR();
   randomGenerator = new TRandom3();
@@ -115,10 +96,38 @@ int ScanChain(TChain *ch, string sample, string outdir, int nEventsSample = -1) 
 
     gconf.GetConfigsFromDatasetName(filename.Data());
 
+    double scaleToLumi = 1;
+    if (!gconf.is_data) {
+      if (nevtsamp <= 0) {
+        cerr << ">>> WARNING! The input total number of sample " << sample << " is invalid!! Setting it 1000." << endl;
+        nevtsamp = 1000;
+      }
+      scaleToLumi = gconf.lumi * 1000 / nevtsamp;
+      if (auto itxs = default_xsec_list.find(sample); itxs != default_xsec_list.end()) {
+        scaleToLumi *= itxs->second;
+      } else {
+        bool found = false;
+        for (auto& xs : default_xsec_list) {
+          if (sample.find(xs.first) == 0) {
+            scaleToLumi *= xs.second;
+            found = true;
+            cout << ">>> Loading xsec from default list for sample " << sample << " and we get " << xs.second << "pb." << endl;
+            break;
+          }
+        }
+        if (!found) {
+          cerr << ">>> WARNING! Cannot find the xsec in the default list for sample " << sample << "!! Exiting!" << endl;
+          cout << __LINE__ << ": gconf.lumi= " << gconf.lumi << ", nevtsamp= " << nevtsamp << ", scaleToLumi= " << scaleToLumi << endl;
+          exit(4);
+        }
+      }
+    }
+
     muoncorr->reset();
-    muoncorr->init(Form("../NanoCORE/data/RocesterCorrection/RoccoR%d.txt", gconf.year));
+    muoncorr->init(Form("config/RocesterCorrection/RoccoR%d.txt", gconf.year));
 
     // auto psRead = new TTreePerfStats("readPerf", tree);
+
     nt.Init(tree);
 
     for( unsigned int evt = 0; evt < tree->GetEntriesFast(); ++evt) {
@@ -127,6 +136,9 @@ int ScanChain(TChain *ch, string sample, string outdir, int nEventsSample = -1) 
       tree->LoadTree(evt);
 
       nEventsTotal++;
+      sum_effevts += (genWeight() > 0)? 1 : -1;
+      sum_genwgts += genWeight();
+
       if (show_progress) bar.progress(nEventsTotal, nEventsChain);
 
       // if (event > 50000) break;
@@ -140,36 +152,10 @@ int ScanChain(TChain *ch, string sample, string outdir, int nEventsSample = -1) 
         }
       }
 
-      bool passMETfilt = passesMETfilters(gconf.is_data);
-      if (!passMETfilt) continue;
+      float weight = (genWeight() > 0)? scaleToLumi : -1.0*scaleToLumi;
 
       // The following skim cuts are in the ntuple skiming steps
       // 2l2nu cut: nTightElection + nTightMuon >= 2, Z pt > 50, mZ > 50
-
-      // plot1d("h_preselec_steps", 3, 1, hvec, ";M_{ll} [GeV]" , 20,  0, 20);
-      // plot1d("h_preselec_met_step3", pfmet_met_Nominal(), weight, hvec, ";E_{T}^{miss} [GeV]"  , 120,  0, 600);
-      // plot1d("h_preselec_gammapt_step3", lead_photon_pt, weight, hvec, ";pt_{ph} [GeV]" , 40,  0, 200);
-      // plot1d("h_preselec_gammaeta_step3", photons_eta()[lead_photon_idx], weight, hvec, ";#eta_{ph}" , 40,  -4.0f, 4.0f);
-
-      // plot1d("h_preselec_steps", 4, 1, hvec, ";M_{ll} [GeV]" , 20,  0, 20);
-      // plot1d("h_preselec_met_step4", pfmet_met_Nominal(), weight, hvec, ";E_{T}^{miss} [GeV]"  , 120,  0, 600);
-      // plot1d("h_preselec_gammapt_step4", lead_photon_pt, weight, hvec, ";pt_{ph} [GeV]" , 40,  0, 200);
-      // plot1d("h_preselec_gammaeta_step4", photons_eta()[lead_photon_idx], weight, hvec, ";#eta_{ph}" , 40,  -4.0f, 4.0f);
-
-      nPassedTotal++;
-
-      float weight = scaleToLumi;
-
-      int nFailCuts = 0;
-
-      int istep=0;
-      plot1d("h_weight_"+to_string(istep), weight, 1, hvec, ";Event weight"  , 200,  0, 20);
-      plot1d("h_met_step"+to_string(istep), MET_pt(), weight, hvec, ";E_{T}^{miss} [GeV]"  , 120,  0, 600);
-      plot1d("h_met_unwgtd_step"+to_string(istep), MET_pt(), 1, hvec, ";E_{T}^{miss} [GeV]"  , 120,  0, 600);
-      if (nFailCuts == 0) {
-        plot1d("h_passed_steps", istep++ , weight, hvec, ";M_{ll} [GeV]" , 20,  0, 20);
-        plot1d("h_met_step"+to_string(istep), MET_pt(), weight, hvec, ";E_{T}^{miss} [GeV]"  , 120,  0, 600);
-      }
 
       plot1d("h_nphotons_raw", Photon_pt().size(), weight, hvec, ";n_{ph} [GeV]" , 5,  0, 5);
       float lead_photon_pt = 0;
@@ -180,21 +166,81 @@ int ScanChain(TChain *ch, string sample, string outdir, int nEventsSample = -1) 
           lead_photon_idx = i;
         }
       }
-      plot1d("h_lead_photon_pt_raw", lead_photon_pt, weight, hvec, ";pt_{ph} [GeV]" , 40,  0, 200);
-      plot1d("h_lead_photon_eta_raw", ((lead_photon_idx >= 0)? Photon_eta().at(lead_photon_idx) : -9), weight, hvec, ";#eta_{ph} [GeV]" , 40,  -4, 4);
+      float lead_photon_eta = (lead_photon_idx >= 0)? Photon_eta()[lead_photon_idx] : -9;
+
+      plot1d("h_preselec_steps", 0, 1, hvec, ";M_{ll} [GeV]" , 20,  0, 20);
+      plot1d("h_preselec_met_step0", MET_pt(), weight, hvec, ";E_{T}^{miss} [GeV]"  , 120,  0, 600);
+      plot1d("h_preselec_gammapt_step0", lead_photon_pt, weight, hvec, ";pt_{ph} [GeV]" , 40,  0, 200);
+      plot1d("h_preselec_gammaeta_step0", lead_photon_eta, weight, hvec, ";#eta_{ph}" , 40,  -4.0f, 4.0f);
+
+      bool passMETfilt = passesMETfilters(gconf.is_data);
+      if (!passMETfilt) continue;
+
+      for (unsigned j = 0; j < nJet(); ++j) {
+        if (Jet_pt()[j] < 30 || (not (Jet_jetId()[j] & 0b0010))) continue;
+        if (MET_pt() > 75)
+          plot1d("h_dphi_met_badjet", deltaPhi(Jet_phi()[j], MET_phi()), weight, hvec, ";#Delta#phi(bad jet,MET) [GeV]" , 32,  0, 3.2);
+        plot1d("h_met_badjetexist", MET_pt(), weight, hvec, ";E_{T}^{miss} [GeV]"  , 120,  0, 600);
+      }
+
+      plot1d("h_preselec_steps", 1, 1, hvec, ";M_{ll} [GeV]" , 20,  0, 20);
+      plot1d("h_preselec_met_step1", MET_pt(), weight, hvec, ";E_{T}^{miss} [GeV]"  , 120,  0, 600);
+      plot1d("h_preselec_gammapt_step1", lead_photon_pt, weight, hvec, ";pt_{ph} [GeV]" , 40,  0, 200);
+      plot1d("h_preselec_gammaeta_step1", lead_photon_eta, weight, hvec, ";#eta_{ph}" , 40,  -4.0f, 4.0f);
+
+      int nPhoton50 = 0;
+      for (unsigned i = 0; i < Photon_pt().size(); ++i) {
+        if (Photon_cutBasedBitmap()[i] & 0b0100) continue;
+        if (Photon_pt()[i] >= 50) nPhoton50++;
+      }
+      plot1d("h_nphotons50", nPhoton50, weight, hvec, ";n_{ph} [GeV]" , 5,  0, 5);
+      // if (applySyncCuts && nPhoton50 == 0) continue;
+
+      plot1d("h_preselec_steps", 2, 1, hvec, ";M_{ll} [GeV]" , 20,  0, 20);
+      plot1d("h_preselec_met_step2", MET_pt(), weight, hvec, ";E_{T}^{miss} [GeV]"  , 120,  0, 600);
+      plot1d("h_preselec_gammapt_step2", lead_photon_pt, weight, hvec, ";pt_{ph} [GeV]" , 40,  0, 200);
+      plot1d("h_preselec_gammaeta_step2", lead_photon_eta, weight, hvec, ";#eta_{ph}" , 40,  -4.0f, 4.0f);
+
+      // To apply the same skim cut as the NanoAOD
+      if (applySyncCuts) {
+        // if (isGamma)
+        //   if (!InstrMETPrunerCuts()) continue;
+        // else
+        if (!ZZ2l2vPrunerCuts()) continue;
+        // if (!InstrMETPrunerCuts()) continue;
+      }
+
+      plot1d("h_preselec_steps", 3, 1, hvec, ";M_{ll} [GeV]" , 20,  0, 20);
+      plot1d("h_preselec_met_step3", MET_pt(), weight, hvec, ";E_{T}^{miss} [GeV]"  , 120,  0, 600);
+      plot1d("h_preselec_gammapt_step3", lead_photon_pt, weight, hvec, ";pt_{ph} [GeV]" , 40,  0, 200);
+      plot1d("h_preselec_gammaeta_step3", lead_photon_eta, weight, hvec, ";#eta_{ph}" , 40,  -4.0f, 4.0f);
+
+      nPassedTotal++;
+
+      int nFailCuts = 0;
 
       auto [tightElectrons, looseElectrons] = getElectrons();
       auto [tightMuons, looseMuons] = getMuons();
       auto photons = getPhotons();
 
-      // bool isPhotonDatadriven = false;  //
-      // bool isEE = (tightElectrons.size() >= 2 && !isPhotonDatadriven); //2 good Photon
-      // bool isMuMu = (tightMuons.size() >= 2 && !isPhotonDatadriven); //2 good muons
-      // bool isGamma = (photons.size() == 1 && isPhotonDatadriven); //1 good photon
-
       bool isEE = (tightElectrons.size() == 2); //2 good Photon
       bool isMuMu = (tightMuons.size() == 2); //2 good muons
-      bool isGamma = (photons.size() == 1); //1 good photon
+      bool isGamma = (photons.size() == 1 && !isEE && !isMuMu); //1 good photon
+
+      string lepcat = "gamma";
+      if (isEE) lepcat = "ee";
+      else if (isMuMu) lepcat = "mumu";
+      else if (isGamma) lepcat = "gamma";
+
+      int istep=0;
+      plot1d("h_weight_"+to_string(istep), weight, 1, hvec, ";Event weight"  , 200,  0, 20);
+      plot1d("h_met_step"+to_string(istep), MET_pt(), weight, hvec, ";E_{T}^{miss} [GeV]"  , 120,  0, 600);
+      plot1d("h_met_unwgtd_step"+to_string(istep), MET_pt(), 1, hvec, ";E_{T}^{miss} [GeV]"  , 120,  0, 600);
+      if (nFailCuts == 0) {
+        plot1d("h_passed_steps_"+lepcat, istep , weight, hvec, ";M_{ll} [GeV]" , 20,  0, 20);
+        plot1d("h_passed_steps", istep++ , weight, hvec, ";M_{ll} [GeV]" , 20,  0, 20);
+        plot1d("h_met_step"+to_string(istep), MET_pt(), weight, hvec, ";E_{T}^{miss} [GeV]"  , 120,  0, 600);
+      }
 
       if (!isEE && !isMuMu && !isGamma) //not a good lepton pair or photon (if datadriven)
         continue;
@@ -228,7 +274,6 @@ int ScanChain(TChain *ch, string sample, string outdir, int nEventsSample = -1) 
         plot1d("h_etagamma_raw", photons[0].p4.Eta(), weight, hvec, ";#eta(#gamma) [GeV]" , 40,  -4.0f, 4.0f);
       }
 
-
       bool passLeptonVeto = true;
       if (isGamma)
         passLeptonVeto = (looseElectrons.empty() and looseMuons.empty());
@@ -240,7 +285,11 @@ int ScanChain(TChain *ch, string sample, string outdir, int nEventsSample = -1) 
       if (!passLeptonVeto) continue;
       // Add track+tau veto also?? <-- to be studied
 
+      vector<int> isotrack_idxs = getIsoTrackIndices(looseMuons, looseElectrons);
+      bool passTrackVeto = (isotrack_idxs.size() > 0);
+
       if (nFailCuts == 0) {
+        plot1d("h_passed_steps_"+lepcat, istep , weight, hvec, ";M_{ll} [GeV]" , 20,  0, 20);
         plot1d("h_passed_steps", istep++ , weight, hvec, ";M_{ll} [GeV]" , 20,  0, 20);
         plot1d("h_met_step"+to_string(istep), MET_pt(), weight, hvec, ";E_{T}^{miss} [GeV]"  , 120,  0, 600);
       }
@@ -282,25 +331,20 @@ int ScanChain(TChain *ch, string sample, string outdir, int nEventsSample = -1) 
       if (!passBTagVeto) continue;
 
       if (nFailCuts == 0) {
+        plot1d("h_passed_steps_"+lepcat, istep , weight, hvec, ";M_{ll} [GeV]" , 20,  0, 20);
         plot1d("h_passed_steps", istep++ , weight, hvec, ";M_{ll} [GeV]" , 20,  0, 20);
         plot1d("h_met_step"+to_string(istep), MET_pt(), weight, hvec, ";E_{T}^{miss} [GeV]"  , 120,  0, 600);
       }
 
+      bool is_VBFcat = PassVBFcuts(jets, boson);
+
       string jetcat = "geq1j";
-      // if (jets.size() == 0)
-      //   jetcat = "eq0j";
-      // else if (PassVBFcuts(jets, boson))
-      //   jetcat = "vbf";
       if (jets.size() == 0)
         jetcat = "eq0j";
       else if (jets.size() == 1)
         jetcat = "eq1j";
       else if (jets.size() == 2)
         jetcat = "eq2j";
-
-      string lepcat = "gamma";
-      if (isEE) lepcat = "ee";
-      else if (isMuMu) lepcat = "mumu";
 
       TLorentzVector met_p4;
       met_p4.SetPtEtaPhiM(MET_pt(), 0., MET_phi(), 0.);
@@ -323,6 +367,7 @@ int ScanChain(TChain *ch, string sample, string outdir, int nEventsSample = -1) 
       if (!passBosonPtCut) nFailCuts++;
       if (nFailCuts > 1) continue;
       if (nFailCuts == 0) {
+        plot1d("h_passed_steps_"+lepcat, istep , weight, hvec, ";M_{ll} [GeV]" , 20,  0, 20);
         plot1d("h_passed_steps", istep++ , weight, hvec, ";M_{ll} [GeV]" , 20,  0, 20);
         plot1d("h_met_step"+to_string(istep), MET_pt(), weight, hvec, ";E_{T}^{miss} [GeV]"  , 120,  0, 600);
       }
@@ -333,6 +378,7 @@ int ScanChain(TChain *ch, string sample, string outdir, int nEventsSample = -1) 
       if (!passZmassWindow) nFailCuts++;
       if (nFailCuts > 1) continue;
       if (nFailCuts == 0) {
+        plot1d("h_passed_steps_"+lepcat, istep , weight, hvec, ";M_{ll} [GeV]" , 20,  0, 20);
         plot1d("h_passed_steps", istep++ , weight, hvec, ";M_{ll} [GeV]" , 20,  0, 20);
         plot1d("h_met_step"+to_string(istep), MET_pt(), weight, hvec, ";E_{T}^{miss} [GeV]"  , 120,  0, 600);
       }
@@ -353,26 +399,27 @@ int ScanChain(TChain *ch, string sample, string outdir, int nEventsSample = -1) 
       }
       bool passDeltaPhiJetMET = (min_dphijmet > 0.5);
       
-      auto fill_jmet_hists = [&](string s) {
-        plot1d("h_met_Zpeak"+s, MET_pt()  , scaleToLumi, hvec, ";E_{T}^{miss} [GeV]"  , 200,  0, 200);
-        plot1d("h_min_dphijmet"+s, min_dphijmet , scaleToLumi, hvec, ";min #Delta#phi(j, E_{T}^{miss}) ", 32,  0, 3.2);
-      };
-      fill_jmet_hists("");
-      if (!isGamma) fill_jmet_hists("_"+jetcat);
+      // auto fill_jmet_hists = [&](string s) {
+      //   plot1d("h_met_Zpeak"+s, MET_pt()  , scaleToLumi, hvec, ";E_{T}^{miss} [GeV]"  , 200,  0, 200);
+      //   plot1d("h_min_dphijmet"+s, min_dphijmet , scaleToLumi, hvec, ";min #Delta#phi(j, E_{T}^{miss}) ", 32,  0, 3.2);
+      // };
+      // fill_jmet_hists("");
+      // if (!isGamma) fill_jmet_hists("_"+jetcat);
 
-      if (MET_pt() > 85 && !isGamma) {
-        fill_jmet_hists("_met_ge85_"+jetcat);
-      }
-      if (MET_pt() < 125) {
-        fill_jmet_hists("_met_lt125");
-        if (!isGamma) fill_jmet_hists("_met_lt125_"+jetcat);
-        if (MET_pt() > 85 && !isGamma) 
-          fill_jmet_hists("_met_85to125_"+jetcat);
-      }
+      // if (MET_pt() > 85 && !isGamma) {
+      //   fill_jmet_hists("_met_ge85_"+jetcat);
+      // }
+      // if (MET_pt() < 125) {
+      //   fill_jmet_hists("_met_lt125");
+      //   if (!isGamma) fill_jmet_hists("_met_lt125_"+jetcat);
+      //   if (MET_pt() > 85 && !isGamma) 
+      //     fill_jmet_hists("_met_85to125_"+jetcat);
+      // }
 
       if (!passDeltaPhiJetMET) nFailCuts++;
       if (nFailCuts > 1) continue;
       if (nFailCuts == 0) {
+        plot1d("h_passed_steps_"+lepcat, istep , weight, hvec, ";M_{ll} [GeV]" , 20,  0, 20);
         plot1d("h_passed_steps", istep++ , weight, hvec, ";M_{ll} [GeV]" , 20,  0, 20);
         plot1d("h_met_step"+to_string(istep), MET_pt(), weight, hvec, ";E_{T}^{miss} [GeV]"  , 120,  0, 600);
       }
@@ -438,8 +485,10 @@ int ScanChain(TChain *ch, string sample, string outdir, int nEventsSample = -1) 
       fill_Zmet_hists(metsuf+jetcat);
       fill_Zmet_hists(metsuf+jetcat+"_"+lepcat);
       if (jets.size() >= 2) {
-        fill_Zmet_hists(metsuf+"_geq2j");
         fill_Zmet_hists(metsuf+"_geq2j_"+lepcat);
+      }
+      if (is_VBFcat) {
+        fill_Zmet_hists(metsuf+"_vbf_"+lepcat);
       }
 
       bool passMETcut = (MET_pt() > 125.);
@@ -461,6 +510,9 @@ int ScanChain(TChain *ch, string sample, string outdir, int nEventsSample = -1) 
         fillNminus1("_"+jetcat);
         fillNminus1("_"+lepcat);
         fillNminus1("_"+jetcat+"_"+lepcat);
+        if (is_VBFcat) {
+          fillNminus1(metsuf+"_vbf_"+lepcat);
+        }
         // if (jets.size() > 0) fillNminus1("_geq1j");
 
         continue;
@@ -505,6 +557,11 @@ int ScanChain(TChain *ch, string sample, string outdir, int nEventsSample = -1) 
       fillhists("_"+jetcat);
       fillhists("_"+lepcat);
       fillhists("_"+jetcat+"_"+lepcat);
+      if (is_VBFcat) {
+        fillhists(metsuf+"_vbf_"+lepcat);
+      } else if (jets.size() >= 1) {
+        fillhists(metsuf+"_geq1j_"+lepcat);
+      }
 
       // int njets, nbtags;
       // float ht;
@@ -527,6 +584,11 @@ int ScanChain(TChain *ch, string sample, string outdir, int nEventsSample = -1) 
 
   } // File loop
   if (show_progress) bar.finish();
+
+  plot1d("h_sum_wgts", 0, nEventsTotal, hvec, ";Bin;Sum of weights" , 5, 0, 5);
+  plot1d("h_sum_wgts", 1, sum_effevts, hvec, ";Bin;Sum of weights" , 5, 0, 5);
+  plot1d("h_sum_wgts", 2, sum_genwgts, hvec, ";Bin;Sum of weights" , 5, 0, 5);
+  // plot1d("h_sum_wgts", 3, sum_nwgt, hvec, ";Bin;Sum of weights" , 5, 0, 5);
 
   fout->cd();
   for (const auto& h : hvec) {
@@ -588,8 +650,8 @@ int ScanChain(TChain *ch, string sample, string outdir, int nEventsSample = -1) 
   delete muoncorr; muoncorr = nullptr;
 
   cout << "\n---------------------------------" << endl;
-  cout << nEventsTotal << " Events Processed, where " << nDuplicates << " duplicates were skipped, and ";
-  cout << nPassedTotal << " Events passed all sphotontions." << endl;
+  cout << nEventsTotal << " Events Processed, where " << int(sum_effevts) << " effective events recored, " << endl;
+  cout << nDuplicates << " duplicates were skipped, and " << nPassedTotal << " Events passed all selections." << endl;
   cout << "---------------------------------\n" << endl;
 
   return 0;

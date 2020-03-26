@@ -180,9 +180,10 @@ std::tuple<vector<Electron>, vector<Electron>> getElectrons() {
   for (unsigned i = 0; i < Electron_pt().size(); ++i) {
     double const etaSc = Electron_deltaEtaSC()[i] + Electron_eta()[i];
     double const absEtaSc = std::abs(etaSc);
-    bool const passLooseId = (Electron_cutBased()[i] >= 2);
+    bool const passLooseId = Electron_mvaFall17V2noIso_WP90()[i];
+    bool const passLooseIso = (Electron_pfRelIso03_all()[i] < 0.1);
 
-    if (Electron_pt()[i] < k_minPt_el_loose or absEtaSc > 2.5 or not passLooseId)
+    if (Electron_pt()[i] < k_minPt_el_loose or absEtaSc > 2.5 or not passLooseId or not passLooseIso)
       continue;
 
     Electron electron;
@@ -194,9 +195,10 @@ std::tuple<vector<Electron>, vector<Electron>> getElectrons() {
 
     looseElectrons.emplace_back(electron);
 
-    bool const passTightId = Electron_cutBased()[i] >= 4;
+    bool const passTightId = Electron_mvaFall17V2noIso_WP90()[i];
+    bool const passTightIso = (Electron_pfRelIso03_all()[i] < 0.1);
 
-    if (Electron_pt()[i] < k_minPt_lep_tight or not passTightId)
+    if (Electron_pt()[i] < k_minPt_lep_tight or not passTightId or not passTightIso)
       continue;
 
     if (absEtaSc > 1.4442 and absEtaSc < 1.5660)  // EB-EE gap
@@ -246,8 +248,9 @@ std::tuple<vector<Muon>, vector<Muon>> getMuons(bool applyRocCorr, float* shiftx
   for (unsigned i = 0; i < Muon_pt().size(); ++i) {
     // Loose ID as per https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideMuonIdRun2#Loose_Muon
     bool const passLooseId = Muon_isPFcand()[i] && Muon_isGlobal()[i] && Muon_isTracker()[i];
+    bool const passLooseIso = (Muon_pfRelIso03_all()[i] < 0.25);
 
-    if (std::abs(Muon_eta()[i]) > 2.4 or not passLooseId or Muon_pfRelIso04_all()[i] > 0.25)
+    if (std::abs(Muon_eta()[i]) > 2.4 or not passLooseId or not passLooseIso)
       continue;
 
     Muon muon;
@@ -270,7 +273,8 @@ std::tuple<vector<Muon>, vector<Muon>> getMuons(bool applyRocCorr, float* shiftx
       if (shifty) *shifty = muon.p4.Py() - muon.uncorrP4.Py();
     }
 
-    bool const passTightId = Muon_tightId()[i];
+    bool const passTightId = Muon_mediumPromptId()[i];
+    bool const passTightIso = (Muon_pfRelIso03_all()[i] < 0.15);
 
     if (muon.p4.Pt() < k_minPt_lep_tight or not passTightId or Muon_pfRelIso04_all()[i] > 0.15) // minPtTight
       continue;
@@ -282,6 +286,34 @@ std::tuple<vector<Muon>, vector<Muon>> getMuons(bool applyRocCorr, float* shiftx
   std::sort(tightMuons.begin(), tightMuons.end(), PtOrdered);
   return {tightMuons, looseMuons};
 
+}
+
+vector<int> getIsoTrackIndices(const vector<Muon>& mus, const vector<Electron>& els) {
+  vector<int> trackIdxs;
+  for (unsigned i = 0; i < nIsoTrack(); ++i) {
+    if (!IsoTrack_isPFcand()[i]) continue;  // only consider pfcandidates
+    if (IsoTrack_pt()[i] < 10) continue;
+    if (fabs(IsoTrack_eta()[i]) > 2.4 ) continue;
+    if (fabs(IsoTrack_dz()[i]) > 0.1) continue;
+    if (int id = abs(IsoTrack_pdgId()[i]); id != 11 && id != 13 && id < 100) continue;
+    if (!IsoTrack_miniPFRelIso_all()[i]) continue;
+
+    // Perform angular cleaning w.r.t. recognized leptons and photons
+    for (auto lep : mus) {
+      if (isCloseObject(IsoTrack_eta()[i], IsoTrack_phi()[i], lep.p4.Eta(), lep.p4.Phi(), 0.4))
+        goto end_of_loop_tracks;
+    }
+    for (auto lep : els) {
+      if (isCloseObject(IsoTrack_eta()[i], IsoTrack_phi()[i], lep.p4.Eta(), lep.p4.Phi(), 0.4))
+        goto end_of_loop_tracks;
+    }
+
+    trackIdxs.push_back(i);
+
+ end_of_loop_tracks:;
+  }
+
+  return trackIdxs;
 }
 
 vector<Photon> getPhotons() {
@@ -460,5 +492,37 @@ vector<Jet> getJets(const vector<Muon>& mus, const vector<Electron>& els, const 
   std::sort(jets.begin(), jets.end(), PtOrdered);
 
   return jets;
+}
+
+bool ZZ2l2vPrunerCuts() {
+  double const minLepPt = 20.;
+  std::vector<LorentzVector> leptonMomenta;
+
+  for (unsigned i = 0; i < nElectron(); ++i) {
+    if (Electron_pt()[i] < minLepPt or Electron_cutBased()[i] < 4  /* fails tight working point */)
+      continue;
+
+    leptonMomenta.emplace_back(Electron_pt()[i], Electron_eta()[i], Electron_phi()[i], Electron_mass()[i]);
+  }
+
+  for (unsigned i = 0; i < nMuon(); ++i) {
+    if (Muon_pt()[i] < 0.9 * minLepPt or not Muon_tightId()[i])
+      continue;
+
+    leptonMomenta.emplace_back(Muon_pt()[i], Muon_eta()[i], Muon_phi()[i], Muon_mass()[i]);
+  }
+
+  if (leptonMomenta.size() < 2)
+    return false;
+
+  for (int i = 0; i < int(leptonMomenta.size()) - 1; ++i) {
+    for (int j = i + 1; j < int(leptonMomenta.size()); ++j) {
+      LorentzVector const p4Z = leptonMomenta[i] + leptonMomenta[j];
+      if (p4Z.M() > 50 and p4Z.Pt() > 50)
+        return true;
+    }
+  }
+
+  return false;
 }
 
