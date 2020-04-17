@@ -292,13 +292,19 @@ vector<int> getIsoTrackIndices(const vector<Muon>& mus, const vector<Electron>& 
   vector<int> trackIdxs;
   for (unsigned i = 0; i < nIsoTrack(); ++i) {
     if (!IsoTrack_isPFcand()[i]) continue;  // only consider pfcandidates
-    if (IsoTrack_pt()[i] < 10) continue;
-    if (fabs(IsoTrack_eta()[i]) > 2.4 ) continue;
+    int id = abs(IsoTrack_pdgId()[i]);
+    if (id != 11 && id != 13 && id < 100) continue;
+    float pt = IsoTrack_pt()[i];
+    if (pt < ((id < 14)? 5 : 10)) continue;
+    if (fabs(IsoTrack_eta()[i]) > ((id == 11)? 3.0 : 2.4) ) continue;
     if (fabs(IsoTrack_dz()[i]) > 0.1) continue;
-    if (int id = abs(IsoTrack_pdgId()[i]); id != 11 && id != 13 && id < 100) continue;
-    if (!IsoTrack_miniPFRelIso_all()[i]) continue;
+    if (pt > 60) {
+      if (IsoTrack_pfRelIso03_chg()[i] * pt > 6) continue;
+    } else {
+      if (IsoTrack_pfRelIso03_chg()[i] > 0.1) continue;
+    }
 
-    // Perform angular cleaning w.r.t. recognized leptons and photons
+    // Perform angular cleaning w.r.t. recognized leptons
     for (auto lep : mus) {
       if (isCloseObject(IsoTrack_eta()[i], IsoTrack_phi()[i], lep.p4.Eta(), lep.p4.Phi(), 0.4))
         goto end_of_loop_tracks;
