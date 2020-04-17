@@ -21,15 +21,15 @@ const std::unordered_map<std::string, float> default_xsec_list = {
   {"GGToHToZZTo2Mu2Nu", 0.00586}, // Generator cross section zz_2l2nu: true 
   {"GGToZZTo2E2Nu_BSI", 0.02149}, // Generator cross section zz_2l2nu: true 
   {"GGToZZTo2Mu2Nu_BSI", 0.02149}, // Generator cross section zz_2l2nu: true 
-  {"QCD_HT1000to1500", 1207},
+  {"QCD_HT50to100", 246300000.0},
   {"QCD_HT100to200", 27990000},
-  {"QCD_HT1500to2000", 119.9},
   {"QCD_HT2000toInf", 25.24},
   {"QCD_HT200to300", 1712000},
   {"QCD_HT300to500", 347700},
   {"QCD_HT500to700", 32100},
-  {"QCD_HT50to100", 246300000.0},
   {"QCD_HT700to1000", 6831},
+  {"QCD_HT1000to1500", 1207},
+  {"QCD_HT1500to2000", 119.9},
   {"QCD_Pt-120to170_EMEnriched", 62964.0},
   {"QCD_Pt-170to300_EMEnriched", 18810.0},
   {"QCD_Pt-20to30_EMEnriched", 5352960.0},
