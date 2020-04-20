@@ -1,5 +1,8 @@
 #include "HZZSelections.h"
 // #include "Utilities.h"
+// #include "config/prescales/photon_prescales_2018.hh"
+#include "config/prescales/photon_prescales_run2.hh"
+
 
 inline bool isCloseObject(const float eta1, const float phi1, const float eta2, const float phi2, const float conesize, float* deltaR = nullptr) {
   const float PI = TMath::Pi();
@@ -122,32 +125,131 @@ double getPhotonTrigPrescale(double objpt) {
   // Take 10% more, so that we are on the plateau (the pT in the name is the one at the middle of the turn-on curve, so at 50% efficiency).
   if (!gconf.is_data) return 1.0;
 
+  bool useSinglePrescale = false;
+  const std::map<unsigned,std::map<unsigned,int>>* runMap = nullptr;
+
   switch (gconf.year) {
     case 2016:
       if ( HLT_Photon250_NoHE() || HLT_Photon300_NoHE() )
         return 1.0;
 
-      if ( objpt > 181.5 )
-        return (HLT_Photon165_R9Id90_HE10_IsoM())? 1.0 : 0.0;
-      else if ( objpt > 132. )
-        return (HLT_Photon120_R9Id90_HE10_IsoM())? 2.4773 : 0.0; // 1./(1.-0.59633)
-      else if ( objpt > 99. )
-        return (HLT_Photon90_R9Id90_HE10_IsoM())? 6.9483 : 0.0; // 1./(1.-0.85608)
-      else if ( objpt > 82.5 )
-        return (HLT_Photon75_R9Id90_HE10_IsoM())? 13.978 : 0.0; // 1./(1.-0.92846)
-      else if ( objpt > 55. )
-        return (HLT_Photon50_R9Id90_HE10_IsoM())? 71.736 : 0.0; // 1./(1.-0.98606)
-      else if ( objpt > 39.3 )
-        return (HLT_Photon36_R9Id90_HE10_IsoM())? 164.47 : 0.0; // 1./(1.-0.99392)
-      else if ( objpt > 33. )
-        return (HLT_Photon30_R9Id90_HE10_IsoM())? 367.65 : 0.0; // 1./(1.-0.99728)
-      else if ( objpt > 24.2 )
-        return (HLT_Photon22_R9Id90_HE10_IsoM())? 1851.9 : 0.0; // 1./(1.-0.99946)
+      if (!useSinglePrescale) {
+        if ( objpt > 181.5 ) {
+          if (HLT_Photon165_R9Id90_HE10_IsoM())
+            return 1.0;
+          else
+            return 0.0;
+        } else if ( objpt > 132. ) {
+          if (HLT_Photon120_R9Id90_HE10_IsoM())
+            runMap = &tab_prescales_HLT_Photon120_R9Id90_HE10_IsoM;
+          else
+            return 0.0; // 1./(1.-0.59633)
+        } else if ( objpt > 99. ) {
+          if (HLT_Photon90_R9Id90_HE10_IsoM())
+            runMap = &tab_prescales_HLT_Photon90_R9Id90_HE10_IsoM;
+          else
+            return 0.0; // 1./(1.-0.85608)
+        } else if ( objpt > 82.5 ) {
+          if (HLT_Photon75_R9Id90_HE10_IsoM())
+            runMap = &tab_prescales_HLT_Photon75_R9Id90_HE10_IsoM;
+          else
+            return 0.0; // 1./(1.-0.92846)
+        } else if ( objpt > 55. ) {
+          if (HLT_Photon50_R9Id90_HE10_IsoM())
+            runMap = &tab_prescales_HLT_Photon50_R9Id90_HE10_IsoM;
+          else
+            return 0.0; // 1./(1.-0.98606)
+        } else if ( objpt > 39.3 ) {
+          if (HLT_Photon36_R9Id90_HE10_IsoM())
+            runMap = &tab_prescales_HLT_Photon36_R9Id90_HE10_IsoM;
+          else
+            return 0.0; // 1./(1.-0.99392)
+        } else if ( objpt > 33. ) {
+          if (HLT_Photon30_R9Id90_HE10_IsoM())
+            runMap = &tab_prescales_HLT_Photon30_R9Id90_HE10_IsoM;
+          else
+            return 0.0; // 1./(1.-0.99728)
+        } else if ( objpt > 24.2 ) {
+          if (HLT_Photon22_R9Id90_HE10_IsoM())
+            runMap = &tab_prescales_HLT_Photon22_R9Id90_HE10_IsoM;
+          else
+            return 0.0; // 1./(1.-0.99946)
+        }
+      }
+      else if (useSinglePrescale) {
+        if ( objpt > 181.5 )
+          return (HLT_Photon165_R9Id90_HE10_IsoM())? 1.0 : 0.0;
+        else if ( objpt > 132. )
+          return (HLT_Photon120_R9Id90_HE10_IsoM())? 2.4773 : 0.0; // 1./(1.-0.59633)
+        else if ( objpt > 99. )
+          return (HLT_Photon90_R9Id90_HE10_IsoM())? 6.9483 : 0.0; // 1./(1.-0.85608)
+        else if ( objpt > 82.5 )
+          return (HLT_Photon75_R9Id90_HE10_IsoM())? 13.978 : 0.0; // 1./(1.-0.92846)
+        else if ( objpt > 55. )
+          return (HLT_Photon50_R9Id90_HE10_IsoM())? 71.736 : 0.0; // 1./(1.-0.98606)
+        else if ( objpt > 39.3 )
+          return (HLT_Photon36_R9Id90_HE10_IsoM())? 164.47 : 0.0; // 1./(1.-0.99392)
+        else if ( objpt > 33. )
+          return (HLT_Photon30_R9Id90_HE10_IsoM())? 367.65 : 0.0; // 1./(1.-0.99728)
+        else if ( objpt > 24.2 )
+          return (HLT_Photon22_R9Id90_HE10_IsoM())? 1851.9 : 0.0; // 1./(1.-0.99946)
+      }
       break;
+
     case 2017:
     case 2018:
+      if (!useSinglePrescale) {
+        if ( objpt > 230 ) {
+          return (HLT_Photon200())? 1.0 : 0.0;
+        } else if ( objpt > 181.5 ) {
+          if (HLT_Photon165_R9Id90_HE10_IsoM())
+            runMap = &tab_prescales_HLT_Photon165_R9Id90_HE10_IsoM;
+          else
+            return 0.0;
+        } else if ( objpt > 132. ) {
+          if (HLT_Photon120_R9Id90_HE10_IsoM())
+            runMap = &tab_prescales_HLT_Photon120_R9Id90_HE10_IsoM;
+          else
+            return 0.0;
+        } else if ( objpt > 99. ) {
+          if (HLT_Photon90_R9Id90_HE10_IsoM())
+            runMap = &tab_prescales_HLT_Photon90_R9Id90_HE10_IsoM;
+          else
+            return 0.0;
+        } else if ( objpt > 82.5 ) {
+          if (HLT_Photon75_R9Id90_HE10_IsoM())
+            runMap = &tab_prescales_HLT_Photon75_R9Id90_HE10_IsoM;
+          else
+            return 0.0;
+        } else if ( objpt > 55. ) {
+          if (HLT_Photon50_R9Id90_HE10_IsoM())
+            runMap = &tab_prescales_HLT_Photon50_R9Id90_HE10_IsoM;
+          else
+            return 0.0;
+        }
+      }
     default:
       break;
+  }
+
+  if (runMap) {
+    // For run number, every run shall exisit in the list
+    map<unsigned,map<unsigned,int>>::const_iterator lumiMap = runMap->find(run());
+    if (lumiMap == runMap->end()) {
+      cout << "[getPhotonTrigPrescale] >> Cannot find run " << run() << " in the prescale table!" << endl;
+      return 1.0;
+    }
+    // For lumi number, only the lowest lumi of each prescale is recorded
+    auto ilumi = (lumiMap->second).upper_bound(luminosityBlock());
+    if (ilumi != (lumiMap->second).begin()) ilumi--;
+    if (luminosityBlock() < ilumi->first) {
+      cout << "[getPhotonTrigPrescale] >> Cannot find luminosity block " << luminosityBlock() << " in run " << run()
+           << " in the prescale table! Reverting to old method!" << endl;
+      return 1.0;
+    }
+    int prescale = ilumi->second;
+
+    return double(prescale);
   }
 
   return 0.0;
@@ -276,7 +378,7 @@ std::tuple<vector<Muon>, vector<Muon>> getMuons(bool applyRocCorr, float* shiftx
     bool const passTightId = Muon_mediumPromptId()[i];
     bool const passTightIso = (Muon_pfRelIso03_all()[i] < 0.15);
 
-    if (muon.p4.Pt() < k_minPt_lep_tight or not passTightId or Muon_pfRelIso04_all()[i] > 0.15) // minPtTight
+    if (muon.p4.Pt() < k_minPt_lep_tight or not passTightId or not passTightIso) // minPtTight
       continue;
 
     tightMuons.emplace_back(muon);
