@@ -23,7 +23,7 @@ bool doBosonEtaReweight = false;
 bool doNvtxReweight = false;
 bool DYclosureTest = false;
 
-const bool makeStepPlots = false;
+const bool makeStepPlots = true;
 const bool produceResultTree = false;
 const bool blind = true;
 
@@ -67,7 +67,7 @@ int ScanChain(TString indir, TString sample, TString tag, TString specifiers = "
 
   extendEEphoton2j = tag.Contains("ee2j");
 
-  bool is_data = (sample.BeginsWith("Run201")) || sample.BeginsWith("photon") || sample.BeginsWith("egamma");
+  bool is_data = (sample.BeginsWith("Run201")) || sample.BeginsWith("photon") || sample.BeginsWith("EGamma");
   bool is_gjets = sample.BeginsWith("GJets");
 
   int year = (tag.Contains("2016"))? 2016 : (tag.Contains("2017"))? 2017 : (tag.Contains("2018"))? 2018 : -1;
@@ -151,7 +151,6 @@ int ScanChain(TString indir, TString sample, TString tag, TString specifiers = "
   // Make photon-pt bins for reweight
   vector<float> ptbin0, ptbin1;
   std::tie(ptbin0, ptbin1) = getPtBins();
-  // auto [ptbin0, ptbin1] = getPtBins();
 
   // For the DjjVBF calculation
   TSpline3* h_vbfcval = fetchHistCopy<TSpline3>("data/SmoothKDConstant_m4l_DjjVBF_13TeV.root", "sp_gr_varReco_Constant_Smooth");
@@ -204,12 +203,13 @@ int ScanChain(TString indir, TString sample, TString tag, TString specifiers = "
       double weight = event_wgt();
       if (is_data) weight = 1;
 
-      bool isgamma(false), isllg(false), is1el(false);
+      bool isdilep(false), isgamma(false), isllg(false), is1el(false);
 
       string lepcat = "_lepcat";
       lepton_cat = -1;
       if (indir.Contains("/DileptonEvents/")) {
         // skimtype = Dilepton;
+        isdilep = true;
         switch (dilepton_id()) {
           case -121:
             lepton_cat = 0;
@@ -251,35 +251,48 @@ int ScanChain(TString indir, TString sample, TString tag, TString specifiers = "
             cout << "WARNING: Invalid dilepton ID: " << dilepton_id() << "!!" << endl;
         }
       }
-      // if (indir.Contains("/SingleLeptonEvents/")) {
+      if (indir.Contains("/SingleLeptonEvents/")) {
+        is1el = true;
+        lepton_cat = 5;
+        lepcat = "_1el";
 
-      // }
+        weight *= event_wgt_triggers();
 
+        // Only loop over single-e data events
+        if (abs(lepton_id()) != 11) continue;
+      }
+
+      double event_wgt_SFs = 1.0;
       if (!is_data) {
         // if (year == 2018 && event_wgt_pileup() > 100) continue;
         // weight *= event_wgt_pileup(); // pileup weight included in event_wgt for US samples
-        // weight *= event_wgt_SFs(); // FIXME: fix the pileup and 
-        double wgt_SFs = event_wgt_SFs_electrons() *  event_wgt_SFs_muons() * event_wgt_SFs_photons();
-        wgt_SFs = std::min(wgt_SFs, 5.0);
-        weight *= wgt_SFs;
+        event_wgt_SFs = event_wgt_SFs_electrons() * event_wgt_SFs_muons() * event_wgt_SFs_photons();
+        event_wgt_SFs *= event_wgt_SFs_PUJetId() * event_wgt_SFs_btagging();
+        event_wgt_SFs = std::min(event_wgt_SFs, 5.0);
+        weight *= event_wgt_SFs;
+
+        // FIXME: Add block for event_wgt_adjustment_NNPDF30
+        weight *= event_wgt_adjustment_NNPDF30();
+
+        // Fill histogram of the weights
+        double scale = pow(10.0, 1 - ceil(log10(fabs(weight))));
+        double wgt_range = 10 * round(weight * scale) / scale;
+        plot1d("h_event_wgts", weight, 1, hvec, "; event weights" , 1000,  -wgt_range, wgt_range);
+        plot1d("h_event_wgts_raw", event_wgt(), 1, hvec, "; event weights" , 1000,  -wgt_range, wgt_range);
+        // plot1d("h_event_wgts_pileup", event_wgt_pileup(), 1, hvec, "; event weights" , 1000,  0, 100);
+        plot1d("h_event_wgts_SFs", event_wgt_SFs, 1, hvec, "; event weights" , 100,  0, 5);
+        plot1d("h_event_wgt_SFs_PUJetId",  event_wgt_SFs_PUJetId(), 1, hvec, "; event weights PUJetId" , 100,  0, 5);
+        plot1d("h_event_wgt_SFs_btagging",  event_wgt_SFs_btagging(), 1, hvec, "; event weights btagging" , 100,  0, 5);
+        plot1d("h_event_wgt_SFs_electrons",  event_wgt_SFs_electrons(), 1, hvec, "; event weights electrons" , 100,  0, 5);
+        plot1d("h_event_wgt_SFs_muons",  event_wgt_SFs_muons(), 1, hvec, "; event weights muons" , 100,  0, 5);
+        plot1d("h_event_wgt_SFs_photons",  event_wgt_SFs_photons(), 1, hvec, "; event weights photons" , 100,  0, 5);
+        plot1d("h_event_wgt_adjustment",  event_wgt_adjustment_NNPDF30(), 1, hvec, "; event weights adjustment" , 100,  0, 5);
       }
-      // FIXME: Add block for event_wgt_adjustment_NNPDF30
 
-      // Fill histogram of the weights
-      double scale = pow(10.0, 1 - ceil(log10(fabs(weight))));
-      double wgt_range = 10 * round(weight * scale) / scale;
-      plot1d("h_event_wgts", weight, 1, hvec, "; event weights" , 1000,  -wgt_range, wgt_range);
-      plot1d("h_event_wgts_raw", event_wgt(), 1, hvec, "; event weights" , 1000,  -wgt_range, wgt_range);
-      // plot1d("h_event_wgts_pileup", event_wgt_pileup(), 1, hvec, "; event weights" , 1000,  0, 100);
-      plot1d("h_event_wgts_SFs", event_wgt_SFs(), 1, hvec, "; event weights" , 100,  0, 5);
-      plot1d("h_event_wgt_SFs_PUJetId",  event_wgt_SFs_PUJetId(), 1, hvec, "; event weights PUJetId" , 100,  0, 5);
-      plot1d("h_event_wgt_SFs_btagging",  event_wgt_SFs_btagging(), 1, hvec, "; event weights btagging" , 100,  0, 5);
-      plot1d("h_event_wgt_SFs_electrons",  event_wgt_SFs_electrons(), 1, hvec, "; event weights electrons" , 100,  0, 5);
-      plot1d("h_event_wgt_SFs_muons",  event_wgt_SFs_muons(), 1, hvec, "; event weights muons" , 100,  0, 5);
-      plot1d("h_event_wgt_SFs_photons",  event_wgt_SFs_photons(), 1, hvec, "; event weights photons" , 100,  0, 5);
-
-      if (isgamma)
+      // Fill histogram of trigger weights
+      if (isgamma) {
         plot1d("h_event_wgts_trigs", event_wgt_triggers(), 1, hvec, "; event weights" , 1000,  0, 1000);
+      }
 
       // plot1d("h_event_wgt_SFs_PUJetId_"+to_string(event_n_ak4jets_pt30())+"jets",  event_wgt_SFs_PUJetId(), 1, hvec, "; event weights PUJetId" , 100,  0, 5);
       // plot1d("h_event_wgt_SFs_btagging_"+to_string(event_n_ak4jets_pt30())+"jets",  event_wgt_SFs_btagging(), 1, hvec, "; event weights btagging" , 100,  0, 5);
@@ -318,7 +331,7 @@ int ScanChain(TString indir, TString sample, TString tag, TString specifiers = "
         if (!makeStepPlots) return;
         plot1d("h_metphi_step"+to_string(istep)+s, event_phimiss(), weight, hvec, ";#phi(E_{T}^{miss})"  , 64, -3.2, 3.2);
         plot1d("h_met_step"+to_string(istep)+s, event_pTmiss(), weight, hvec, ";E_{T}^{miss} [GeV]"  , 160, 0, 800);
-        plot1d("h_passed_steps_"+lepcat, istep , weight, hvec, ";step" , 20,  0, 20);
+        plot1d("h_passed_steps"+lepcat, istep , weight, hvec, ";step" , 20,  0, 20);
         plot1d("h_passed_steps", istep , weight, hvec, ";step" , 20,  0, 20);
         istep++;
       };
@@ -330,6 +343,9 @@ int ScanChain(TString indir, TString sample, TString tag, TString specifiers = "
         continue;
       }
       
+      // btag veto, already applied on SinglePhotonEvents but not others
+      if (!isgamma && event_n_ak4jets_pt30_btagged_loose() != 0) continue;
+
       // photon quality cut
       if (isgamma || isllg) {
         if (extendEEphoton2j) {
@@ -349,6 +365,12 @@ int ScanChain(TString indir, TString sample, TString tag, TString specifiers = "
         
         if (fabs(photon_seedTime()) > 2.0) continue;
         if (year == 2018 && photon_seedTime() > 1.0) continue;
+      } else if (is1el) {
+        if (extendEEphoton2j) {
+          if (event_n_ak4jets_pt30() < 2 && (fabs(lepton_eta()) > 1.4442)) continue;  // barrel only for njet < 2
+        } else {
+          if (fabs(lepton_eta()) > 1.4442) continue;  // barrel photon only for everything
+        }
       }
       fill_passedsteps("_photoncuts");
 
@@ -361,10 +383,10 @@ int ScanChain(TString indir, TString sample, TString tag, TString specifiers = "
       float metphi = event_phimiss();
       float mZZ = event_mZZ();
       float mtZZ = event_mTZZ();
-      float Vpt  = (isgamma || isllg)? photon_pt()  : dilepton_pt();
-      float Veta = (isgamma || isllg)? photon_eta() : dilepton_eta();
-      float Vphi = (isgamma || isllg)? photon_phi() : dilepton_phi();
-      float Vmass = (isgamma || isllg)? 91.2 : dilepton_mass();
+      float Vpt   = (isgamma || isllg)? photon_pt()  : (is1el)? lepton_pt()  : dilepton_pt();
+      float Veta  = (isgamma || isllg)? photon_eta() : (is1el)? lepton_eta() : dilepton_eta();
+      float Vphi  = (isgamma || isllg)? photon_phi() : (is1el)? lepton_phi() : dilepton_phi();
+      float Vmass = (isdilep)? dilepton_mass() : 91.2;
 
       njet = event_n_ak4jets_pt30();
       dphijmet = min_abs_dPhi_pTj_pTmiss();
@@ -389,7 +411,6 @@ int ScanChain(TString indir, TString sample, TString tag, TString specifiers = "
       if (njet > 0 && dphijmet < 0.25) continue;
       fill_passedsteps("_dphis");
  
-      // FIXME: check the following block
       if (isllg) {
         // make mass cut 
         if (fabs(dilepton_mass() - 91.2) > 15) continue;  // version one
@@ -417,7 +438,8 @@ int ScanChain(TString indir, TString sample, TString tag, TString specifiers = "
 
       tf_sgtoll = tf_sgtoee = tf_sgtomumu = 1;
       if (isgamma) {
-        if (is_gjets) {
+        if (is_gjets && skimver < 4.02) {
+          // apply the NLO/LO weight for the MC
           weight *= std::max(1., 1.716910-0.001221*photon_pt());
         }
         int icat = (photon_pt() > 440)? 39 : (photon_pt() - 50) / 10;
@@ -430,11 +452,7 @@ int ScanChain(TString indir, TString sample, TString tag, TString specifiers = "
 
       bool applyZGweightFromLLG = true;
       if (applyZGweightFromLLG && (isZG_nlo_incl || isZG_nlo_ptG130) && met > 125) {
-        if (year == 2018) {
-          if (njet == 0) weight *= 1.07;
-          if (njet == 1) weight *= 0.76;
-          if (njet == 2) weight *= 1.19;
-        }
+        weight *= getNjetSFfromLLG(njet, year);
       }
 
       // if (true) {
@@ -539,7 +557,7 @@ int ScanChain(TString indir, TString sample, TString tag, TString specifiers = "
             plot1d("hnum_pt_b2_photon_r9id90"+s,  photon_pt(), avgwgt, hvec, ";p_{T}^{#gamma} [GeV]" , phptbin2.size()-1, phptbin2.data());
           }
         }
-        if (!isgamma) {
+        if (isdilep || isllg) {
           plot1d("h_nlep"+s, leptons_id().size(), weight, hvec, ";N(lep)"  , 4,  0, 4);
           plot1d("h_llid"+s, dilepton_id(), weight, hvec, ";ll ID"  , 36,  -180, 180);
           plot1d("h_ptll"+s, dilepton_pt(), weight, hvec, ";p_{T}^{ll} [GeV]"  , 160,  0, 800);
@@ -629,6 +647,52 @@ int ScanChain(TString indir, TString sample, TString tag, TString specifiers = "
         weight *= tf_sgtoll;
         fillhists("_fullMET"+jetcat+"_ll");
         fillhists(metsuf+jetcat+"_ll");
+      }
+
+      if (is1el) {
+        
+        float origwgt = weight;
+        float scale(1.), sferr(0.);
+        std::tie(scale, sferr) = getElecToGammaRate(Vpt, year);
+        weight *= scale;
+
+        metsuf = "_fullMET";
+        weight = origwgt * scale;
+        fillhists(metsuf+jetcat+"_gamma");
+        weight = origwgt * (scale+sferr);
+        fillhists(metsuf+jetcat+"_etogSFUp_gamma");
+        weight = origwgt * (scale-sferr);
+        fillhists(metsuf+jetcat+"_etogSFDn_gamma");
+
+        if (met < 125) metsuf = "_metlt125";
+        else metsuf = "_metge125";
+        weight = origwgt * scale;
+        fillhists(metsuf+jetcat+"_gamma");
+        weight = origwgt * (scale+sferr);
+        fillhists(metsuf+jetcat+"_etogSFUp_gamma");
+        weight = origwgt * (scale-sferr);
+        fillhists(metsuf+jetcat+"_etogSFDn_gamma");
+
+        if (doBosonPtReweight) {
+          tf_sgtoll = getBosonPtScale(lepton_pt(), lepton_eta(), year, jetcat, ptbin0, ptbin1, (is_data || !DYclosureTest), extendEEphoton2j, doBosonEtaReweight);
+
+          metsuf = "_fullMET";
+          weight = origwgt * scale * tf_sgtoll;
+          fillhists(metsuf+jetcat+"_ll");
+          weight = origwgt * (scale+sferr) * tf_sgtoll;
+          fillhists(metsuf+jetcat+"_etogSFUp_ll");
+          weight = origwgt * (scale-sferr) * tf_sgtoll;
+          fillhists(metsuf+jetcat+"_etogSFDn_ll");
+
+          if (met < 125) metsuf = "_metlt125";
+          else metsuf = "_metge125";
+          weight = origwgt * scale * tf_sgtoll;
+          fillhists(metsuf+jetcat+"_ll");
+          weight = origwgt * (scale+sferr) * tf_sgtoll;
+          fillhists(metsuf+jetcat+"_etogSFUp_ll");
+          weight = origwgt * (scale-sferr) * tf_sgtoll;
+          fillhists(metsuf+jetcat+"_etogSFDn_ll");
+        }
       }
 
       // if (125 < photon_pt() && photon_pt() < 275) {
