@@ -267,27 +267,19 @@ const vector<float> ptScales_geq1j = {
 
 std::tuple<vector<float>, vector<float>> getPtBins() {
 
-  // vector<float> ptbin0;
-  // for (int i = 55; i < 160; i += 5) ptbin0.emplace_back(i);
-  // for (int i = 160; i < 200; i += 10) ptbin0.emplace_back(i);
-  // ptbin0.emplace_back(250); ptbin0.emplace_back(450);
 
-  // vector<float> ptbin1;
-  // for (int i = 55; i < 160; i += 5) ptbin1.emplace_back(i);
-  // for (int i = 160; i < 300; i += 10) ptbin1.emplace_back(i);
-  // for (int i = 300; i <= 350; i += 25) ptbin1.emplace_back(i);
-  // ptbin1.emplace_back(400); ptbin1.emplace_back(600);
-
-  vector<float> ptbin0 = {55, 60, 65, 70, 75, 80, 90, 105, 130, 160, 200, 250, 450};
+  // vector<float> ptbin0 = {55, 60, 65, 70, 75, 80, 90, 105, 130, 160, 200, 250, 450};
+  vector<float> ptbin0 = {55, 60, 65, 70, 75, 80, 90, 110, 130, 175, 450};
 
   vector<float> ptbin1;
   for (int i = 55;  i < 120; i += 5)  ptbin1.emplace_back(i);
   for (int i = 120; i < 150; i += 10) ptbin1.emplace_back(i);
   for (int i = 150; i < 180; i += 15) ptbin1.emplace_back(i);
-  for (int i = 180; i < 220; i += 20) ptbin1.emplace_back(i);
-  for (int i = 220; i < 270; i += 25) ptbin1.emplace_back(i);
-  ptbin1.emplace_back(270); ptbin1.emplace_back(300); ptbin1.emplace_back(350);
-  ptbin1.emplace_back(425); ptbin1.emplace_back(600);
+  ptbin1.insert(ptbin1.end(), {180, 200, 230, 300, 600});
+  // for (int i = 180; i < 210; i += 30) ptbin1.emplace_back(i);
+  // for (int i = 220; i < 270; i += 25) ptbin1.emplace_back(i);
+  // ptbin1.emplace_back(270); ptbin1.emplace_back(300); ptbin1.emplace_back(350);
+  // ptbin1.emplace_back(425); ptbin1.emplace_back(600);
 
   return std::make_tuple(ptbin0, ptbin1);
 }
@@ -473,6 +465,21 @@ vector<float> sf_Vaeta_flatpt_v6_data18_metlt125_ee2j = {7.996e-01,7.911e-01,8.3
 vector<float> sf_Vaeta_flatpt_v6_data17_metlt125_ee2j = {7.659e-01,8.470e-01,8.066e-01,8.087e-01,8.094e-01,8.049e-01,8.190e-01,9.220e-01,9.454e-01,9.621e-01,1.152e+00,1.291e+00,1.275e+00,1.405e+00,1.736e+00,1.555e+00,1.041e+00,1.055e+00,9.258e-01,8.113e-01,8.972e-01,8.394e-01,9.667e-01,1.000e+00,6.765e-01,1.000e+00,};
 vector<float> sf_Vaeta_flatpt_v6_data16_metlt125_ee2j = {8.127e-01,9.357e-01,8.470e-01,8.179e-01,9.157e-01,8.599e-01,9.443e-01,1.043e+00,1.003e+00,1.035e+00,1.148e+00,1.292e+00,1.446e+00,1.404e+00,1.842e+00,1.738e+00,1.178e+00,1.026e+00,9.676e-01,6.854e-01,7.862e-01,7.172e-01,7.322e-01,5.871e-01,4.590e-01,1.000e+00,};
 
+
+vector<float> sf_Vpt_b0_v7_data16_metlt125_eq0j = {1.666e-02,1.867e-02,2.045e-02,2.264e-02,2.402e-02,2.693e-02,3.487e-02,3.722e-02,3.635e-02,2.659e-02,};
+vector<float> sf_Vpt_b1_v7_data16_metlt125_eq1j = {1.853e-02,2.172e-02,2.359e-02,2.659e-02,2.901e-02,3.176e-02,3.605e-02,3.861e-02,4.156e-02,4.830e-02,4.951e-02,5.312e-02,5.537e-02,5.907e-02,6.217e-02,7.517e-02,7.526e-02,7.870e-02,8.879e-02,8.705e-02,1.012e-01,1.115e-01,};
+vector<float> sf_Vpt_b1_v7_data16_metlt125_ee2j = {9.911e-03,1.157e-02,1.223e-02,1.447e-02,1.644e-02,1.738e-02,2.159e-02,2.139e-02,2.384e-02,2.660e-02,2.815e-02,2.938e-02,3.294e-02,3.466e-02,3.814e-02,4.296e-02,4.576e-02,5.008e-02,5.466e-02,5.894e-02,6.155e-02,8.113e-02,};
+vector<float> sf_Vpt_b0_v7_data17_metlt125_eq0j = {1.763e-02,1.926e-02,2.128e-02,2.801e-02,2.480e-02,3.609e-02,4.716e-02,6.023e-02,1.051e-01,1.481e-01,};
+vector<float> sf_Vpt_b1_v7_data17_metlt125_eq1j = {1.972e-02,2.337e-02,2.678e-02,2.938e-02,3.384e-02,3.502e-02,3.902e-02,4.199e-02,4.434e-02,4.787e-02,5.164e-02,5.286e-02,6.359e-02,6.239e-02,6.441e-02,6.818e-02,8.145e-02,8.530e-02,9.429e-02,8.923e-02,1.017e-01,1.075e-01,};
+vector<float> sf_Vpt_b1_v7_data17_metlt125_ee2j = {1.093e-02,1.255e-02,1.446e-02,1.670e-02,1.850e-02,1.895e-02,2.171e-02,2.504e-02,2.649e-02,3.065e-02,3.186e-02,3.415e-02,3.644e-02,3.846e-02,4.113e-02,4.505e-02,4.972e-02,5.556e-02,5.971e-02,6.382e-02,6.960e-02,8.394e-02,};
+vector<float> sf_Vpt_b0_v7_data18_metlt125_eq0j = {1.804e-02,2.018e-02,2.260e-02,2.551e-02,3.053e-02,3.271e-02,4.606e-02,8.163e-02,1.082e-01,1.507e-01,};
+vector<float> sf_Vpt_b1_v7_data18_metlt125_eq1j = {2.097e-02,2.256e-02,2.699e-02,2.872e-02,3.151e-02,3.578e-02,3.656e-02,4.211e-02,4.602e-02,5.055e-02,5.222e-02,5.549e-02,5.524e-02,6.039e-02,6.939e-02,7.098e-02,7.893e-02,8.067e-02,9.044e-02,9.185e-02,9.476e-02,9.639e-02,};
+vector<float> sf_Vpt_b1_v7_data18_metlt125_ee2j = {1.130e-02,1.273e-02,1.446e-02,1.658e-02,1.958e-02,1.988e-02,2.414e-02,2.468e-02,2.591e-02,2.678e-02,3.188e-02,3.431e-02,3.577e-02,3.739e-02,4.064e-02,4.318e-02,4.790e-02,5.038e-02,5.288e-02,6.046e-02,6.695e-02,7.112e-02,};
+
+vector<float> sf_Vaeta_flatpt_v7_data16_metlt125_ee2j = {7.705e-01,8.681e-01,8.228e-01,8.016e-01,8.715e-01,8.701e-01,9.485e-01,9.947e-01,9.777e-01,9.883e-01,1.135e+00,1.275e+00,1.435e+00,1.442e+00,1.892e+00,1.835e+00,1.219e+00,1.064e+00,9.941e-01,7.329e-01,8.210e-01,7.600e-01,6.942e-01,6.380e-01,4.438e-01,1.000e+00,};
+vector<float> sf_Vaeta_flatpt_v7_data17_metlt125_ee2j = {7.327e-01,8.060e-01,7.796e-01,7.665e-01,7.707e-01,7.847e-01,8.078e-01,8.821e-01,9.329e-01,9.437e-01,1.101e+00,1.303e+00,1.249e+00,1.404e+00,1.741e+00,1.669e+00,1.054e+00,1.075e+00,9.370e-01,8.878e-01,9.725e-01,9.234e-01,1.026e+00,1.048e+00,6.945e-01,1.000e+00,};
+vector<float> sf_Vaeta_flatpt_v7_data18_metlt125_ee2j = {7.752e-01,7.571e-01,8.013e-01,8.389e-01,8.595e-01,7.891e-01,8.600e-01,9.790e-01,9.095e-01,9.811e-01,1.001e+00,1.283e+00,1.349e+00,1.342e+00,1.653e+00,1.635e+00,1.066e+00,1.099e+00,9.339e-01,8.776e-01,8.778e-01,9.469e-01,1.024e+00,7.568e-01,5.391e-01,1.000e+00,};
+
 // vector<float> boson_aeta_metlt125_eq2j_18 = {1.567e-02,1.526e-02,1.662e-02,1.749e-02,1.858e-02,1.633e-02,1.713e-02,2.057e-02,1.916e-02,2.136e-02,2.209e-02,2.648e-02,2.876e-02,2.723e-02,3.645e-02,3.295e-02,2.063e-02,2.127e-02,1.813e-02,1.594e-02,1.591e-02,1.733e-02,1.970e-02,1.436e-02,1.004e-02,1.000e+00,};
 
 const vector<float> sf_pt_phvsel_llg = {0.774,1.09,1.222,1.437,1.201,1.002,0.853,0.717,0.788,1.225,0.834,0.724,0.873,0.853,0.842,0.468,0.491,0.476,0.499,};
@@ -486,16 +493,15 @@ float getBosonPtScale(float Vpt, float Veta, int year, string jetcat, vector<flo
 
   if (year == 2018) {
     if (is_data) {
-      if (extendEEphoton2j && jetcat == "_eq2j") {
-        scale = sf_Vpt_b1_v6_data18_metlt125_ee2j.at(icat1);
+      if (extendEEphoton2j && jetcat == "_ge2j") {
+        scale = sf_Vpt_b1_v7_data18_metlt125_ee2j.at(icat1);
         if (doBosonEtaReweight) {
-          // int ibin = (fabs(Veta) >= 2.5)? 0 : int((Veta + 2.5) / 0.1);
           int ibin = (fabs(Veta) >= 2.5)? 24 : int(fabs(Veta) / 0.1);
-          scale *= sf_Vaeta_flatpt_v6_data18_metlt125_ee2j.at(ibin);
+          scale *= sf_Vaeta_flatpt_v7_data18_metlt125_ee2j.at(ibin);
         }
       }
-      else if (jetcat == "_eq0j") scale = sf_Vpt_b0_v6_data18_metlt125_eq0j.at(icat0);
-      else if (jetcat == "_eq1j") scale = sf_Vpt_b1_v6_data18_metlt125_eq1j.at(icat1);
+      else if (jetcat == "_eq0j") scale = sf_Vpt_b0_v7_data18_metlt125_eq0j.at(icat0);
+      else if (jetcat == "_eq1j") scale = sf_Vpt_b1_v7_data18_metlt125_eq1j.at(icat1);
       else if (jetcat == "_eq2j") scale = sf_Vpt_b1_v4_data18_metlt125_eq2j.at(icat1);
     } else {
       if (extendEEphoton2j && jetcat == "_eq2j") {
@@ -511,16 +517,15 @@ float getBosonPtScale(float Vpt, float Veta, int year, string jetcat, vector<flo
     }
   } else if (year == 2017) {
     if (is_data) {
-      if (extendEEphoton2j && jetcat == "_eq2j") {
-        scale = sf_Vpt_b1_v6_data17_metlt125_ee2j.at(icat1);
+      if (extendEEphoton2j && jetcat == "_ge2j") {
+        scale = sf_Vpt_b1_v7_data17_metlt125_ee2j.at(icat1);
         if (doBosonEtaReweight) {
-          // int ibin = (fabs(Veta) >= 2.5)? 0 : int((Veta + 2.5) / 0.1);
           int ibin = (fabs(Veta) >= 2.5)? 24 : int(fabs(Veta) / 0.1);
-          scale *= sf_Vaeta_flatpt_v6_data17_metlt125_ee2j.at(ibin);
+          scale *= sf_Vaeta_flatpt_v7_data17_metlt125_ee2j.at(ibin);
         }
       }
-      else if (jetcat == "_eq0j") scale = sf_Vpt_b0_v6_data17_metlt125_eq0j.at(icat0);
-      else if (jetcat == "_eq1j") scale = sf_Vpt_b1_v6_data17_metlt125_eq1j.at(icat1);
+      else if (jetcat == "_eq0j") scale = sf_Vpt_b0_v7_data17_metlt125_eq0j.at(icat0);
+      else if (jetcat == "_eq1j") scale = sf_Vpt_b1_v7_data17_metlt125_eq1j.at(icat1);
       else if (jetcat == "_eq2j") scale = sf_Vpt_b1_v4_data17_metlt125_eq2j.at(icat1);
     } else {
       if (extendEEphoton2j && jetcat == "_eq2j") {
@@ -536,16 +541,15 @@ float getBosonPtScale(float Vpt, float Veta, int year, string jetcat, vector<flo
     }
   } else if (year == 2016) {
     if (is_data) {
-      if (extendEEphoton2j && jetcat == "_eq2j") {
-        scale = sf_Vpt_b1_v6_data16_metlt125_ee2j.at(icat1);
+      if (extendEEphoton2j && jetcat == "_ge2j") {
+        scale = sf_Vpt_b1_v7_data16_metlt125_ee2j.at(icat1);
         if (doBosonEtaReweight) {
-          // int ibin = (fabs(Veta) >= 2.5)? 0 : int((Veta + 2.5) / 0.1);
           int ibin = (fabs(Veta) >= 2.5)? 24 : int(fabs(Veta) / 0.1);
-          scale *= sf_Vaeta_flatpt_v6_data16_metlt125_ee2j.at(ibin);
+          scale *= sf_Vaeta_flatpt_v7_data16_metlt125_ee2j.at(ibin);
         }
       }
-      else if (jetcat == "_eq0j") scale = sf_Vpt_b0_v6_data16_metlt125_eq0j.at(icat0);
-      else if (jetcat == "_eq1j") scale = sf_Vpt_b1_v6_data16_metlt125_eq1j.at(icat1);
+      else if (jetcat == "_eq0j") scale = sf_Vpt_b0_v7_data16_metlt125_eq0j.at(icat0);
+      else if (jetcat == "_eq1j") scale = sf_Vpt_b1_v7_data16_metlt125_eq1j.at(icat1);
       else if (jetcat == "_eq2j") scale = sf_Vpt_b1_v4_data16_metlt125_eq2j.at(icat1);
     } else {
       if (extendEEphoton2j && jetcat == "_eq2j") {
