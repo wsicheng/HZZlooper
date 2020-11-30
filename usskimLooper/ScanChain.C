@@ -377,6 +377,12 @@ int ScanChain(TString indir, TString sample, TString tag, TString specifiers = "
         } else {
           if (fabs(lepton_eta()) > 1.4442) continue;  // barrel photon only for everything
         }
+        // R9 cuts to mimic the photon trigger
+        if (year == 2016) {
+          if (lepton_pt() < 190 && electron_full5x5_r9() < 0.9) continue;
+        } else {
+          if (lepton_pt() < 220 && electron_full5x5_r9() < 0.9) continue;
+        }
       }
       fill_passedsteps("_photoncuts");
 
@@ -722,8 +728,20 @@ int ScanChain(TString indir, TString sample, TString tag, TString specifiers = "
           ph_sipip    = photon_full5x5_sigmaIPhiIPhi();
           ph_Emip     = photon_MIPTotalEnergy();
           ph_seedtime = photon_seedTime();
-
           // tf_sgtoll; <-- already assigned above
+        } else if (is1el) {
+          evt_weight *= tf_etog;
+          ph_convveto = 1;
+          ph_passPFid = 1;
+          ph_isEB     = fabs(lepton_eta()) < 1.4442;
+          ph_pt       = lepton_pt();
+          ph_eta      = lepton_eta();
+          ph_phi      = lepton_phi();
+          ph_r9       = electron_full5x5_r9();
+          ph_sieie    = electron_full5x5_sigmaIEtaIEta();
+          ph_sipip    = electron_full5x5_sigmaIPhiIPhi();
+          ph_Emip     = -1;
+          ph_seedtime = electron_seedTime();
           // tf_etog; <-- already assigned above
         }
 
