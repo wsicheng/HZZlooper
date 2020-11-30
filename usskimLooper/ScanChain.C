@@ -150,12 +150,15 @@ int ScanChain(TString indir, TString sample, TString tag, TString specifiers = "
     tout->Branch("tf_gamma_to_ll", &tf_sgtoll);
     // tout->Branch("tf_gamma_to_ee", &tf_sgtoee);
     // tout->Branch("tf_gamma_to_mumu", &tf_sgtomumu);
-    tout->Branch("tf_el_to_gamma", &tf_etog);
     tout->Branch("jet_size", &njet);
     tout->Branch("jet_pt", jet_pt, "jet_pt[jet_size]/F");
     tout->Branch("jet_eta", jet_eta, "jet_eta[jet_size]/F");
     tout->Branch("jet_phi", jet_phi, "jet_phi[jet_size]/F");
     tout->Branch("jet_mass", jet_mass, "jet_mass[jet_size]/F");
+
+    if (tag.Contains("slskim"))
+      tout->Branch("tf_el_to_gamma", &tf_etog);
+
   }
 
   // Make photon-pt bins for reweight
@@ -347,6 +350,7 @@ int ScanChain(TString indir, TString sample, TString tag, TString specifiers = "
 
       // spurious weight veto
       if (!is_data && fabs(weight) >= 1e5) {
+        if (!sample.BeginsWith("QCD"))
         cout << "Suprious weight veto: sample= " << sample << ", weight= " << weight << ", event= " << evt << ", currentFile->GetTitle() = " << currentFile->GetTitle() << endl;
         continue;
       }
@@ -619,6 +623,8 @@ int ScanChain(TString indir, TString sample, TString tag, TString specifiers = "
         fillhists(metsuf+jetcat+"_ll");
       }
 
+      // record the event weight before the transfer factor applied
+      evt_weight = weight;
       if (isgamma && doBosonPtReweight) {
         weight *= tf_sgtoll;
         fillhists("_fullMET"+jetcat+"_ll");
@@ -673,7 +679,7 @@ int ScanChain(TString indir, TString sample, TString tag, TString specifiers = "
 
       float thr_met = 0.;
       if (produceResultTree && met > thr_met) {
-        evt_weight = weight;
+        // evt_weight = weight;
         ll_pt = Vpt;
         ll_eta = Veta;
         ll_phi = Vphi;
@@ -682,7 +688,6 @@ int ScanChain(TString indir, TString sample, TString tag, TString specifiers = "
         ptmiss_phi = metphi;
         mT = mtZZ;
         M_ZZ = mZZ;
-        jet_cat = njet;
 
         // lepton_cat = lepton_cat; <-- already assigned above
         // mindphi_jet_met = dphijmet; <-- already assigned above
@@ -722,12 +727,16 @@ int ScanChain(TString indir, TString sample, TString tag, TString specifiers = "
           // tf_etog; <-- already assigned above
         }
 
+        LorentzVector boson_p4(Vpt, Veta, Vphi, Vmass);
+        vector<LorentzVector> jets;
         for (int j = 0; j < std::min(njet, 32); ++j) {
           jet_pt[j] = ak4jets_pt().at(j);
           jet_eta[j] = ak4jets_eta().at(j);
           jet_phi[j] = ak4jets_phi().at(j);
           jet_mass[j] = ak4jets_mass().at(j);
+          jets.emplace_back(jet_pt[j], jet_eta[j], jet_phi[j], jet_mass[j]);
         }
+        jet_cat = (njet >= 2)? (passVBFcuts(jets, boson_p4)? 2 : 1) : njet;
 
         tout->Fill();
       }
