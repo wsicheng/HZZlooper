@@ -1,5 +1,7 @@
 #pragma GCC diagnostic ignored "-Wsign-compare"
 
+#include <fstream>
+
 #include "TFile.h"
 #include "TTree.h"
 #include "TCut.h"
@@ -24,11 +26,15 @@ bool doNvtxReweight = false;
 bool DYclosureTest = false;
 
 const bool makeStepPlots = true;
+const bool produceFilterList = false;
 const bool produceResultTree = true;
 const bool separateFileForTree = true;
+const bool usStyleTree = true;
 const bool blind = true;
 
 vector<float> nvtxscale(100, 0);
+
+std::ofstream ofile;
 
 int ScanChain(TString indir, TString sample, TString tag, TString specifiers = "", TString extrargs = ""){
 
@@ -43,7 +49,8 @@ int ScanChain(TString indir, TString sample, TString tag, TString specifiers = "
   // skimver = 1.0;
 
   TString outname = sample;
-  TString fileout = Form("output/%s/%s.root", tag.Data(), outname.Data());
+  TString systname = "Nominal";
+  TString fileout = Form("output/%s/%s_%s.root", tag.Data(), outname.Data(), systname.Data());
   gSystem->Exec(Form("mkdir -p output/%s", tag.Data()));
   TFile* fout = new TFile(fileout, "RECREATE");
   cout << ">> Outputting to " << fileout << endl;
@@ -75,17 +82,23 @@ int ScanChain(TString indir, TString sample, TString tag, TString specifiers = "
   unsigned nEventsChain = ch->GetEntries();
 
   // Result tree producer
-  TFile* fout2 = nullptr;
-  TTree* tout = nullptr;
+  map<string, TFile*> fouts;
+  map<string, TTree*> touts;
   float evt_weight;
   float ll_pt, ll_eta, ll_phi, ll_mass;
-  float ptmiss, ptmiss_phi, mT, M_ZZ;
+  float ptmiss, phimiss, mT, M_ZZ;
   float dphijmet, dphiVmet, dphilljmet;
   float trigwgt(1.), lumiwgt(1.), sf_elec(1.), sf_muon(1.), sf_photon(1.), sf_btag(1.), sf_pujetid(1.);
-  float DjjVBF;
-  int lepton_cat, jet_cat, njet, nvtxs;
+  float DjjVBF(-1.), DjjVBFL1(-1.), DjjVBFa2(-1.), DjjVBFa3(-1.), DjjVBFL1ZGs(-1.);
+
+  int ll_id(0), lepton_cat(-1), jet_cat(-1);
+  unsigned njet(0), nvtxs(0);
   float jet_pt[32], jet_eta[32], jet_phi[32], jet_mass[32];
   unsigned run(0), lumi(0), event(0);
+  unsigned njet_m60(0), nak8jet200(0), nak8jet200_m60(0), nak8jet200_m140(0);
+  float ak8jet_pt(0.), ak8jet_eta(-999.), ak8jet_phi(-999.), ak8jet_mass(0.);
+
+  float dijet_mass(0.), dijet_pt(0.), dijet_dEta(-99.), dijet_dPhi(-99.);
 
   bool ph_convveto;
   bool ph_passPFid;
@@ -96,69 +109,133 @@ int ScanChain(TString indir, TString sample, TString tag, TString specifiers = "
   float ph_r9, ph_sieie, ph_sipip;
   float ph_Emip, ph_seedtime, ph_e4oe1;
 
+  vector<string> systematics = {"Nominal", "TriggerEffUp"};
+
+  if (is_data) systematics = vector<string>{"Nominal"};
+
   if (produceResultTree) {
-    if (separateFileForTree) {
-      gSystem->Exec(Form("mkdir -p outtree/%s", tag.Data()));
-      fout2 = new TFile(fileout.ReplaceAll("output/", "outtree/"), "RECREATE");
-      fout2->cd();
+    for (string isys : systematics) {
+      if (separateFileForTree) {
+        gSystem->Exec(Form("mkdir -p outtree/%s", tag.Data()));
+        fouts[isys] = new TFile(Form("outtree/%s/finaltree_%s_%s.root", tag.Data(), outname.Data(), isys.c_str()), "RECREATE");
+        fouts[isys]->cd();
+      }
+
+      TTree* tout = new TTree("FinalTree", "");
+      if (usStyleTree) {
+        tout->Branch("weight", &evt_weight);
+        tout->Branch("mTZZ", &mT);
+
+        tout->Branch("dilepton_id", &ll_id);
+        tout->Branch("dilepton_pt", &ll_pt);
+        tout->Branch("dilepton_eta", &ll_eta);
+        tout->Branch("dilepton_mass", &ll_mass);
+
+        tout->Branch("pTmiss", &ptmiss);
+        tout->Branch("phimiss", &phimiss);
+
+        tout->Branch("n_ak4jets_pt30", &njet);
+        tout->Branch("n_ak4jets_pt30_mass60", &njet_m60);
+
+        tout->Branch("dijet_mass", &dijet_mass);
+        tout->Branch("dijet_pt", &dijet_pt);
+        tout->Branch("dijet_dEta", &dijet_dEta);
+        tout->Branch("dijet_dPhi", &dijet_dPhi);
+
+        tout->Branch("ak4jet_leading_pt", jet_pt);
+        tout->Branch("ak4jet_leading_eta", jet_eta);
+        tout->Branch("ak4jet_leading_phi", jet_phi);
+        tout->Branch("ak4jet_leading_mass", jet_mass);
+
+        tout->Branch("ak4jet_subleading_pt", jet_pt+1);
+        tout->Branch("ak4jet_subleading_eta", jet_eta+1);
+        tout->Branch("ak4jet_subleading_phi", jet_phi+1);
+        tout->Branch("ak4jet_subleading_mass", jet_mass+1);
+
+        tout->Branch("n_ak8jets_pt200", &nak8jet200);
+        tout->Branch("n_ak8jets_pt200_mass60to110", &nak8jet200_m60);
+        tout->Branch("n_ak8jets_pt200_mass140", &nak8jet200_m140);
+
+        tout->Branch("ak8jet_leading_pt", ak8jet_pt);
+        tout->Branch("ak8jet_leading_eta", ak8jet_eta);
+        tout->Branch("ak8jet_leading_mass", ak8jet_mass);
+
+        tout->Branch("DjjVBF", &DjjVBF);
+        tout->Branch("DjjVBFL1", &DjjVBFL1);
+        tout->Branch("DjjVBFa2", &DjjVBFa2);
+        tout->Branch("DjjVBFa3", &DjjVBFa3);
+        tout->Branch("DjjVBFL1ZGs", &DjjVBFL1ZGs);
+
+        // Extra branches
+        tout->Branch("tf_gamma_to_ll", &tf_sgtoll);
+        tout->Branch("run", &run);
+        tout->Branch("lumi", &lumi);
+        tout->Branch("event", &event);
+
+      } else {
+        tout->Branch("weight", &evt_weight);
+        tout->Branch("ll_pt", &ll_pt);
+        tout->Branch("ll_eta", &ll_eta);
+        tout->Branch("ll_phi", &ll_phi);
+        tout->Branch("ll_mass", &ll_mass);
+        tout->Branch("ptmiss", &ptmiss);
+        tout->Branch("ptmiss_phi", &phimiss);
+        tout->Branch("mT", &mT);
+        tout->Branch("lepton_cat", &lepton_cat);
+        tout->Branch("jet_cat", &jet_cat);
+
+        tout->Branch("mindphi_jet_met", &dphijmet);
+        tout->Branch("dphi_boson_met", &dphiVmet);
+        tout->Branch("dphi_lljets_met", &dphilljmet);
+        tout->Branch("mZZ", &M_ZZ);
+        tout->Branch("DjjVBF", &DjjVBF);
+        tout->Branch("num_pv_good", &nvtxs);
+        tout->Branch("weight_trigger", &trigwgt);
+        tout->Branch("weight_luminosity", &lumiwgt);
+        tout->Branch("weight_SF_elec", &sf_elec);
+        tout->Branch("weight_SF_muon", &sf_muon);
+        tout->Branch("weight_SF_photon", &sf_photon);
+        tout->Branch("weight_SF_btag", &sf_btag);
+        tout->Branch("weight_SF_pujetid", &sf_pujetid);
+
+        tout->Branch("run", &run);
+        tout->Branch("lumi", &lumi);
+        tout->Branch("event", &event);
+
+        tout->Branch("photon_convveto", &ph_convveto);
+        tout->Branch("photon_passPFid", &ph_passPFid);
+        tout->Branch("photon_isEB", &ph_isEB);
+
+        tout->Branch("photon_pt", &ph_pt);
+        tout->Branch("photon_eta", &ph_eta);
+        tout->Branch("photon_phi", &ph_phi);
+        tout->Branch("photon_r9", &ph_r9);
+        tout->Branch("photon_sieie", &ph_sieie);
+        tout->Branch("photon_sipip", &ph_sipip);
+        tout->Branch("photon_Emip", &ph_Emip);
+        tout->Branch("photon_seedtime", &ph_seedtime);
+
+        tout->Branch("tf_gamma_to_ll", &tf_sgtoll);
+        // tout->Branch("tf_gamma_to_ee", &tf_sgtoee);
+        // tout->Branch("tf_gamma_to_mumu", &tf_sgtomumu);
+        tout->Branch("jet_size", &njet);
+        tout->Branch("jet_pt", jet_pt, "jet_pt[jet_size]/F");
+        tout->Branch("jet_eta", jet_eta, "jet_eta[jet_size]/F");
+        tout->Branch("jet_phi", jet_phi, "jet_phi[jet_size]/F");
+        tout->Branch("jet_mass", jet_mass, "jet_mass[jet_size]/F");
+
+        if (indir.Contains("/SingleLeptonEvents/")) {
+          tout->Branch("tf_el_to_gamma", &tf_etog);
+        }
+      }
+
+      touts[isys] = tout;
     }
+  }
 
-    tout = new TTree("SkimTree", "");
-
-    tout->Branch("weight", &evt_weight);
-    tout->Branch("ll_pt", &ll_pt);
-    tout->Branch("ll_eta", &ll_eta);
-    tout->Branch("ll_phi", &ll_phi);
-    tout->Branch("ll_mass", &ll_mass);
-    tout->Branch("ptmiss", &ptmiss);
-    tout->Branch("ptmiss_phi", &ptmiss_phi);
-    tout->Branch("mT", &mT);
-    tout->Branch("lepton_cat", &lepton_cat);
-    tout->Branch("jet_cat", &jet_cat);
-
-    tout->Branch("mindphi_jet_met", &dphijmet);
-    tout->Branch("dphi_boson_met", &dphiVmet);
-    tout->Branch("dphi_lljets_met", &dphilljmet);
-    tout->Branch("mZZ", &M_ZZ);
-    tout->Branch("DjjVBF", &DjjVBF);
-    tout->Branch("num_pv_good", &nvtxs);
-    tout->Branch("weight_trigger", &trigwgt);
-    tout->Branch("weight_luminosity", &lumiwgt);
-    tout->Branch("weight_SF_elec", &sf_elec);
-    tout->Branch("weight_SF_muon", &sf_muon);
-    tout->Branch("weight_SF_photon", &sf_photon);
-    tout->Branch("weight_SF_btag", &sf_btag);
-    tout->Branch("weight_SF_pujetid", &sf_pujetid);
-
-    tout->Branch("run", &run);
-    tout->Branch("lumi", &lumi);
-    tout->Branch("event", &event);
-
-    tout->Branch("photon_convveto", &ph_convveto);
-    tout->Branch("photon_passPFid", &ph_passPFid);
-    tout->Branch("photon_isEB", &ph_isEB);
-
-    tout->Branch("photon_pt", &ph_pt);
-    tout->Branch("photon_eta", &ph_eta);
-    tout->Branch("photon_phi", &ph_phi);
-    tout->Branch("photon_r9", &ph_r9);
-    tout->Branch("photon_sieie", &ph_sieie);
-    tout->Branch("photon_sipip", &ph_sipip);
-    tout->Branch("photon_Emip", &ph_Emip);
-    tout->Branch("photon_seedtime", &ph_seedtime);
-
-    tout->Branch("tf_gamma_to_ll", &tf_sgtoll);
-    // tout->Branch("tf_gamma_to_ee", &tf_sgtoee);
-    // tout->Branch("tf_gamma_to_mumu", &tf_sgtomumu);
-    tout->Branch("jet_size", &njet);
-    tout->Branch("jet_pt", jet_pt, "jet_pt[jet_size]/F");
-    tout->Branch("jet_eta", jet_eta, "jet_eta[jet_size]/F");
-    tout->Branch("jet_phi", jet_phi, "jet_phi[jet_size]/F");
-    tout->Branch("jet_mass", jet_mass, "jet_mass[jet_size]/F");
-
-    if (tag.Contains("slskim"))
-      tout->Branch("tf_el_to_gamma", &tf_etog);
-
+  if (produceFilterList && is_data) {
+    gSystem->Exec(Form("mkdir -p outfile/%s", tag.Data()));
+    ofile.open(Form("outfile/%s/photonFilterList_%s.txt", tag.Data(), sample.Data()));
   }
 
   // Make photon-pt bins for reweight
@@ -167,6 +244,10 @@ int ScanChain(TString indir, TString sample, TString tag, TString specifiers = "
 
   // For the DjjVBF calculation
   TSpline3* h_vbfcval = fetchHistCopy<TSpline3>("data/SmoothKDConstant_m4l_DjjVBF_13TeV.root", "sp_gr_varReco_Constant_Smooth");
+  TSpline3* h_vbfgval_L1 = fetchHistCopy<TSpline3>("data/gConstant_VBF_L1.root", "sp_tgfinal_VBF_SM_over_tgfinal_VBF_L1");
+  TSpline3* h_vbfgval_a2 = fetchHistCopy<TSpline3>("data/gConstant_VBF_g2.root", "sp_tgfinal_VBF_SM_over_tgfinal_VBF_g2");
+  TSpline3* h_vbfgval_a3 = fetchHistCopy<TSpline3>("data/gConstant_VBF_g4.root", "sp_tgfinal_VBF_SM_over_tgfinal_VBF_g4");
+  TSpline3* h_vbfgval_L1ZGs = fetchHistCopy<TSpline3>("data/gConstant_VBF_L1Zgs.root", "sp_tgfinal_VBF_SM_photoncut_over_tgfinal_VBF_L1Zgs");
 
   // Setup pileup re-weighting for comparing data of different years
   if (doNvtxReweight) {
@@ -189,7 +270,7 @@ int ScanChain(TString indir, TString sample, TString tag, TString specifiers = "
   TObjArray *listOfFiles = ch->GetListOfFiles();
   TIter fileIter(listOfFiles);
 
-  while ( (currentFile = (TFile*)fileIter.Next()) ) { 
+  while ( (currentFile = (TFile*)fileIter.Next()) ) {
     TString filename(currentFile->GetTitle());
     if (specifiers != "") {
       if (!filename.Contains(specifiers)) {
@@ -241,6 +322,8 @@ int ScanChain(TString indir, TString sample, TString tag, TString specifiers = "
         }
         trigwgt = event_wgt_triggers_SingleLepton() + event_wgt_triggers_Dilepton();
         if (trigwgt == 0.f) continue;
+        if (tag.Contains("emuCR") && lepton_cat != 2) continue;
+        if (tag.Contains("2lCR") && (lepton_cat | 1) != 1) continue;
       }
       if (indir.Contains("/SinglePhotonEvents/")) {
         // skimtype = SinglePhoton;
@@ -333,6 +416,164 @@ int ScanChain(TString indir, TString sample, TString tag, TString specifiers = "
       };
       fillPhotonHitMap("_raw");
 
+      auto fillJetMassHists = [&](string s = "") {
+        if (event_n_ak4jets_pt30() > 0) {
+          plot1d("h_jet1_pt"+s, ak4jets_pt()[0], weight, hvec, ";p_{T}^{jet1} [GeV]" , 80,  0, 400);
+          plot1d("h_jet1_mass"+s, ak4jets_mass()[0], weight, hvec, ";M_{T}^{jet1} [GeV]" , 80,  0, 400);
+          plot1d("h_jet1_eta"+s, ak4jets_eta()[0], weight, hvec, ";#eta(jet1)"  , 96,  -4.8f, 4.8f);
+          plot1d("h_jet1_nemf"+s, ak4jets_NEMF()[0], weight, hvec, ";jet neutral EM fraction" , 50,  0, 1);
+        }
+        if (event_n_ak4jets_pt30() > 1) {
+          plot1d("h_jet2_nemf"+s, ak4jets_NEMF()[1], weight, hvec, ";jet neutral EM fraction" , 50,  0, 1);
+
+          float mindiffMjjW(9999), mindiffMjjZ(9999), mindiffMjjtop(9999);
+          for (int i = 0; i <event_n_ak4jets_pt30(); ++i) {
+            for (int j = i+1; j <event_n_ak4jets_pt30(); ++j) {
+              LorentzVector p4jj = LorentzVector(ak4jets_pt()[i], ak4jets_eta()[i], ak4jets_phi()[i], ak4jets_mass()[i])
+                  + LorentzVector(ak4jets_pt()[j], ak4jets_eta()[j], ak4jets_phi()[j], ak4jets_mass()[j]);
+              if (fabs(p4jj.M() - 80.3) < fabs(mindiffMjjW)) mindiffMjjW = (p4jj.M() - 80.3);
+              if (fabs(p4jj.M() - 91.2) < fabs(mindiffMjjZ)) mindiffMjjZ = (p4jj.M() - 91.2);
+              if (fabs(p4jj.M() - 173) < fabs(mindiffMjjtop)) mindiffMjjtop = (p4jj.M() - 173);
+            }
+          }
+          plot1d("h_jet_mass_closest_W"+s, mindiffMjjW+80.3, weight, hvec, ";M_{jj} [GeV]" , 60,  0, 1200);
+          plot1d("h_jet_mass_closest_Z"+s, mindiffMjjZ+91.2, weight, hvec, ";M_{jj} [GeV]" , 40,  0, 1600);
+          plot1d("h_jet_mass_closest_top"+s, mindiffMjjtop+173, weight, hvec, ";M_{jj} [GeV]" , 40,  0, 2000);
+        }
+
+        if (ak8jets_mass().size() > 0) {
+          plot1d("h_ak8jet1_mass"+s, ak8jets_mass()[0], weight, hvec, ";M_{T}^{ak8jet1} [GeV]" , 80,  0, 400);
+          float mindiffMjW(9999), mindiffMjZ(9999), mindiffMjtop(9999);
+          for (size_t j = 0; j < ak8jets_mass().size(); ++j) {
+            if (fabs(ak8jets_mass()[j] - 80.3) < fabs(mindiffMjW)) mindiffMjW = (ak8jets_mass()[j] - 80.3);
+            if (fabs(ak8jets_mass()[j] - 91.2) < fabs(mindiffMjZ)) mindiffMjZ = (ak8jets_mass()[j] - 91.2);
+            if (fabs(ak8jets_mass()[j] - 173) < fabs(mindiffMjtop)) mindiffMjtop = (ak8jets_mass()[j] - 173);
+          }
+          plot1d("h_ak8jet_mass_closest_W"+s, mindiffMjW+80.3, weight, hvec, ";M_{J} [GeV]" , 80,  0, 400);
+          plot1d("h_ak8jet_mass_closest_Z"+s, mindiffMjZ+91.2, weight, hvec, ";M_{J} [GeV]" , 80,  0, 400);
+          plot1d("h_ak8jet_mass_closest_top"+s, mindiffMjZ+173, weight, hvec, ";M_{J} [GeV]" , 80,  0, 400);
+        }
+
+        float jet_nemf_inHEHFgap = -1;
+        for (int j = 0; j < event_n_ak4jets_pt30(); ++j) {
+          plot1d("h_jets_nemf"+s, ak4jets_NEMF()[j], weight, hvec, ";jet neutral EM fraction" , 50,  0, 1);
+          float nemf_thr = std::min(1., std::max(0., -0.03405+0.001472*ak4jets_pt()[j]+0.0001892*ak4jets_pt()[j]*ak4jets_pt()[j]));
+          if (2.65 < fabs(ak4jets_eta()[j]) && fabs(ak4jets_eta()[j]) < 3.139) {
+            jet_nemf_inHEHFgap = ak4jets_NEMF()[j];
+            plot1d("h_jets_nemf_HEHFgap"+s, ak4jets_NEMF()[j], weight, hvec, ";jet neutral EM fraction" , 50,  0, 1);
+            plot1d("h_jets_pt_HEHFgap"+s, ak4jets_pt()[j], weight, hvec, ";p_{T}^{jet1} [GeV]" , 80,  0, 400);
+            plot1d("h_jets_empt_HEHFgap"+s, ak4jets_pt()[j] * ak4jets_NEMF()[j], weight, hvec, ";p_{T}^{jet1} [GeV]" , 80,  0, 400);
+            if (ak4jets_NEMF()[j] > 0.6) {
+              plot1d("h_jets_pt_HEHFgap_nemfgt0p6"+s, ak4jets_pt()[j], weight, hvec, ";p_{T}^{jet1} [GeV]" , 80,  0, 400);
+              plot1d("h_jets_empt_HEHFgap_nemfgt0p6"+s, ak4jets_pt()[j] * ak4jets_NEMF()[j], weight, hvec, ";p_{T}^{jet1} [GeV]" , 80,  0, 400);
+            } else {
+              plot1d("h_jets_pt_HEHFgap_nemflt0p6"+s, ak4jets_pt()[j], weight, hvec, ";p_{T}^{jet1} [GeV]" , 80,  0, 400);
+              plot1d("h_jets_empt_HEHFgap_nemflt0p6"+s, ak4jets_pt()[j] * ak4jets_NEMF()[j], weight, hvec, ";p_{T}^{jet1} [GeV]" , 80,  0, 400);
+            }
+            if (ak4jets_NEMF()[j] > 0.5) {
+              plot1d("h_jets_pt_HEHFgap_nemfgt0p5"+s, ak4jets_pt()[j], weight, hvec, ";p_{T}^{jet1} [GeV]" , 80,  0, 400);
+              plot1d("h_jets_empt_HEHFgap_nemfgt0p5"+s, ak4jets_pt()[j] * ak4jets_NEMF()[j], weight, hvec, ";p_{T}^{jet1} [GeV]" , 80,  0, 400);
+            } else {
+              plot1d("h_jets_pt_HEHFgap_nemflt0p5"+s, ak4jets_pt()[j], weight, hvec, ";p_{T}^{jet1} [GeV]" , 80,  0, 400);
+              plot1d("h_jets_empt_HEHFgap_nemflt0p5"+s, ak4jets_pt()[j] * ak4jets_NEMF()[j], weight, hvec, ";p_{T}^{jet1} [GeV]" , 80,  0, 400);
+            }
+            if (ak4jets_NEMF()[j] > 0.7) {
+              plot1d("h_jets_pt_HEHFgap_nemfgt0p7"+s, ak4jets_pt()[j], weight, hvec, ";p_{T}^{jet1} [GeV]" , 80,  0, 400);
+              plot1d("h_jets_empt_HEHFgap_nemfgt0p7"+s, ak4jets_pt()[j] * ak4jets_NEMF()[j], weight, hvec, ";p_{T}^{jet1} [GeV]" , 80,  0, 400);
+            } else {
+              plot1d("h_jets_pt_HEHFgap_nemflt0p7"+s, ak4jets_pt()[j], weight, hvec, ";p_{T}^{jet1} [GeV]" , 80,  0, 400);
+              plot1d("h_jets_empt_HEHFgap_nemflt0p7"+s, ak4jets_pt()[j] * ak4jets_NEMF()[j], weight, hvec, ";p_{T}^{jet1} [GeV]" , 80,  0, 400);
+            }
+            if (ak4jets_NEMF()[j] > nemf_thr) {
+              plot1d("h_jets_pt_HEHFgap_nemfgtthr"+s, ak4jets_pt()[j], weight, hvec, ";p_{T}^{jet1} [GeV]" , 80,  0, 400);
+              plot1d("h_jets_empt_HEHFgap_nemfgtthr"+s, ak4jets_pt()[j] * ak4jets_NEMF()[j], weight, hvec, ";p_{T}^{jet1} [GeV]" , 80,  0, 400);
+            } else {
+              plot1d("h_jets_pt_HEHFgap_nemfltthr"+s, ak4jets_pt()[j], weight, hvec, ";p_{T}^{jet1} [GeV]" , 80,  0, 400);
+              plot1d("h_jets_empt_HEHFgap_nemfltthr"+s, ak4jets_pt()[j] * ak4jets_NEMF()[j], weight, hvec, ";p_{T}^{jet1} [GeV]" , 80,  0, 400);
+            }
+          }
+          if (ak4jets_NEMF()[j] < 0.6) {
+            plot1d("h_jetpt_nemflt0p6"+s, ak4jets_pt()[j], weight, hvec, ";p_{T}^{jet} [GeV]" , 80,  0, 400);
+            plot1d("h_jeteta_nemflt0p6"+s, ak4jets_eta()[j], weight, hvec, ";#eta(jet)"  , 96,  -4.8f, 4.8f);
+            plot1d("h_dphiVmet_nemflt0p6"+s, dPhi_pTboson_pTmiss(), weight, hvec, ";#Delta#phi(boson, E_{T}^{miss}) ", 32,  0, 3.2);
+            plot1d("h_dphijmet_nemflt0p6"+s, min_abs_dPhi_pTj_pTmiss(), weight, hvec, ";min#Delta#phi(jet, E_{T}^{miss}) ", 32,  0, 3.2);
+          } else {
+            plot1d("h_jetpt_nemfgt0p6"+s, ak4jets_pt()[j], weight, hvec, ";p_{T}^{jet} [GeV]" , 80,  0, 400);
+            plot1d("h_jeteta_nemfgt0p6"+s, ak4jets_eta()[j], weight, hvec, ";#eta(jet)"  , 96,  -4.8f, 4.8f);
+            plot1d("h_dphiVmet_nemfgt0p6"+s, dPhi_pTboson_pTmiss(), weight, hvec, ";#Delta#phi(boson, E_{T}^{miss}) ", 32,  0, 3.2);
+            plot1d("h_dphijmet_nemfgt0p6"+s, min_abs_dPhi_pTj_pTmiss(), weight, hvec, ";min#Delta#phi(jet, E_{T}^{miss}) ", 32,  0, 3.2);
+            plot1d("h_jets_empt_nemfgt0p6"+s, ak4jets_pt()[j] * ak4jets_NEMF()[j], weight, hvec, ";p_{T}^{jet1} [GeV]" , 80,  0, 400);
+            if (ak4jets_pt()[j] < 50) {
+              plot1d("h_jets_eta_nemfgt0p6_jptlt50"+s, ak4jets_eta()[j], weight, hvec, ";#eta(jet)"  , 96,  -4.8f, 4.8f);
+              plot1d("h_dphijmet_nemfgt0p6_jptlt50"+s, min_abs_dPhi_pTj_pTmiss(), weight, hvec, ";min#Delta#phi(jet, E_{T}^{miss}) ", 32,  0, 3.2);
+            } else {
+              plot1d("h_jets_eta_nemfgt0p6_jptgt50"+s, ak4jets_eta()[j], weight, hvec, ";#eta(jet)"  , 96,  -4.8f, 4.8f);
+              plot1d("h_dphijmet_nemfgt0p6_jptgt50"+s, min_abs_dPhi_pTj_pTmiss(), weight, hvec, ";min#Delta#phi(jet, E_{T}^{miss}) ", 32,  0, 3.2);
+            }
+          }
+          if (ak4jets_NEMF()[j] < 0.5) {
+            plot1d("h_jetpt_nemflt0p5"+s, ak4jets_pt()[j], weight, hvec, ";p_{T}^{jet} [GeV]" , 80,  0, 400);
+            plot1d("h_jeteta_nemflt0p5"+s, ak4jets_eta()[j], weight, hvec, ";#eta(jet)"  , 96,  -4.8f, 4.8f);
+            plot1d("h_dphiVmet_nemflt0p5"+s, dPhi_pTboson_pTmiss(), weight, hvec, ";#Delta#phi(boson, E_{T}^{miss}) ", 32,  0, 3.2);
+            plot1d("h_dphijmet_nemflt0p5"+s, min_abs_dPhi_pTj_pTmiss(), weight, hvec, ";min#Delta#phi(jet, E_{T}^{miss}) ", 32,  0, 3.2);
+            plot1d("h_jets_empt_nemflt0p5"+s, ak4jets_pt()[j] * ak4jets_NEMF()[j], weight, hvec, ";p_{T}^{jet1} [GeV]" , 80,  0, 400);
+          } else {
+            plot1d("h_jetpt_nemfgt0p5"+s, ak4jets_pt()[j], weight, hvec, ";p_{T}^{jet} [GeV]" , 80,  0, 400);
+            plot1d("h_jeteta_nemfgt0p5"+s, ak4jets_eta()[j], weight, hvec, ";#eta(jet)"  , 96,  -4.8f, 4.8f);
+            plot1d("h_dphiVmet_nemfgt0p5"+s, dPhi_pTboson_pTmiss(), weight, hvec, ";#Delta#phi(boson, E_{T}^{miss}) ", 32,  0, 3.2);
+            plot1d("h_dphijmet_nemfgt0p5"+s, min_abs_dPhi_pTj_pTmiss(), weight, hvec, ";min#Delta#phi(jet, E_{T}^{miss}) ", 32,  0, 3.2);
+            plot1d("h_jets_empt_nemfgt0p5"+s, ak4jets_pt()[j] * ak4jets_NEMF()[j], weight, hvec, ";p_{T}^{jet1} [GeV]" , 80,  0, 400);
+          }
+          if (ak4jets_NEMF()[j] < 0.7) {
+            plot1d("h_jetpt_nemflt0p7"+s, ak4jets_pt()[j], weight, hvec, ";p_{T}^{jet} [GeV]" , 80,  0, 400);
+            plot1d("h_jeteta_nemflt0p7"+s, ak4jets_eta()[j], weight, hvec, ";#eta(jet)"  , 96,  -4.8f, 4.8f);
+            plot1d("h_dphiVmet_nemflt0p7"+s, dPhi_pTboson_pTmiss(), weight, hvec, ";#Delta#phi(boson, E_{T}^{miss}) ", 32,  0, 3.2);
+            plot1d("h_dphijmet_nemflt0p7"+s, min_abs_dPhi_pTj_pTmiss(), weight, hvec, ";min#Delta#phi(jet, E_{T}^{miss}) ", 32,  0, 3.2);
+            plot1d("h_jets_empt_nemflt0p7"+s, ak4jets_pt()[j] * ak4jets_NEMF()[j], weight, hvec, ";p_{T}^{jet1} [GeV]" , 80,  0, 400);
+          } else {
+            plot1d("h_jetpt_nemfgt0p7"+s, ak4jets_pt()[j], weight, hvec, ";p_{T}^{jet} [GeV]" , 80,  0, 400);
+            plot1d("h_jeteta_nemfgt0p7"+s, ak4jets_eta()[j], weight, hvec, ";#eta(jet)"  , 96,  -4.8f, 4.8f);
+            plot1d("h_dphiVmet_nemfgt0p7"+s, dPhi_pTboson_pTmiss(), weight, hvec, ";#Delta#phi(boson, E_{T}^{miss}) ", 32,  0, 3.2);
+            plot1d("h_dphijmet_nemfgt0p7"+s, min_abs_dPhi_pTj_pTmiss(), weight, hvec, ";min#Delta#phi(jet, E_{T}^{miss}) ", 32,  0, 3.2);
+            plot1d("h_jets_empt_nemfgt0p7"+s, ak4jets_pt()[j] * ak4jets_NEMF()[j], weight, hvec, ";p_{T}^{jet1} [GeV]" , 80,  0, 400);
+          }
+          if (ak4jets_NEMF()[j] < nemf_thr) {
+            plot1d("h_jetpt_nemfltthr"+s, ak4jets_pt()[j], weight, hvec, ";p_{T}^{jet} [GeV]" , 80,  0, 400);
+            plot1d("h_jeteta_nemfltthr"+s, ak4jets_eta()[j], weight, hvec, ";#eta(jet)"  , 96,  -4.8f, 4.8f);
+            plot1d("h_dphiVmet_nemfltthr"+s, dPhi_pTboson_pTmiss(), weight, hvec, ";#Delta#phi(boson, E_{T}^{miss}) ", 32,  0, 3.2);
+            plot1d("h_dphijmet_nemfltthr"+s, min_abs_dPhi_pTj_pTmiss(), weight, hvec, ";min#Delta#phi(jet, E_{T}^{miss}) ", 32,  0, 3.2);
+            plot1d("h_jets_empt_nemfltthr"+s, ak4jets_pt()[j] * ak4jets_NEMF()[j], weight, hvec, ";p_{T}^{jet1} [GeV]" , 80,  0, 400);
+          } else {
+            plot1d("h_jetpt_nemfgtthr"+s, ak4jets_pt()[j], weight, hvec, ";p_{T}^{jet} [GeV]" , 80,  0, 400);
+            plot1d("h_jeteta_nemfgtthr"+s, ak4jets_eta()[j], weight, hvec, ";#eta(jet)"  , 96,  -4.8f, 4.8f);
+            plot1d("h_dphiVmet_nemfgtthr"+s, dPhi_pTboson_pTmiss(), weight, hvec, ";#Delta#phi(boson, E_{T}^{miss}) ", 32,  0, 3.2);
+            plot1d("h_dphijmet_nemfgtthr"+s, min_abs_dPhi_pTj_pTmiss(), weight, hvec, ";min#Delta#phi(jet, E_{T}^{miss}) ", 32,  0, 3.2);
+            plot1d("h_jets_empt_nemfgtthr"+s, ak4jets_pt()[j] * ak4jets_NEMF()[j], weight, hvec, ";p_{T}^{jet1} [GeV]" , 80,  0, 400);
+          }
+          if (ak4jets_pt()[j] < 50) {
+            plot1d("h_jets_eta_jptlt50"+s, ak4jets_eta()[j], weight, hvec, ";#eta(jet)"  , 96,  -4.8f, 4.8f);
+            plot1d("h_jets_nemf_jptlt50"+s, ak4jets_NEMF()[j], weight, hvec, ";jet neutral EM fraction" , 50,  0, 1);
+            plot1d("h_jets_nemfthr_jptlt50"+s, nemf_thr, weight, hvec, ";jet neutral EM fraction threshold" , 50,  0, 1);
+          } else {
+            plot1d("h_jets_eta_jptgt50"+s, ak4jets_eta()[j], weight, hvec, ";#eta(jet)"  , 96,  -4.8f, 4.8f);
+            plot1d("h_jets_nemf_jptgt50"+s, ak4jets_NEMF()[j], weight, hvec, ";jet neutral EM fraction" , 50,  0, 1);
+            plot1d("h_jets_nemfthr_jptgt50"+s, nemf_thr, weight, hvec, ";jet neutral EM fraction threshold" , 50,  0, 1);
+          }
+        }
+        if (jet_nemf_inHEHFgap > 0) {
+          plot1d("h_met_jetinHEHFgap"+s, event_pTmiss(), wgt, hvec, ";p_{T}^{miss} [GeV]" , 160, 0, 800);
+          if (jet_nemf_inHEHFgap < 0.6)
+            plot1d("h_met_jetinHEHFgap_nemflt0p6"+s, event_pTmiss(), wgt, hvec, ";p_{T}^{miss} [GeV]" , 160, 0, 800);
+          else
+            plot1d("h_met_jetinHEHFgap_nemfgt0p6"+s, event_pTmiss(), wgt, hvec, ";p_{T}^{miss} [GeV]" , 160, 0, 800);
+        }
+        plot1d("h_dphiVmet_jchk"+s, dPhi_pTboson_pTmiss(), weight, hvec, ";#Delta#phi(boson, E_{T}^{miss}) ", 32,  0, 3.2);
+        plot1d("h_dphijmet_jchk"+s, min_abs_dPhi_pTj_pTmiss(), weight, hvec, ";min#Delta#phi(j, E_{T}^{miss}) ", 32,  0, 3.2);
+      };
+      fillJetMassHists("_raw_fullMET");
+      if (event_pTmiss() > 50) fillJetMassHists("_raw_metge50");
+      if (event_pTmiss() > 125) fillJetMassHists("_raw_metge125");
+
       //  Chekc the sample names
       if (isZG_nlo_incl   && (isgamma || isllg) && photon_pt() > 135) continue;
       if (isZG_nlo_ptG130 && (isgamma || isllg) && photon_pt() < 135) continue;
@@ -345,8 +586,9 @@ int ScanChain(TString indir, TString sample, TString tag, TString specifiers = "
         plot1d("h_passed_steps"+lepcat, istep , weight, hvec, ";step" , 20,  0, 20);
         plot1d("h_passed_steps", istep , weight, hvec, ";step" , 20,  0, 20);
         istep++;
+        if (checkevt()) cout << __LINE__ << ": dilepton_mass()= " << dilepton_mass() << ", s= " << s << endl;
       };
-      fill_passedsteps();
+      fill_passedsteps("_nocut");
 
       // spurious weight veto
       if (!is_data && fabs(weight) >= 1e5) {
@@ -354,11 +596,12 @@ int ScanChain(TString indir, TString sample, TString tag, TString specifiers = "
         cout << "Suprious weight veto: sample= " << sample << ", weight= " << weight << ", event= " << evt << ", currentFile->GetTitle() = " << currentFile->GetTitle() << endl;
         continue;
       }
-      
+
       // btag veto, already applied on SinglePhotonEvents but not others
       if (!isgamma && event_n_ak4jets_pt30_btagged_loose() != 0) continue;
 
       // photon quality cuts
+      bool veto = false;
       if (isgamma || isllg) {
         if (extendEEphoton2j) {
           if (event_n_ak4jets_pt30() < 2 && !photon_isEB()) continue;  // barrel only for njet < 2
@@ -366,11 +609,12 @@ int ScanChain(TString indir, TString sample, TString tag, TString specifiers = "
           if (!photon_isEB()) continue;  // barrel photon only for everything
         }
         if (!photon_is_conversionSafe()) continue;
-        if (!photon_is_PFID() || !photon_is_METSafe()) continue;
-        if (photon_full5x5_sigmaIEtaIEta() < 0.001 || photon_full5x5_sigmaIPhiIPhi() < 0.001) continue;
-        if (photon_MIPTotalEnergy() > 4.9) continue;
-        if (fabs(photon_seedTime()) > 2.0) continue;
-        if (year == 2018 && photon_seedTime() > 1.0) continue;
+        if (photon_full5x5_sigmaIEtaIEta() < 0.001) continue;
+        if (!photon_is_PFID() || !photon_is_METSafe()) veto = true;
+        if (photon_full5x5_sigmaIPhiIPhi() < 0.001) veto = true;
+        if (photon_MIPTotalEnergy() > 4.9) veto = true;
+        if (fabs(photon_seedTime()) > 2.0) veto = true;
+        if (year == 2018 && photon_seedTime() > 1.0) veto = true;
       } else if (is1el) {
         if (extendEEphoton2j) {
           if (event_n_ak4jets_pt30() < 2 && (fabs(lepton_eta()) > 1.4442)) continue;  // barrel only for njet < 2
@@ -384,6 +628,7 @@ int ScanChain(TString indir, TString sample, TString tag, TString specifiers = "
           if (lepton_pt() < 220 && electron_full5x5_r9() < 0.9) continue;
         }
       }
+      if (!produceFilterList && veto) continue;
       fill_passedsteps("_photoncuts");
 
       if (doNvtxReweight && year > 2016) {
@@ -402,15 +647,29 @@ int ScanChain(TString indir, TString sample, TString tag, TString specifiers = "
 
       njet = event_n_ak4jets_pt30();
       dphijmet = min_abs_dPhi_pTj_pTmiss();
-      dphiVmet = dPhi_pTboson_pTmiss();
-      dphilljmet = dPhi_pTbosonjets_pTmiss();
+      dphiVmet = fabs(dPhi_pTboson_pTmiss());
+      dphilljmet = fabs(dPhi_pTbosonjets_pTmiss());
       float dphiVjet = 4.0;
 
-      DjjVBF = -999.;
-      if (njet >= 2) {
-        double constant = h_vbfcval->Eval(mZZ);
-        DjjVBF = p_JJVBF_SIG_ghv1_1_JHUGen() / (p_JJVBF_SIG_ghv1_1_JHUGen() + constant*p_JJQCD_SIG_ghg2_1_JHUGen());
-      }
+      double cval = (njet >= 2)? h_vbfcval->Eval(mZZ) : -1;
+      auto getDjjVBF = [&](float num, TSpline3* hgval=nullptr, float gscale=1.) -> float {
+        if (njet < 2) return -1.;
+        float gsq = (hgval)? 1./(gscale * hgval->Eval(mZZ)) : 1;
+        float res = num / (num +  (cval * gsq * gsq) * p_JJQCD_SIG_ghg2_1_JHUGen());
+        return res;
+      };
+      DjjVBF = getDjjVBF(p_JJVBF_SIG_ghv1_1_JHUGen());
+      DjjVBFL1 = getDjjVBF(p_JJVBF_SIG_ghv1prime2_1E4_JHUGen(), h_vbfgval_L1, 1e-4);
+      DjjVBFa2 = getDjjVBF(p_JJVBF_SIG_ghv2_1_JHUGen(), h_vbfgval_a2);
+      DjjVBFa2 = getDjjVBF(p_JJVBF_SIG_ghv4_1_JHUGen(), h_vbfgval_a3);
+      DjjVBFL1ZGs = getDjjVBF(p_JJVBF_SIG_ghza1prime2_1E4_JHUGen(), h_vbfgval_L1ZGs, 1e-4);
+
+      string jetcat = "jetcat";
+      if (njet == 0) jetcat = "_eq0j";
+      else if (njet == 1) jetcat = "_eq1j";
+      else if (njet >= 2) jetcat = "_ge2j";
+      // else if (njet == 2) jetcat = "_eq2j"; // alternative jet categories
+      // else if (njet >= 3) jetcat = "_ge3j"; // alternative jet categories
 
       // Analysis selections
       if (Vpt < 55.0) continue;
@@ -418,13 +677,46 @@ int ScanChain(TString indir, TString sample, TString tag, TString specifiers = "
 
       fill_passedsteps("_VptVmass");
 
+      fillJetMassHists("_nodphi_fullMET"+jetcat);
+      if (event_pTmiss() > 50) fillJetMassHists("_nodphi_metge50"+jetcat);
+      if (event_pTmiss() > 125) fillJetMassHists("_nodphi_metge125"+jetcat);
+
       if (dphiVmet < 1.0) continue;
       if (dphilljmet < 2.5) continue;
       if (njet > 0 && dphijmet < 0.25) continue;
+
+      // if (dphilljmet < 2.5 || (njet > 0 && dphijmet < 0.25)) {
+      //   fillJetMassHists("_lowDphijmet_fullMET"+jetcat);
+      //   if (event_pTmiss() > 50) fillJetMassHists("_lowDphijmet_metge50"+jetcat);
+      //   if (event_pTmiss() > 125) fillJetMassHists("_lowDphijmet_metge125"+jetcat);
+      //   continue;
+      // }
       fill_passedsteps("_dphis");
- 
+
+      fillJetMassHists("_fullMET"+jetcat);
+      if (event_pTmiss() > 50) fillJetMassHists("_metge50"+jetcat);
+      if (event_pTmiss() > 125) fillJetMassHists("_metge125"+jetcat);
+
+      // Make jet veto at horn regions
+      if (year > 2016) {
+        bool jetveto = false;
+        for (int j = 0; j < event_n_ak4jets_pt30(); ++j) {
+          if (2.65 < fabs(ak4jets_eta()[j]) && fabs(ak4jets_eta()[j]) < 3.139) {
+            float nemf_thr = (year == 2018)? 0.7 : (year == 2017)? 0.5 : 1.;
+            if (ak4jets_NEMF()[j] > nemf_thr) {
+              jetveto = true;
+            }
+          }
+        }
+        if (jetveto) continue;
+      }
+
+      // End of cuts
+      // --------------------------
+      // Begin of scale factors
+
       if (isllg) {
-        // make mass cut 
+        // make mass cut
         if (fabs(dilepton_mass() - 91.2) > 15) continue;  // version one <-- use this
         // if (fabs(event_mllg - 91.2) > 15) continue;  // version two
         // if (fabs(event_mllg - 91.2) > 15 && fabs(dilepton_mass() - 91.2) > 15) continue; // version three
@@ -437,15 +729,8 @@ int ScanChain(TString indir, TString sample, TString tag, TString specifiers = "
       }
 
       if (blind && is_data && (lepton_cat | 1) == 1 && event_pTmiss() >= 125) continue;
-      if (njet > 0) dphiVjet = deltaPhi(ak4jets_phi()[0], Vphi);          
+      if (njet > 0) dphiVjet = deltaPhi(ak4jets_phi()[0], Vphi);
       if (njet > 1) dphiVjet = min(dphiVjet, deltaPhi(ak4jets_phi()[1], Vphi));
-
-      string jetcat = "jetcat";
-      if (njet == 0) jetcat = "_eq0j";
-      else if (njet == 1) jetcat = "_eq1j";
-      else if (njet >= 2) jetcat = "_ge2j";
-      // else if (njet == 2) jetcat = "_eq2j"; // alternative jet categories
-      // else if (njet >= 3) jetcat = "_ge3j"; // alternative jet categories
 
       if (njet == 0 && dphiVmet < 2.5) jetcat = "_eq0j_lowdphi";  // shouldn't happen now
 
@@ -468,11 +753,19 @@ int ScanChain(TString indir, TString sample, TString tag, TString specifiers = "
         weight *= getNjetSFfromLLG(njet, year);
       }
 
+      if (produceFilterList && is_data) {
+        ofile << RunNumber() << ':' << LuminosityBlock() << ':' << EventNumber() << ':' << veto << endl;
+      }
+      if (produceFilterList && veto) continue;
+
       // Photon plots again
       wgt = weight;
       fillPhotonHitMap("_fullMET");
-      if (met > 125)
+
+      if (met > 125) {
         fillPhotonHitMap("_final");
+        fill_passedsteps("_final");
+      }
 
       auto fillhists = [&](string s = "") {
         plot1d("h_met"+s, met, weight, hvec, ";E_{T}^{miss} [GeV]"  , 160,  0, 800);
@@ -516,7 +809,7 @@ int ScanChain(TString indir, TString sample, TString tag, TString specifiers = "
         plot1d("h_boson_pt_b0"+s, Vpt, weight, hvec, ";p_{T}(boson) [GeV]" , ptbin0.size()-1, ptbin0.data());
         plot1d("h_boson_pt_b1"+s, Vpt, weight, hvec, ";p_{T}(boson) [GeV]" , ptbin1.size()-1, ptbin1.data());
         plot1d("h_boson_aeta"+s, fabs(Veta), weight, hvec, ";#eta(boson)" , 26,  0.f, 2.6f);
-        
+
         const vector<float> mtbin1 = {0, 75, 150, 225, 300, 375, 450, 525, 600, 725, 850, 975, 1100};
         plot1d("h_mtZZ_b1"+s,  mtZZ , weight, hvec, ";M_{T}(ZZ) [GeV]" , mtbin1.size()-1, mtbin1.data());
         const vector<float> mtbin3 = {0, 75, 150, 225, 300, 375, 450, 525, 600, 725, 850, 975, 1100};
@@ -532,14 +825,14 @@ int ScanChain(TString indir, TString sample, TString tag, TString specifiers = "
 
         if (isllg || isgamma) {
           plot1d("h_photon_r9"+s, photon_full5x5_r9(), weight, hvec, ";R9 (5x5) " , 70,  0, 1.4);
-        
+
           plot1d("h_photon_sieie"+s,  photon_full5x5_sigmaIEtaIEta(), weight, hvec, ";#sigma_{i#etai#eta}(#gamma)" , 80,  0, 0.02);
           plot1d("h_photon_sipip"+s,  photon_full5x5_sigmaIPhiIPhi(), weight, hvec, ";#sigma_{i#phii#phi}(#gamma)" , 80,  0, 0.02);
           plot1d("h_photon_tseed"+s,  photon_seedTime(), weight, hvec, ";t_{seed}(#gamma) [ns]" , 120,  -15, 15);
           plot1d("h_photon_Emip"+s,   photon_MIPTotalEnergy(), weight, hvec, ";E_{MIP}(#gamma) [GeV]" , 60,  0, 12);
 
           const vector<float> phptbin1 = {55, 82.5, 100, 135, 180, 220, 450};
-          const vector<float> phptbin2 = {55, 82.5, 100, 135, 180, 190, 450};          
+          const vector<float> phptbin2 = {55, 82.5, 100, 135, 180, 190, 450};
 
           float avgwgt = weight;
           int icat1 = std::upper_bound(phptbin1.begin(), phptbin1.end(), photon_pt())- phptbin1.begin() - 1;
@@ -630,7 +923,7 @@ int ScanChain(TString indir, TString sample, TString tag, TString specifiers = "
       }
 
       // record the event weight before the transfer factor applied
-      evt_weight = weight;
+      evt_weight *= tf_sgtoll;
       if (isgamma && doBosonPtReweight) {
         weight *= tf_sgtoll;
         fillhists("_fullMET"+jetcat+"_ll");
@@ -683,83 +976,148 @@ int ScanChain(TString indir, TString sample, TString tag, TString specifiers = "
         }
       }
 
-      float thr_met = 0.;
-      if (produceResultTree && met > thr_met) {
-        // evt_weight = weight;
+      float met_thr = 125.;
+
+      if (produceResultTree && met > met_thr) {
+        // Common branches
+        // evt_weight = weight; <-- already assigned
         ll_pt = Vpt;
         ll_eta = Veta;
         ll_phi = Vphi;
         ll_mass = Vmass;
         ptmiss = met;
-        ptmiss_phi = metphi;
+        phimiss = metphi;
+
         mT = mtZZ;
         M_ZZ = mZZ;
 
-        // lepton_cat = lepton_cat; <-- already assigned above
-        // mindphi_jet_met = dphijmet; <-- already assigned above
-        // dphi_boson_met = dphiVmet; <-- already assigned above
-        // dphi_lljets_met = dphilljmet; <-- already assigned above
-        // mZZ = M_ZZ; <-- already assigned above
         // njet = event_Njets(); <-- already assigned above
-        nvtxs = event_n_vtxs_good();
+        // DjjVBF; <-- already assigned above
+        // DjjVBFL1; <-- already assigned above
+        // DjjVBFa2; <-- already assigned above
+        // DjjVBFa3; <-- already assigned above
+        // DjjVBFL1ZGs; <-- already assigned above
 
-        lumiwgt = event_wgt();
-        sf_elec = event_wgt_SFs_electrons();
-        sf_muon = event_wgt_SFs_muons();
-        sf_photon = event_wgt_SFs_photons();
-        sf_btag = event_wgt_SFs_btagging();
-        sf_pujetid = event_wgt_SFs_PUJetId();
+        if (usStyleTree) {
+          ll_id = dilepton_id();
+          evt_weight = weight;
 
-        if (is_data) {
-          run = RunNumber();
-          lumi = LuminosityBlock();
-          event = EventNumber();
+          njet_m60 = 0;
+          for (int j = 0; j < std::min(njet, 2U); ++j) {
+            if (ak4jets_mass().at(j) > 60) njet_m60++;
+          }
+
+          if (is_data) {
+            run = RunNumber();
+            lumi = LuminosityBlock();
+            event = EventNumber();
+          }
+
+          int j = 0;
+          LorentzVector p4_dijet;
+          for (; j < std::min(njet, 2U); ++j) {
+            jet_pt[j] = ak4jets_pt().at(j);
+            jet_eta[j] = ak4jets_eta().at(j);
+            jet_phi[j] = ak4jets_phi().at(j);
+            jet_mass[j] = ak4jets_mass().at(j);
+            if (njet >= 2) p4_dijet += LorentzVector(jet_pt[j], jet_eta[j], jet_phi[j], jet_mass[j]);
+          }
+          for (; j < 2; ++j) {
+            jet_pt[j] = -999.;
+            jet_eta[j] = -999.;
+            jet_phi[j] = -999.;
+            jet_mass[j] = -999.;
+          }
+
+          if (njet >= 2) {
+            dijet_pt = p4_dijet.pt();
+            dijet_mass = p4_dijet.M();
+            dijet_dEta = fabs(jet_eta[0] - jet_eta[1]);
+            dijet_dPhi = deltaPhi(jet_phi[0], jet_phi[1]);
+          } else {
+            dijet_pt = -999.;
+            dijet_mass = -999.;
+            dijet_dEta = -999.;
+            dijet_dPhi = -999.;
+          }
+
+          nak8jet200 = ak8jets_mass().size();
+          nak8jet200_m60 = 0;
+          nak8jet200_m140 = 0;
+          for (int j = 0; j < nak8jet200; ++j) {
+            if (ak8jets_mass()[j] >= 60 && ak8jets_mass()[j] <110) nak8jet200_m60++;
+            else if (ak8jets_mass()[j] >= 140) nak8jet200_m140++;
+          }
+
+        } else {
+          // lepton_cat = lepton_cat; <-- already assigned above
+          // mindphi_jet_met = dphijmet; <-- already assigned above
+          // dphi_boson_met = dphiVmet; <-- already assigned above
+          // dphi_lljets_met = dphilljmet; <-- already assigned above
+          // mZZ = M_ZZ; <-- already assigned above
+          nvtxs = event_n_vtxs_good();
+
+          lumiwgt = event_wgt();
+          sf_elec = event_wgt_SFs_electrons();
+          sf_muon = event_wgt_SFs_muons();
+          sf_photon = event_wgt_SFs_photons();
+          sf_btag = event_wgt_SFs_btagging();
+          sf_pujetid = event_wgt_SFs_PUJetId();
+
+          if (is_data) {
+            run = RunNumber();
+            lumi = LuminosityBlock();
+            event = EventNumber();
+          }
+
+          if (isllg || isgamma) {
+            ph_convveto = photon_is_conversionSafe();
+            ph_passPFid = photon_is_PFID();
+            ph_isEB     = photon_isEB();
+            ph_pt       = photon_pt();
+            ph_eta      = photon_eta();
+            ph_phi      = photon_phi();
+            ph_r9       = photon_full5x5_r9();
+            ph_sieie    = photon_full5x5_sigmaIEtaIEta();
+            ph_sipip    = photon_full5x5_sigmaIPhiIPhi();
+            ph_Emip     = photon_MIPTotalEnergy();
+            ph_seedtime = photon_seedTime();
+            // tf_sgtoll; <-- already assigned above
+          } else if (is1el) {
+            evt_weight *= tf_etog;
+            ph_convveto = 1;
+            ph_passPFid = 1;
+            ph_isEB     = fabs(lepton_eta()) < 1.4442;
+            ph_pt       = lepton_pt();
+            ph_eta      = lepton_eta();
+            ph_phi      = lepton_phi();
+            ph_r9       = electron_full5x5_r9();
+            ph_sieie    = electron_full5x5_sigmaIEtaIEta();
+            ph_sipip    = electron_full5x5_sigmaIPhiIPhi();
+            ph_Emip     = -1;
+            ph_seedtime = electron_seedTime();
+            // tf_etog; <-- already assigned above
+          }
+
+          LorentzVector boson_p4(Vpt, Veta, Vphi, Vmass);
+          vector<LorentzVector> jets;
+          for (int j = 0; j < std::min(njet, 32U); ++j) {
+            jet_pt[j] = ak4jets_pt().at(j);
+            jet_eta[j] = ak4jets_eta().at(j);
+            jet_phi[j] = ak4jets_phi().at(j);
+            jet_mass[j] = ak4jets_mass().at(j);
+            jets.emplace_back(jet_pt[j], jet_eta[j], jet_phi[j], jet_mass[j]);
+          }
+          jet_cat = (njet >= 2)? (passVBFcuts(jets, boson_p4)? 2 : 1) : njet;
         }
 
-        if (isllg || isgamma) {
-          ph_convveto = photon_is_conversionSafe();
-          ph_passPFid = photon_is_PFID();
-          ph_isEB     = photon_isEB();
-          ph_pt       = photon_pt();
-          ph_eta      = photon_eta();
-          ph_phi      = photon_phi();
-          ph_r9       = photon_full5x5_r9();
-          ph_sieie    = photon_full5x5_sigmaIEtaIEta();
-          ph_sipip    = photon_full5x5_sigmaIPhiIPhi();
-          ph_Emip     = photon_MIPTotalEnergy();
-          ph_seedtime = photon_seedTime();
-          // tf_sgtoll; <-- already assigned above
-        } else if (is1el) {
-          evt_weight *= tf_etog;
-          ph_convveto = 1;
-          ph_passPFid = 1;
-          ph_isEB     = fabs(lepton_eta()) < 1.4442;
-          ph_pt       = lepton_pt();
-          ph_eta      = lepton_eta();
-          ph_phi      = lepton_phi();
-          ph_r9       = electron_full5x5_r9();
-          ph_sieie    = electron_full5x5_sigmaIEtaIEta();
-          ph_sipip    = electron_full5x5_sigmaIPhiIPhi();
-          ph_Emip     = -1;
-          ph_seedtime = electron_seedTime();
-          // tf_etog; <-- already assigned above
+        for (string isys : systematics) {
+          fouts[isys]->cd();
+          touts[isys]->Fill();
         }
-
-        LorentzVector boson_p4(Vpt, Veta, Vphi, Vmass);
-        vector<LorentzVector> jets;
-        for (int j = 0; j < std::min(njet, 32); ++j) {
-          jet_pt[j] = ak4jets_pt().at(j);
-          jet_eta[j] = ak4jets_eta().at(j);
-          jet_phi[j] = ak4jets_phi().at(j);
-          jet_mass[j] = ak4jets_mass().at(j);
-          jets.emplace_back(jet_pt[j], jet_eta[j], jet_phi[j], jet_mass[j]);
-        }
-        jet_cat = (njet >= 2)? (passVBFcuts(jets, boson_p4)? 2 : 1) : njet;
-
-        tout->Fill();
       }
 
-    }//event loop
+    } //event loop
 
 
     delete file;
@@ -821,18 +1179,21 @@ int ScanChain(TString indir, TString sample, TString tag, TString specifiers = "
     h.second->Write();
   }
 
+  if (produceFilterList) ofile.close();
+
   if (produceResultTree) {
     if (separateFileForTree) {
-      fout2->cd();
-      tout->Write();
-      fout2->Close();
+      for (string isys : systematics) {
+        fouts[isys]->cd();
+        touts[isys]->Write();
+        fouts[isys]->Close();
+      }
     } else {
       fout->cd();
-      tout->Write();
+      touts[0]->Write();
     }
   }
   fout->Close();
 
   return 0;
 }
-
