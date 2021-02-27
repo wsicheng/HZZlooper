@@ -8,6 +8,56 @@ void SkimTree::Init(TTree *tree) {
     EventNumber_branch = tree->GetBranch("EventNumber");
     if (EventNumber_branch) { EventNumber_branch->SetAddress(&EventNumber_); }
   }
+  KFactor_EW_NLO_qqVV_Bkg_EWDn_branch = 0;
+  if (tree->GetBranch("KFactor_EW_NLO_qqVV_Bkg_EWDn") != 0) {
+    KFactor_EW_NLO_qqVV_Bkg_EWDn_branch = tree->GetBranch("KFactor_EW_NLO_qqVV_Bkg_EWDn");
+    if (KFactor_EW_NLO_qqVV_Bkg_EWDn_branch) { KFactor_EW_NLO_qqVV_Bkg_EWDn_branch->SetAddress(&KFactor_EW_NLO_qqVV_Bkg_EWDn_); }
+  }
+  KFactor_EW_NLO_qqVV_Bkg_EWUp_branch = 0;
+  if (tree->GetBranch("KFactor_EW_NLO_qqVV_Bkg_EWUp") != 0) {
+    KFactor_EW_NLO_qqVV_Bkg_EWUp_branch = tree->GetBranch("KFactor_EW_NLO_qqVV_Bkg_EWUp");
+    if (KFactor_EW_NLO_qqVV_Bkg_EWUp_branch) { KFactor_EW_NLO_qqVV_Bkg_EWUp_branch->SetAddress(&KFactor_EW_NLO_qqVV_Bkg_EWUp_); }
+  }
+  KFactor_EW_NLO_qqVV_Bkg_Nominal_branch = 0;
+  if (tree->GetBranch("KFactor_EW_NLO_qqVV_Bkg_Nominal") != 0) {
+    KFactor_EW_NLO_qqVV_Bkg_Nominal_branch = tree->GetBranch("KFactor_EW_NLO_qqVV_Bkg_Nominal");
+    if (KFactor_EW_NLO_qqVV_Bkg_Nominal_branch) { KFactor_EW_NLO_qqVV_Bkg_Nominal_branch->SetAddress(&KFactor_EW_NLO_qqVV_Bkg_Nominal_); }
+  }
+  KFactor_EW_NLO_qqVV_Bkg_arg_mass_branch = 0;
+  if (tree->GetBranch("KFactor_EW_NLO_qqVV_Bkg_arg_mass") != 0) {
+    KFactor_EW_NLO_qqVV_Bkg_arg_mass_branch = tree->GetBranch("KFactor_EW_NLO_qqVV_Bkg_arg_mass");
+    if (KFactor_EW_NLO_qqVV_Bkg_arg_mass_branch) { KFactor_EW_NLO_qqVV_Bkg_arg_mass_branch->SetAddress(&KFactor_EW_NLO_qqVV_Bkg_arg_mass_); }
+  }
+  KFactor_EW_NLO_qqVV_Bkg_arg_pthat_branch = 0;
+  if (tree->GetBranch("KFactor_EW_NLO_qqVV_Bkg_arg_pthat") != 0) {
+    KFactor_EW_NLO_qqVV_Bkg_arg_pthat_branch = tree->GetBranch("KFactor_EW_NLO_qqVV_Bkg_arg_pthat");
+    if (KFactor_EW_NLO_qqVV_Bkg_arg_pthat_branch) { KFactor_EW_NLO_qqVV_Bkg_arg_pthat_branch->SetAddress(&KFactor_EW_NLO_qqVV_Bkg_arg_pthat_); }
+  }
+  KFactor_EW_NLO_qqVV_Bkg_arg_rho_branch = 0;
+  if (tree->GetBranch("KFactor_EW_NLO_qqVV_Bkg_arg_rho") != 0) {
+    KFactor_EW_NLO_qqVV_Bkg_arg_rho_branch = tree->GetBranch("KFactor_EW_NLO_qqVV_Bkg_arg_rho");
+    if (KFactor_EW_NLO_qqVV_Bkg_arg_rho_branch) { KFactor_EW_NLO_qqVV_Bkg_arg_rho_branch->SetAddress(&KFactor_EW_NLO_qqVV_Bkg_arg_rho_); }
+  }
+  KFactor_EW_NLO_qqVV_Bkg_arg_that_branch = 0;
+  if (tree->GetBranch("KFactor_EW_NLO_qqVV_Bkg_arg_that") != 0) {
+    KFactor_EW_NLO_qqVV_Bkg_arg_that_branch = tree->GetBranch("KFactor_EW_NLO_qqVV_Bkg_arg_that");
+    if (KFactor_EW_NLO_qqVV_Bkg_arg_that_branch) { KFactor_EW_NLO_qqVV_Bkg_arg_that_branch->SetAddress(&KFactor_EW_NLO_qqVV_Bkg_arg_that_); }
+  }
+  KFactor_QCD_NNLO_qqVV_Bkg_Nominal_branch = 0;
+  if (tree->GetBranch("KFactor_QCD_NNLO_qqVV_Bkg_Nominal") != 0) {
+    KFactor_QCD_NNLO_qqVV_Bkg_Nominal_branch = tree->GetBranch("KFactor_QCD_NNLO_qqVV_Bkg_Nominal");
+    if (KFactor_QCD_NNLO_qqVV_Bkg_Nominal_branch) { KFactor_QCD_NNLO_qqVV_Bkg_Nominal_branch->SetAddress(&KFactor_QCD_NNLO_qqVV_Bkg_Nominal_); }
+  }
+  KFactor_QCD_NNLO_qqVV_Bkg_arg_mass_branch = 0;
+  if (tree->GetBranch("KFactor_QCD_NNLO_qqVV_Bkg_arg_mass") != 0) {
+    KFactor_QCD_NNLO_qqVV_Bkg_arg_mass_branch = tree->GetBranch("KFactor_QCD_NNLO_qqVV_Bkg_arg_mass");
+    if (KFactor_QCD_NNLO_qqVV_Bkg_arg_mass_branch) { KFactor_QCD_NNLO_qqVV_Bkg_arg_mass_branch->SetAddress(&KFactor_QCD_NNLO_qqVV_Bkg_arg_mass_); }
+  }
+  KFactor_QCD_NNLO_qqVV_Bkg_arg_pthat_branch = 0;
+  if (tree->GetBranch("KFactor_QCD_NNLO_qqVV_Bkg_arg_pthat") != 0) {
+    KFactor_QCD_NNLO_qqVV_Bkg_arg_pthat_branch = tree->GetBranch("KFactor_QCD_NNLO_qqVV_Bkg_arg_pthat");
+    if (KFactor_QCD_NNLO_qqVV_Bkg_arg_pthat_branch) { KFactor_QCD_NNLO_qqVV_Bkg_arg_pthat_branch->SetAddress(&KFactor_QCD_NNLO_qqVV_Bkg_arg_pthat_); }
+  }
   LuminosityBlock_branch = 0;
   if (tree->GetBranch("LuminosityBlock") != 0) {
     LuminosityBlock_branch = tree->GetBranch("LuminosityBlock");
@@ -178,6 +228,11 @@ void SkimTree::Init(TTree *tree) {
     event_mZZ_branch = tree->GetBranch("event_mZZ");
     if (event_mZZ_branch) { event_mZZ_branch->SetAddress(&event_mZZ_); }
   }
+  event_mlg_branch = 0;
+  if (tree->GetBranch("event_mlg") != 0) {
+    event_mlg_branch = tree->GetBranch("event_mlg");
+    if (event_mlg_branch) { event_mlg_branch->SetAddress(&event_mlg_); }
+  }
   event_mllg_branch = 0;
   if (tree->GetBranch("event_mllg") != 0) {
     event_mllg_branch = tree->GetBranch("event_mllg");
@@ -213,6 +268,11 @@ void SkimTree::Init(TTree *tree) {
     event_n_ak4jets_pt30_btagged_medium_branch = tree->GetBranch("event_n_ak4jets_pt30_btagged_medium");
     if (event_n_ak4jets_pt30_btagged_medium_branch) { event_n_ak4jets_pt30_btagged_medium_branch->SetAddress(&event_n_ak4jets_pt30_btagged_medium_); }
   }
+  event_n_leptons_fakeableBase_branch = 0;
+  if (tree->GetBranch("event_n_leptons_fakeableBase") != 0) {
+    event_n_leptons_fakeableBase_branch = tree->GetBranch("event_n_leptons_fakeableBase");
+    if (event_n_leptons_fakeableBase_branch) { event_n_leptons_fakeableBase_branch->SetAddress(&event_n_leptons_fakeableBase_); }
+  }
   event_n_vtxs_good_branch = 0;
   if (tree->GetBranch("event_n_vtxs_good") != 0) {
     event_n_vtxs_good_branch = tree->GetBranch("event_n_vtxs_good");
@@ -247,6 +307,16 @@ void SkimTree::Init(TTree *tree) {
   if (tree->GetBranch("event_wgt_L1PrefiringUp") != 0) {
     event_wgt_L1PrefiringUp_branch = tree->GetBranch("event_wgt_L1PrefiringUp");
     if (event_wgt_L1PrefiringUp_branch) { event_wgt_L1PrefiringUp_branch->SetAddress(&event_wgt_L1PrefiringUp_); }
+  }
+  event_wgt_PUDn_branch = 0;
+  if (tree->GetBranch("event_wgt_PUDn") != 0) {
+    event_wgt_PUDn_branch = tree->GetBranch("event_wgt_PUDn");
+    if (event_wgt_PUDn_branch) { event_wgt_PUDn_branch->SetAddress(&event_wgt_PUDn_); }
+  }
+  event_wgt_PUUp_branch = 0;
+  if (tree->GetBranch("event_wgt_PUUp") != 0) {
+    event_wgt_PUUp_branch = tree->GetBranch("event_wgt_PUUp");
+    if (event_wgt_PUUp_branch) { event_wgt_PUUp_branch->SetAddress(&event_wgt_PUUp_); }
   }
   event_wgt_SFs_PUJetId_branch = 0;
   if (tree->GetBranch("event_wgt_SFs_PUJetId") != 0) {
@@ -363,10 +433,80 @@ void SkimTree::Init(TTree *tree) {
     event_wgt_SFs_photons_EffUp_branch = tree->GetBranch("event_wgt_SFs_photons_EffUp");
     if (event_wgt_SFs_photons_EffUp_branch) { event_wgt_SFs_photons_EffUp_branch->SetAddress(&event_wgt_SFs_photons_EffUp_); }
   }
+  event_wgt_adjustment_AsMZDn_branch = 0;
+  if (tree->GetBranch("event_wgt_adjustment_AsMZDn") != 0) {
+    event_wgt_adjustment_AsMZDn_branch = tree->GetBranch("event_wgt_adjustment_AsMZDn");
+    if (event_wgt_adjustment_AsMZDn_branch) { event_wgt_adjustment_AsMZDn_branch->SetAddress(&event_wgt_adjustment_AsMZDn_); }
+  }
+  event_wgt_adjustment_AsMZUp_branch = 0;
+  if (tree->GetBranch("event_wgt_adjustment_AsMZUp") != 0) {
+    event_wgt_adjustment_AsMZUp_branch = tree->GetBranch("event_wgt_adjustment_AsMZUp");
+    if (event_wgt_adjustment_AsMZUp_branch) { event_wgt_adjustment_AsMZUp_branch->SetAddress(&event_wgt_adjustment_AsMZUp_); }
+  }
   event_wgt_adjustment_NNPDF30_branch = 0;
   if (tree->GetBranch("event_wgt_adjustment_NNPDF30") != 0) {
     event_wgt_adjustment_NNPDF30_branch = tree->GetBranch("event_wgt_adjustment_NNPDF30");
     if (event_wgt_adjustment_NNPDF30_branch) { event_wgt_adjustment_NNPDF30_branch->SetAddress(&event_wgt_adjustment_NNPDF30_); }
+  }
+  event_wgt_adjustment_NNPDF30_AsMZDn_branch = 0;
+  if (tree->GetBranch("event_wgt_adjustment_NNPDF30_AsMZDn") != 0) {
+    event_wgt_adjustment_NNPDF30_AsMZDn_branch = tree->GetBranch("event_wgt_adjustment_NNPDF30_AsMZDn");
+    if (event_wgt_adjustment_NNPDF30_AsMZDn_branch) { event_wgt_adjustment_NNPDF30_AsMZDn_branch->SetAddress(&event_wgt_adjustment_NNPDF30_AsMZDn_); }
+  }
+  event_wgt_adjustment_NNPDF30_AsMZUp_branch = 0;
+  if (tree->GetBranch("event_wgt_adjustment_NNPDF30_AsMZUp") != 0) {
+    event_wgt_adjustment_NNPDF30_AsMZUp_branch = tree->GetBranch("event_wgt_adjustment_NNPDF30_AsMZUp");
+    if (event_wgt_adjustment_NNPDF30_AsMZUp_branch) { event_wgt_adjustment_NNPDF30_AsMZUp_branch->SetAddress(&event_wgt_adjustment_NNPDF30_AsMZUp_); }
+  }
+  event_wgt_adjustment_NNPDF30_PDFReplicaDn_branch = 0;
+  if (tree->GetBranch("event_wgt_adjustment_NNPDF30_PDFReplicaDn") != 0) {
+    event_wgt_adjustment_NNPDF30_PDFReplicaDn_branch = tree->GetBranch("event_wgt_adjustment_NNPDF30_PDFReplicaDn");
+    if (event_wgt_adjustment_NNPDF30_PDFReplicaDn_branch) { event_wgt_adjustment_NNPDF30_PDFReplicaDn_branch->SetAddress(&event_wgt_adjustment_NNPDF30_PDFReplicaDn_); }
+  }
+  event_wgt_adjustment_NNPDF30_PDFReplicaUp_branch = 0;
+  if (tree->GetBranch("event_wgt_adjustment_NNPDF30_PDFReplicaUp") != 0) {
+    event_wgt_adjustment_NNPDF30_PDFReplicaUp_branch = tree->GetBranch("event_wgt_adjustment_NNPDF30_PDFReplicaUp");
+    if (event_wgt_adjustment_NNPDF30_PDFReplicaUp_branch) { event_wgt_adjustment_NNPDF30_PDFReplicaUp_branch->SetAddress(&event_wgt_adjustment_NNPDF30_PDFReplicaUp_); }
+  }
+  event_wgt_adjustment_PDFReplicaDn_branch = 0;
+  if (tree->GetBranch("event_wgt_adjustment_PDFReplicaDn") != 0) {
+    event_wgt_adjustment_PDFReplicaDn_branch = tree->GetBranch("event_wgt_adjustment_PDFReplicaDn");
+    if (event_wgt_adjustment_PDFReplicaDn_branch) { event_wgt_adjustment_PDFReplicaDn_branch->SetAddress(&event_wgt_adjustment_PDFReplicaDn_); }
+  }
+  event_wgt_adjustment_PDFReplicaUp_branch = 0;
+  if (tree->GetBranch("event_wgt_adjustment_PDFReplicaUp") != 0) {
+    event_wgt_adjustment_PDFReplicaUp_branch = tree->GetBranch("event_wgt_adjustment_PDFReplicaUp");
+    if (event_wgt_adjustment_PDFReplicaUp_branch) { event_wgt_adjustment_PDFReplicaUp_branch->SetAddress(&event_wgt_adjustment_PDFReplicaUp_); }
+  }
+  event_wgt_adjustment_PDFScaleDn_branch = 0;
+  if (tree->GetBranch("event_wgt_adjustment_PDFScaleDn") != 0) {
+    event_wgt_adjustment_PDFScaleDn_branch = tree->GetBranch("event_wgt_adjustment_PDFScaleDn");
+    if (event_wgt_adjustment_PDFScaleDn_branch) { event_wgt_adjustment_PDFScaleDn_branch->SetAddress(&event_wgt_adjustment_PDFScaleDn_); }
+  }
+  event_wgt_adjustment_PDFScaleUp_branch = 0;
+  if (tree->GetBranch("event_wgt_adjustment_PDFScaleUp") != 0) {
+    event_wgt_adjustment_PDFScaleUp_branch = tree->GetBranch("event_wgt_adjustment_PDFScaleUp");
+    if (event_wgt_adjustment_PDFScaleUp_branch) { event_wgt_adjustment_PDFScaleUp_branch->SetAddress(&event_wgt_adjustment_PDFScaleUp_); }
+  }
+  event_wgt_adjustment_PythiaScaleDn_branch = 0;
+  if (tree->GetBranch("event_wgt_adjustment_PythiaScaleDn") != 0) {
+    event_wgt_adjustment_PythiaScaleDn_branch = tree->GetBranch("event_wgt_adjustment_PythiaScaleDn");
+    if (event_wgt_adjustment_PythiaScaleDn_branch) { event_wgt_adjustment_PythiaScaleDn_branch->SetAddress(&event_wgt_adjustment_PythiaScaleDn_); }
+  }
+  event_wgt_adjustment_PythiaScaleUp_branch = 0;
+  if (tree->GetBranch("event_wgt_adjustment_PythiaScaleUp") != 0) {
+    event_wgt_adjustment_PythiaScaleUp_branch = tree->GetBranch("event_wgt_adjustment_PythiaScaleUp");
+    if (event_wgt_adjustment_PythiaScaleUp_branch) { event_wgt_adjustment_PythiaScaleUp_branch->SetAddress(&event_wgt_adjustment_PythiaScaleUp_); }
+  }
+  event_wgt_adjustment_QCDScaleDn_branch = 0;
+  if (tree->GetBranch("event_wgt_adjustment_QCDScaleDn") != 0) {
+    event_wgt_adjustment_QCDScaleDn_branch = tree->GetBranch("event_wgt_adjustment_QCDScaleDn");
+    if (event_wgt_adjustment_QCDScaleDn_branch) { event_wgt_adjustment_QCDScaleDn_branch->SetAddress(&event_wgt_adjustment_QCDScaleDn_); }
+  }
+  event_wgt_adjustment_QCDScaleUp_branch = 0;
+  if (tree->GetBranch("event_wgt_adjustment_QCDScaleUp") != 0) {
+    event_wgt_adjustment_QCDScaleUp_branch = tree->GetBranch("event_wgt_adjustment_QCDScaleUp");
+    if (event_wgt_adjustment_QCDScaleUp_branch) { event_wgt_adjustment_QCDScaleUp_branch->SetAddress(&event_wgt_adjustment_QCDScaleUp_); }
   }
   event_wgt_triggers_branch = 0;
   if (tree->GetBranch("event_wgt_triggers") != 0) {
@@ -377,6 +517,21 @@ void SkimTree::Init(TTree *tree) {
   if (tree->GetBranch("event_wgt_triggers_Dilepton") != 0) {
     event_wgt_triggers_Dilepton_branch = tree->GetBranch("event_wgt_triggers_Dilepton");
     if (event_wgt_triggers_Dilepton_branch) { event_wgt_triggers_Dilepton_branch->SetAddress(&event_wgt_triggers_Dilepton_); }
+  }
+  event_wgt_triggers_Dilepton_DF_Extra_branch = 0;
+  if (tree->GetBranch("event_wgt_triggers_Dilepton_DF_Extra") != 0) {
+    event_wgt_triggers_Dilepton_DF_Extra_branch = tree->GetBranch("event_wgt_triggers_Dilepton_DF_Extra");
+    if (event_wgt_triggers_Dilepton_DF_Extra_branch) { event_wgt_triggers_Dilepton_DF_Extra_branch->SetAddress(&event_wgt_triggers_Dilepton_DF_Extra_); }
+  }
+  event_wgt_triggers_PFHT_Control_branch = 0;
+  if (tree->GetBranch("event_wgt_triggers_PFHT_Control") != 0) {
+    event_wgt_triggers_PFHT_Control_branch = tree->GetBranch("event_wgt_triggers_PFHT_Control");
+    if (event_wgt_triggers_PFHT_Control_branch) { event_wgt_triggers_PFHT_Control_branch->SetAddress(&event_wgt_triggers_PFHT_Control_); }
+  }
+  event_wgt_triggers_PFMET_MHT_Control_branch = 0;
+  if (tree->GetBranch("event_wgt_triggers_PFMET_MHT_Control") != 0) {
+    event_wgt_triggers_PFMET_MHT_Control_branch = tree->GetBranch("event_wgt_triggers_PFMET_MHT_Control");
+    if (event_wgt_triggers_PFMET_MHT_Control_branch) { event_wgt_triggers_PFMET_MHT_Control_branch->SetAddress(&event_wgt_triggers_PFMET_MHT_Control_); }
   }
   event_wgt_triggers_SingleLepton_branch = 0;
   if (tree->GetBranch("event_wgt_triggers_SingleLepton") != 0) {
@@ -397,6 +552,31 @@ void SkimTree::Init(TTree *tree) {
   if (tree->GetBranch("genmet_phimiss") != 0) {
     genmet_phimiss_branch = tree->GetBranch("genmet_phimiss");
     if (genmet_phimiss_branch) { genmet_phimiss_branch->SetAddress(&genmet_phimiss_); }
+  }
+  lepton_eff_branch = 0;
+  if (tree->GetBranch("lepton_eff") != 0) {
+    lepton_eff_branch = tree->GetBranch("lepton_eff");
+    if (lepton_eff_branch) { lepton_eff_branch->SetAddress(&lepton_eff_); }
+  }
+  lepton_eff_StatDn_branch = 0;
+  if (tree->GetBranch("lepton_eff_StatDn") != 0) {
+    lepton_eff_StatDn_branch = tree->GetBranch("lepton_eff_StatDn");
+    if (lepton_eff_StatDn_branch) { lepton_eff_StatDn_branch->SetAddress(&lepton_eff_StatDn_); }
+  }
+  lepton_eff_StatUp_branch = 0;
+  if (tree->GetBranch("lepton_eff_StatUp") != 0) {
+    lepton_eff_StatUp_branch = tree->GetBranch("lepton_eff_StatUp");
+    if (lepton_eff_StatUp_branch) { lepton_eff_StatUp_branch->SetAddress(&lepton_eff_StatUp_); }
+  }
+  lepton_eff_SystDn_branch = 0;
+  if (tree->GetBranch("lepton_eff_SystDn") != 0) {
+    lepton_eff_SystDn_branch = tree->GetBranch("lepton_eff_SystDn");
+    if (lepton_eff_SystDn_branch) { lepton_eff_SystDn_branch->SetAddress(&lepton_eff_SystDn_); }
+  }
+  lepton_eff_SystUp_branch = 0;
+  if (tree->GetBranch("lepton_eff_SystUp") != 0) {
+    lepton_eff_SystUp_branch = tree->GetBranch("lepton_eff_SystUp");
+    if (lepton_eff_SystUp_branch) { lepton_eff_SystUp_branch->SetAddress(&lepton_eff_SystUp_); }
   }
   lepton_eta_branch = 0;
   if (tree->GetBranch("lepton_eta") != 0) {
@@ -428,15 +608,35 @@ void SkimTree::Init(TTree *tree) {
     lepton_pt_branch = tree->GetBranch("lepton_pt");
     if (lepton_pt_branch) { lepton_pt_branch->SetAddress(&lepton_pt_); }
   }
-  lepton_relIso_branch = 0;
-  if (tree->GetBranch("lepton_relIso") != 0) {
-    lepton_relIso_branch = tree->GetBranch("lepton_relIso");
-    if (lepton_relIso_branch) { lepton_relIso_branch->SetAddress(&lepton_relIso_); }
-  }
   leptons_eff_branch = 0;
   if (tree->GetBranch("leptons_eff") != 0) {
     leptons_eff_branch = tree->GetBranch("leptons_eff");
     if (leptons_eff_branch) { leptons_eff_branch->SetAddress(&leptons_eff_); }
+  }
+  leptons_eff_DF_branch = 0;
+  if (tree->GetBranch("leptons_eff_DF") != 0) {
+    leptons_eff_DF_branch = tree->GetBranch("leptons_eff_DF");
+    if (leptons_eff_DF_branch) { leptons_eff_DF_branch->SetAddress(&leptons_eff_DF_); }
+  }
+  leptons_eff_DF_StatDn_branch = 0;
+  if (tree->GetBranch("leptons_eff_DF_StatDn") != 0) {
+    leptons_eff_DF_StatDn_branch = tree->GetBranch("leptons_eff_DF_StatDn");
+    if (leptons_eff_DF_StatDn_branch) { leptons_eff_DF_StatDn_branch->SetAddress(&leptons_eff_DF_StatDn_); }
+  }
+  leptons_eff_DF_StatUp_branch = 0;
+  if (tree->GetBranch("leptons_eff_DF_StatUp") != 0) {
+    leptons_eff_DF_StatUp_branch = tree->GetBranch("leptons_eff_DF_StatUp");
+    if (leptons_eff_DF_StatUp_branch) { leptons_eff_DF_StatUp_branch->SetAddress(&leptons_eff_DF_StatUp_); }
+  }
+  leptons_eff_DF_SystDn_branch = 0;
+  if (tree->GetBranch("leptons_eff_DF_SystDn") != 0) {
+    leptons_eff_DF_SystDn_branch = tree->GetBranch("leptons_eff_DF_SystDn");
+    if (leptons_eff_DF_SystDn_branch) { leptons_eff_DF_SystDn_branch->SetAddress(&leptons_eff_DF_SystDn_); }
+  }
+  leptons_eff_DF_SystUp_branch = 0;
+  if (tree->GetBranch("leptons_eff_DF_SystUp") != 0) {
+    leptons_eff_DF_SystUp_branch = tree->GetBranch("leptons_eff_DF_SystUp");
+    if (leptons_eff_DF_SystUp_branch) { leptons_eff_DF_SystUp_branch->SetAddress(&leptons_eff_DF_SystUp_); }
   }
   leptons_eff_StatDn_branch = 0;
   if (tree->GetBranch("leptons_eff_StatDn") != 0) {
@@ -663,6 +863,16 @@ void SkimTree::Init(TTree *tree) {
 void SkimTree::GetEntry(unsigned int idx) {
   index = idx;
   EventNumber_isLoaded = false;
+  KFactor_EW_NLO_qqVV_Bkg_EWDn_isLoaded = false;
+  KFactor_EW_NLO_qqVV_Bkg_EWUp_isLoaded = false;
+  KFactor_EW_NLO_qqVV_Bkg_Nominal_isLoaded = false;
+  KFactor_EW_NLO_qqVV_Bkg_arg_mass_isLoaded = false;
+  KFactor_EW_NLO_qqVV_Bkg_arg_pthat_isLoaded = false;
+  KFactor_EW_NLO_qqVV_Bkg_arg_rho_isLoaded = false;
+  KFactor_EW_NLO_qqVV_Bkg_arg_that_isLoaded = false;
+  KFactor_QCD_NNLO_qqVV_Bkg_Nominal_isLoaded = false;
+  KFactor_QCD_NNLO_qqVV_Bkg_arg_mass_isLoaded = false;
+  KFactor_QCD_NNLO_qqVV_Bkg_arg_pthat_isLoaded = false;
   LuminosityBlock_isLoaded = false;
   RunNumber_isLoaded = false;
   ak4jets_CEMF_isLoaded = false;
@@ -697,6 +907,7 @@ void SkimTree::GetEntry(unsigned int idx) {
   electrons_seedTime_isLoaded = false;
   event_mTZZ_isLoaded = false;
   event_mZZ_isLoaded = false;
+  event_mlg_isLoaded = false;
   event_mllg_isLoaded = false;
   event_n_ak4jets_pt20_isLoaded = false;
   event_n_ak4jets_pt20_btagged_loose_isLoaded = false;
@@ -704,6 +915,7 @@ void SkimTree::GetEntry(unsigned int idx) {
   event_n_ak4jets_pt30_isLoaded = false;
   event_n_ak4jets_pt30_btagged_loose_isLoaded = false;
   event_n_ak4jets_pt30_btagged_medium_isLoaded = false;
+  event_n_leptons_fakeableBase_isLoaded = false;
   event_n_vtxs_good_isLoaded = false;
   event_pTmiss_isLoaded = false;
   event_pass_tightMETFilters_isLoaded = false;
@@ -711,6 +923,8 @@ void SkimTree::GetEntry(unsigned int idx) {
   event_wgt_isLoaded = false;
   event_wgt_L1PrefiringDn_isLoaded = false;
   event_wgt_L1PrefiringUp_isLoaded = false;
+  event_wgt_PUDn_isLoaded = false;
+  event_wgt_PUUp_isLoaded = false;
   event_wgt_SFs_PUJetId_isLoaded = false;
   event_wgt_SFs_PUJetId_EffDn_isLoaded = false;
   event_wgt_SFs_PUJetId_EffUp_isLoaded = false;
@@ -734,21 +948,47 @@ void SkimTree::GetEntry(unsigned int idx) {
   event_wgt_SFs_photons_isLoaded = false;
   event_wgt_SFs_photons_EffDn_isLoaded = false;
   event_wgt_SFs_photons_EffUp_isLoaded = false;
+  event_wgt_adjustment_AsMZDn_isLoaded = false;
+  event_wgt_adjustment_AsMZUp_isLoaded = false;
   event_wgt_adjustment_NNPDF30_isLoaded = false;
+  event_wgt_adjustment_NNPDF30_AsMZDn_isLoaded = false;
+  event_wgt_adjustment_NNPDF30_AsMZUp_isLoaded = false;
+  event_wgt_adjustment_NNPDF30_PDFReplicaDn_isLoaded = false;
+  event_wgt_adjustment_NNPDF30_PDFReplicaUp_isLoaded = false;
+  event_wgt_adjustment_PDFReplicaDn_isLoaded = false;
+  event_wgt_adjustment_PDFReplicaUp_isLoaded = false;
+  event_wgt_adjustment_PDFScaleDn_isLoaded = false;
+  event_wgt_adjustment_PDFScaleUp_isLoaded = false;
+  event_wgt_adjustment_PythiaScaleDn_isLoaded = false;
+  event_wgt_adjustment_PythiaScaleUp_isLoaded = false;
+  event_wgt_adjustment_QCDScaleDn_isLoaded = false;
+  event_wgt_adjustment_QCDScaleUp_isLoaded = false;
   event_wgt_triggers_isLoaded = false;
   event_wgt_triggers_Dilepton_isLoaded = false;
+  event_wgt_triggers_Dilepton_DF_Extra_isLoaded = false;
+  event_wgt_triggers_PFHT_Control_isLoaded = false;
+  event_wgt_triggers_PFMET_MHT_Control_isLoaded = false;
   event_wgt_triggers_SingleLepton_isLoaded = false;
   event_wgt_triggers_SinglePhoton_isLoaded = false;
   genmet_pTmiss_isLoaded = false;
   genmet_phimiss_isLoaded = false;
+  lepton_eff_isLoaded = false;
+  lepton_eff_StatDn_isLoaded = false;
+  lepton_eff_StatUp_isLoaded = false;
+  lepton_eff_SystDn_isLoaded = false;
+  lepton_eff_SystUp_isLoaded = false;
   lepton_eta_isLoaded = false;
   lepton_id_isLoaded = false;
   lepton_is_genMatched_prompt_isLoaded = false;
   lepton_mass_isLoaded = false;
   lepton_phi_isLoaded = false;
   lepton_pt_isLoaded = false;
-  lepton_relIso_isLoaded = false;
   leptons_eff_isLoaded = false;
+  leptons_eff_DF_isLoaded = false;
+  leptons_eff_DF_StatDn_isLoaded = false;
+  leptons_eff_DF_StatUp_isLoaded = false;
+  leptons_eff_DF_SystDn_isLoaded = false;
+  leptons_eff_DF_SystUp_isLoaded = false;
   leptons_eff_StatDn_isLoaded = false;
   leptons_eff_StatUp_isLoaded = false;
   leptons_eff_SystDn_isLoaded = false;
@@ -796,6 +1036,16 @@ void SkimTree::GetEntry(unsigned int idx) {
 }
 void SkimTree::LoadAllBranches() {
   if (EventNumber_branch != 0) EventNumber();
+  if (KFactor_EW_NLO_qqVV_Bkg_EWDn_branch != 0) KFactor_EW_NLO_qqVV_Bkg_EWDn();
+  if (KFactor_EW_NLO_qqVV_Bkg_EWUp_branch != 0) KFactor_EW_NLO_qqVV_Bkg_EWUp();
+  if (KFactor_EW_NLO_qqVV_Bkg_Nominal_branch != 0) KFactor_EW_NLO_qqVV_Bkg_Nominal();
+  if (KFactor_EW_NLO_qqVV_Bkg_arg_mass_branch != 0) KFactor_EW_NLO_qqVV_Bkg_arg_mass();
+  if (KFactor_EW_NLO_qqVV_Bkg_arg_pthat_branch != 0) KFactor_EW_NLO_qqVV_Bkg_arg_pthat();
+  if (KFactor_EW_NLO_qqVV_Bkg_arg_rho_branch != 0) KFactor_EW_NLO_qqVV_Bkg_arg_rho();
+  if (KFactor_EW_NLO_qqVV_Bkg_arg_that_branch != 0) KFactor_EW_NLO_qqVV_Bkg_arg_that();
+  if (KFactor_QCD_NNLO_qqVV_Bkg_Nominal_branch != 0) KFactor_QCD_NNLO_qqVV_Bkg_Nominal();
+  if (KFactor_QCD_NNLO_qqVV_Bkg_arg_mass_branch != 0) KFactor_QCD_NNLO_qqVV_Bkg_arg_mass();
+  if (KFactor_QCD_NNLO_qqVV_Bkg_arg_pthat_branch != 0) KFactor_QCD_NNLO_qqVV_Bkg_arg_pthat();
   if (LuminosityBlock_branch != 0) LuminosityBlock();
   if (RunNumber_branch != 0) RunNumber();
   if (ak4jets_CEMF_branch != 0) ak4jets_CEMF();
@@ -830,6 +1080,7 @@ void SkimTree::LoadAllBranches() {
   if (electrons_seedTime_branch != 0) electrons_seedTime();
   if (event_mTZZ_branch != 0) event_mTZZ();
   if (event_mZZ_branch != 0) event_mZZ();
+  if (event_mlg_branch != 0) event_mlg();
   if (event_mllg_branch != 0) event_mllg();
   if (event_n_ak4jets_pt20_branch != 0) event_n_ak4jets_pt20();
   if (event_n_ak4jets_pt20_btagged_loose_branch != 0) event_n_ak4jets_pt20_btagged_loose();
@@ -837,6 +1088,7 @@ void SkimTree::LoadAllBranches() {
   if (event_n_ak4jets_pt30_branch != 0) event_n_ak4jets_pt30();
   if (event_n_ak4jets_pt30_btagged_loose_branch != 0) event_n_ak4jets_pt30_btagged_loose();
   if (event_n_ak4jets_pt30_btagged_medium_branch != 0) event_n_ak4jets_pt30_btagged_medium();
+  if (event_n_leptons_fakeableBase_branch != 0) event_n_leptons_fakeableBase();
   if (event_n_vtxs_good_branch != 0) event_n_vtxs_good();
   if (event_pTmiss_branch != 0) event_pTmiss();
   if (event_pass_tightMETFilters_branch != 0) event_pass_tightMETFilters();
@@ -844,6 +1096,8 @@ void SkimTree::LoadAllBranches() {
   if (event_wgt_branch != 0) event_wgt();
   if (event_wgt_L1PrefiringDn_branch != 0) event_wgt_L1PrefiringDn();
   if (event_wgt_L1PrefiringUp_branch != 0) event_wgt_L1PrefiringUp();
+  if (event_wgt_PUDn_branch != 0) event_wgt_PUDn();
+  if (event_wgt_PUUp_branch != 0) event_wgt_PUUp();
   if (event_wgt_SFs_PUJetId_branch != 0) event_wgt_SFs_PUJetId();
   if (event_wgt_SFs_PUJetId_EffDn_branch != 0) event_wgt_SFs_PUJetId_EffDn();
   if (event_wgt_SFs_PUJetId_EffUp_branch != 0) event_wgt_SFs_PUJetId_EffUp();
@@ -867,21 +1121,47 @@ void SkimTree::LoadAllBranches() {
   if (event_wgt_SFs_photons_branch != 0) event_wgt_SFs_photons();
   if (event_wgt_SFs_photons_EffDn_branch != 0) event_wgt_SFs_photons_EffDn();
   if (event_wgt_SFs_photons_EffUp_branch != 0) event_wgt_SFs_photons_EffUp();
+  if (event_wgt_adjustment_AsMZDn_branch != 0) event_wgt_adjustment_AsMZDn();
+  if (event_wgt_adjustment_AsMZUp_branch != 0) event_wgt_adjustment_AsMZUp();
   if (event_wgt_adjustment_NNPDF30_branch != 0) event_wgt_adjustment_NNPDF30();
+  if (event_wgt_adjustment_NNPDF30_AsMZDn_branch != 0) event_wgt_adjustment_NNPDF30_AsMZDn();
+  if (event_wgt_adjustment_NNPDF30_AsMZUp_branch != 0) event_wgt_adjustment_NNPDF30_AsMZUp();
+  if (event_wgt_adjustment_NNPDF30_PDFReplicaDn_branch != 0) event_wgt_adjustment_NNPDF30_PDFReplicaDn();
+  if (event_wgt_adjustment_NNPDF30_PDFReplicaUp_branch != 0) event_wgt_adjustment_NNPDF30_PDFReplicaUp();
+  if (event_wgt_adjustment_PDFReplicaDn_branch != 0) event_wgt_adjustment_PDFReplicaDn();
+  if (event_wgt_adjustment_PDFReplicaUp_branch != 0) event_wgt_adjustment_PDFReplicaUp();
+  if (event_wgt_adjustment_PDFScaleDn_branch != 0) event_wgt_adjustment_PDFScaleDn();
+  if (event_wgt_adjustment_PDFScaleUp_branch != 0) event_wgt_adjustment_PDFScaleUp();
+  if (event_wgt_adjustment_PythiaScaleDn_branch != 0) event_wgt_adjustment_PythiaScaleDn();
+  if (event_wgt_adjustment_PythiaScaleUp_branch != 0) event_wgt_adjustment_PythiaScaleUp();
+  if (event_wgt_adjustment_QCDScaleDn_branch != 0) event_wgt_adjustment_QCDScaleDn();
+  if (event_wgt_adjustment_QCDScaleUp_branch != 0) event_wgt_adjustment_QCDScaleUp();
   if (event_wgt_triggers_branch != 0) event_wgt_triggers();
   if (event_wgt_triggers_Dilepton_branch != 0) event_wgt_triggers_Dilepton();
+  if (event_wgt_triggers_Dilepton_DF_Extra_branch != 0) event_wgt_triggers_Dilepton_DF_Extra();
+  if (event_wgt_triggers_PFHT_Control_branch != 0) event_wgt_triggers_PFHT_Control();
+  if (event_wgt_triggers_PFMET_MHT_Control_branch != 0) event_wgt_triggers_PFMET_MHT_Control();
   if (event_wgt_triggers_SingleLepton_branch != 0) event_wgt_triggers_SingleLepton();
   if (event_wgt_triggers_SinglePhoton_branch != 0) event_wgt_triggers_SinglePhoton();
   if (genmet_pTmiss_branch != 0) genmet_pTmiss();
   if (genmet_phimiss_branch != 0) genmet_phimiss();
+  if (lepton_eff_branch != 0) lepton_eff();
+  if (lepton_eff_StatDn_branch != 0) lepton_eff_StatDn();
+  if (lepton_eff_StatUp_branch != 0) lepton_eff_StatUp();
+  if (lepton_eff_SystDn_branch != 0) lepton_eff_SystDn();
+  if (lepton_eff_SystUp_branch != 0) lepton_eff_SystUp();
   if (lepton_eta_branch != 0) lepton_eta();
   if (lepton_id_branch != 0) lepton_id();
   if (lepton_is_genMatched_prompt_branch != 0) lepton_is_genMatched_prompt();
   if (lepton_mass_branch != 0) lepton_mass();
   if (lepton_phi_branch != 0) lepton_phi();
   if (lepton_pt_branch != 0) lepton_pt();
-  if (lepton_relIso_branch != 0) lepton_relIso();
   if (leptons_eff_branch != 0) leptons_eff();
+  if (leptons_eff_DF_branch != 0) leptons_eff_DF();
+  if (leptons_eff_DF_StatDn_branch != 0) leptons_eff_DF_StatDn();
+  if (leptons_eff_DF_StatUp_branch != 0) leptons_eff_DF_StatUp();
+  if (leptons_eff_DF_SystDn_branch != 0) leptons_eff_DF_SystDn();
+  if (leptons_eff_DF_SystUp_branch != 0) leptons_eff_DF_SystUp();
   if (leptons_eff_StatDn_branch != 0) leptons_eff_StatDn();
   if (leptons_eff_StatUp_branch != 0) leptons_eff_StatUp();
   if (leptons_eff_SystDn_branch != 0) leptons_eff_SystDn();
@@ -938,6 +1218,126 @@ const unsigned long long &SkimTree::EventNumber() {
     EventNumber_isLoaded = true;
   }
   return EventNumber_;
+}
+const float &SkimTree::KFactor_EW_NLO_qqVV_Bkg_EWDn() {
+  if (not KFactor_EW_NLO_qqVV_Bkg_EWDn_isLoaded) {
+    if (KFactor_EW_NLO_qqVV_Bkg_EWDn_branch != 0) {
+      KFactor_EW_NLO_qqVV_Bkg_EWDn_branch->GetEntry(index);
+    } else {
+      printf("branch KFactor_EW_NLO_qqVV_Bkg_EWDn_branch does not exist!\n");
+      exit(1);
+    }
+    KFactor_EW_NLO_qqVV_Bkg_EWDn_isLoaded = true;
+  }
+  return KFactor_EW_NLO_qqVV_Bkg_EWDn_;
+}
+const float &SkimTree::KFactor_EW_NLO_qqVV_Bkg_EWUp() {
+  if (not KFactor_EW_NLO_qqVV_Bkg_EWUp_isLoaded) {
+    if (KFactor_EW_NLO_qqVV_Bkg_EWUp_branch != 0) {
+      KFactor_EW_NLO_qqVV_Bkg_EWUp_branch->GetEntry(index);
+    } else {
+      printf("branch KFactor_EW_NLO_qqVV_Bkg_EWUp_branch does not exist!\n");
+      exit(1);
+    }
+    KFactor_EW_NLO_qqVV_Bkg_EWUp_isLoaded = true;
+  }
+  return KFactor_EW_NLO_qqVV_Bkg_EWUp_;
+}
+const float &SkimTree::KFactor_EW_NLO_qqVV_Bkg_Nominal() {
+  if (not KFactor_EW_NLO_qqVV_Bkg_Nominal_isLoaded) {
+    if (KFactor_EW_NLO_qqVV_Bkg_Nominal_branch != 0) {
+      KFactor_EW_NLO_qqVV_Bkg_Nominal_branch->GetEntry(index);
+    } else {
+      printf("branch KFactor_EW_NLO_qqVV_Bkg_Nominal_branch does not exist!\n");
+      exit(1);
+    }
+    KFactor_EW_NLO_qqVV_Bkg_Nominal_isLoaded = true;
+  }
+  return KFactor_EW_NLO_qqVV_Bkg_Nominal_;
+}
+const float &SkimTree::KFactor_EW_NLO_qqVV_Bkg_arg_mass() {
+  if (not KFactor_EW_NLO_qqVV_Bkg_arg_mass_isLoaded) {
+    if (KFactor_EW_NLO_qqVV_Bkg_arg_mass_branch != 0) {
+      KFactor_EW_NLO_qqVV_Bkg_arg_mass_branch->GetEntry(index);
+    } else {
+      printf("branch KFactor_EW_NLO_qqVV_Bkg_arg_mass_branch does not exist!\n");
+      exit(1);
+    }
+    KFactor_EW_NLO_qqVV_Bkg_arg_mass_isLoaded = true;
+  }
+  return KFactor_EW_NLO_qqVV_Bkg_arg_mass_;
+}
+const float &SkimTree::KFactor_EW_NLO_qqVV_Bkg_arg_pthat() {
+  if (not KFactor_EW_NLO_qqVV_Bkg_arg_pthat_isLoaded) {
+    if (KFactor_EW_NLO_qqVV_Bkg_arg_pthat_branch != 0) {
+      KFactor_EW_NLO_qqVV_Bkg_arg_pthat_branch->GetEntry(index);
+    } else {
+      printf("branch KFactor_EW_NLO_qqVV_Bkg_arg_pthat_branch does not exist!\n");
+      exit(1);
+    }
+    KFactor_EW_NLO_qqVV_Bkg_arg_pthat_isLoaded = true;
+  }
+  return KFactor_EW_NLO_qqVV_Bkg_arg_pthat_;
+}
+const float &SkimTree::KFactor_EW_NLO_qqVV_Bkg_arg_rho() {
+  if (not KFactor_EW_NLO_qqVV_Bkg_arg_rho_isLoaded) {
+    if (KFactor_EW_NLO_qqVV_Bkg_arg_rho_branch != 0) {
+      KFactor_EW_NLO_qqVV_Bkg_arg_rho_branch->GetEntry(index);
+    } else {
+      printf("branch KFactor_EW_NLO_qqVV_Bkg_arg_rho_branch does not exist!\n");
+      exit(1);
+    }
+    KFactor_EW_NLO_qqVV_Bkg_arg_rho_isLoaded = true;
+  }
+  return KFactor_EW_NLO_qqVV_Bkg_arg_rho_;
+}
+const float &SkimTree::KFactor_EW_NLO_qqVV_Bkg_arg_that() {
+  if (not KFactor_EW_NLO_qqVV_Bkg_arg_that_isLoaded) {
+    if (KFactor_EW_NLO_qqVV_Bkg_arg_that_branch != 0) {
+      KFactor_EW_NLO_qqVV_Bkg_arg_that_branch->GetEntry(index);
+    } else {
+      printf("branch KFactor_EW_NLO_qqVV_Bkg_arg_that_branch does not exist!\n");
+      exit(1);
+    }
+    KFactor_EW_NLO_qqVV_Bkg_arg_that_isLoaded = true;
+  }
+  return KFactor_EW_NLO_qqVV_Bkg_arg_that_;
+}
+const float &SkimTree::KFactor_QCD_NNLO_qqVV_Bkg_Nominal() {
+  if (not KFactor_QCD_NNLO_qqVV_Bkg_Nominal_isLoaded) {
+    if (KFactor_QCD_NNLO_qqVV_Bkg_Nominal_branch != 0) {
+      KFactor_QCD_NNLO_qqVV_Bkg_Nominal_branch->GetEntry(index);
+    } else {
+      printf("branch KFactor_QCD_NNLO_qqVV_Bkg_Nominal_branch does not exist!\n");
+      exit(1);
+    }
+    KFactor_QCD_NNLO_qqVV_Bkg_Nominal_isLoaded = true;
+  }
+  return KFactor_QCD_NNLO_qqVV_Bkg_Nominal_;
+}
+const float &SkimTree::KFactor_QCD_NNLO_qqVV_Bkg_arg_mass() {
+  if (not KFactor_QCD_NNLO_qqVV_Bkg_arg_mass_isLoaded) {
+    if (KFactor_QCD_NNLO_qqVV_Bkg_arg_mass_branch != 0) {
+      KFactor_QCD_NNLO_qqVV_Bkg_arg_mass_branch->GetEntry(index);
+    } else {
+      printf("branch KFactor_QCD_NNLO_qqVV_Bkg_arg_mass_branch does not exist!\n");
+      exit(1);
+    }
+    KFactor_QCD_NNLO_qqVV_Bkg_arg_mass_isLoaded = true;
+  }
+  return KFactor_QCD_NNLO_qqVV_Bkg_arg_mass_;
+}
+const float &SkimTree::KFactor_QCD_NNLO_qqVV_Bkg_arg_pthat() {
+  if (not KFactor_QCD_NNLO_qqVV_Bkg_arg_pthat_isLoaded) {
+    if (KFactor_QCD_NNLO_qqVV_Bkg_arg_pthat_branch != 0) {
+      KFactor_QCD_NNLO_qqVV_Bkg_arg_pthat_branch->GetEntry(index);
+    } else {
+      printf("branch KFactor_QCD_NNLO_qqVV_Bkg_arg_pthat_branch does not exist!\n");
+      exit(1);
+    }
+    KFactor_QCD_NNLO_qqVV_Bkg_arg_pthat_isLoaded = true;
+  }
+  return KFactor_QCD_NNLO_qqVV_Bkg_arg_pthat_;
 }
 const unsigned int &SkimTree::LuminosityBlock() {
   if (not LuminosityBlock_isLoaded) {
@@ -1347,6 +1747,18 @@ const float &SkimTree::event_mZZ() {
   }
   return event_mZZ_;
 }
+const float &SkimTree::event_mlg() {
+  if (not event_mlg_isLoaded) {
+    if (event_mlg_branch != 0) {
+      event_mlg_branch->GetEntry(index);
+    } else {
+      printf("branch event_mlg_branch does not exist!\n");
+      exit(1);
+    }
+    event_mlg_isLoaded = true;
+  }
+  return event_mlg_;
+}
 const float &SkimTree::event_mllg() {
   if (not event_mllg_isLoaded) {
     if (event_mllg_branch != 0) {
@@ -1431,6 +1843,18 @@ const unsigned int &SkimTree::event_n_ak4jets_pt30_btagged_medium() {
   }
   return event_n_ak4jets_pt30_btagged_medium_;
 }
+const unsigned int &SkimTree::event_n_leptons_fakeableBase() {
+  if (not event_n_leptons_fakeableBase_isLoaded) {
+    if (event_n_leptons_fakeableBase_branch != 0) {
+      event_n_leptons_fakeableBase_branch->GetEntry(index);
+    } else {
+      printf("branch event_n_leptons_fakeableBase_branch does not exist!\n");
+      exit(1);
+    }
+    event_n_leptons_fakeableBase_isLoaded = true;
+  }
+  return event_n_leptons_fakeableBase_;
+}
 const unsigned int &SkimTree::event_n_vtxs_good() {
   if (not event_n_vtxs_good_isLoaded) {
     if (event_n_vtxs_good_branch != 0) {
@@ -1514,6 +1938,30 @@ const float &SkimTree::event_wgt_L1PrefiringUp() {
     event_wgt_L1PrefiringUp_isLoaded = true;
   }
   return event_wgt_L1PrefiringUp_;
+}
+const float &SkimTree::event_wgt_PUDn() {
+  if (not event_wgt_PUDn_isLoaded) {
+    if (event_wgt_PUDn_branch != 0) {
+      event_wgt_PUDn_branch->GetEntry(index);
+    } else {
+      printf("branch event_wgt_PUDn_branch does not exist!\n");
+      exit(1);
+    }
+    event_wgt_PUDn_isLoaded = true;
+  }
+  return event_wgt_PUDn_;
+}
+const float &SkimTree::event_wgt_PUUp() {
+  if (not event_wgt_PUUp_isLoaded) {
+    if (event_wgt_PUUp_branch != 0) {
+      event_wgt_PUUp_branch->GetEntry(index);
+    } else {
+      printf("branch event_wgt_PUUp_branch does not exist!\n");
+      exit(1);
+    }
+    event_wgt_PUUp_isLoaded = true;
+  }
+  return event_wgt_PUUp_;
 }
 const float &SkimTree::event_wgt_SFs_PUJetId() {
   if (not event_wgt_SFs_PUJetId_isLoaded) {
@@ -1791,6 +2239,30 @@ const float &SkimTree::event_wgt_SFs_photons_EffUp() {
   }
   return event_wgt_SFs_photons_EffUp_;
 }
+const float &SkimTree::event_wgt_adjustment_AsMZDn() {
+  if (not event_wgt_adjustment_AsMZDn_isLoaded) {
+    if (event_wgt_adjustment_AsMZDn_branch != 0) {
+      event_wgt_adjustment_AsMZDn_branch->GetEntry(index);
+    } else {
+      printf("branch event_wgt_adjustment_AsMZDn_branch does not exist!\n");
+      exit(1);
+    }
+    event_wgt_adjustment_AsMZDn_isLoaded = true;
+  }
+  return event_wgt_adjustment_AsMZDn_;
+}
+const float &SkimTree::event_wgt_adjustment_AsMZUp() {
+  if (not event_wgt_adjustment_AsMZUp_isLoaded) {
+    if (event_wgt_adjustment_AsMZUp_branch != 0) {
+      event_wgt_adjustment_AsMZUp_branch->GetEntry(index);
+    } else {
+      printf("branch event_wgt_adjustment_AsMZUp_branch does not exist!\n");
+      exit(1);
+    }
+    event_wgt_adjustment_AsMZUp_isLoaded = true;
+  }
+  return event_wgt_adjustment_AsMZUp_;
+}
 const float &SkimTree::event_wgt_adjustment_NNPDF30() {
   if (not event_wgt_adjustment_NNPDF30_isLoaded) {
     if (event_wgt_adjustment_NNPDF30_branch != 0) {
@@ -1802,6 +2274,150 @@ const float &SkimTree::event_wgt_adjustment_NNPDF30() {
     event_wgt_adjustment_NNPDF30_isLoaded = true;
   }
   return event_wgt_adjustment_NNPDF30_;
+}
+const float &SkimTree::event_wgt_adjustment_NNPDF30_AsMZDn() {
+  if (not event_wgt_adjustment_NNPDF30_AsMZDn_isLoaded) {
+    if (event_wgt_adjustment_NNPDF30_AsMZDn_branch != 0) {
+      event_wgt_adjustment_NNPDF30_AsMZDn_branch->GetEntry(index);
+    } else {
+      printf("branch event_wgt_adjustment_NNPDF30_AsMZDn_branch does not exist!\n");
+      exit(1);
+    }
+    event_wgt_adjustment_NNPDF30_AsMZDn_isLoaded = true;
+  }
+  return event_wgt_adjustment_NNPDF30_AsMZDn_;
+}
+const float &SkimTree::event_wgt_adjustment_NNPDF30_AsMZUp() {
+  if (not event_wgt_adjustment_NNPDF30_AsMZUp_isLoaded) {
+    if (event_wgt_adjustment_NNPDF30_AsMZUp_branch != 0) {
+      event_wgt_adjustment_NNPDF30_AsMZUp_branch->GetEntry(index);
+    } else {
+      printf("branch event_wgt_adjustment_NNPDF30_AsMZUp_branch does not exist!\n");
+      exit(1);
+    }
+    event_wgt_adjustment_NNPDF30_AsMZUp_isLoaded = true;
+  }
+  return event_wgt_adjustment_NNPDF30_AsMZUp_;
+}
+const float &SkimTree::event_wgt_adjustment_NNPDF30_PDFReplicaDn() {
+  if (not event_wgt_adjustment_NNPDF30_PDFReplicaDn_isLoaded) {
+    if (event_wgt_adjustment_NNPDF30_PDFReplicaDn_branch != 0) {
+      event_wgt_adjustment_NNPDF30_PDFReplicaDn_branch->GetEntry(index);
+    } else {
+      printf("branch event_wgt_adjustment_NNPDF30_PDFReplicaDn_branch does not exist!\n");
+      exit(1);
+    }
+    event_wgt_adjustment_NNPDF30_PDFReplicaDn_isLoaded = true;
+  }
+  return event_wgt_adjustment_NNPDF30_PDFReplicaDn_;
+}
+const float &SkimTree::event_wgt_adjustment_NNPDF30_PDFReplicaUp() {
+  if (not event_wgt_adjustment_NNPDF30_PDFReplicaUp_isLoaded) {
+    if (event_wgt_adjustment_NNPDF30_PDFReplicaUp_branch != 0) {
+      event_wgt_adjustment_NNPDF30_PDFReplicaUp_branch->GetEntry(index);
+    } else {
+      printf("branch event_wgt_adjustment_NNPDF30_PDFReplicaUp_branch does not exist!\n");
+      exit(1);
+    }
+    event_wgt_adjustment_NNPDF30_PDFReplicaUp_isLoaded = true;
+  }
+  return event_wgt_adjustment_NNPDF30_PDFReplicaUp_;
+}
+const float &SkimTree::event_wgt_adjustment_PDFReplicaDn() {
+  if (not event_wgt_adjustment_PDFReplicaDn_isLoaded) {
+    if (event_wgt_adjustment_PDFReplicaDn_branch != 0) {
+      event_wgt_adjustment_PDFReplicaDn_branch->GetEntry(index);
+    } else {
+      printf("branch event_wgt_adjustment_PDFReplicaDn_branch does not exist!\n");
+      exit(1);
+    }
+    event_wgt_adjustment_PDFReplicaDn_isLoaded = true;
+  }
+  return event_wgt_adjustment_PDFReplicaDn_;
+}
+const float &SkimTree::event_wgt_adjustment_PDFReplicaUp() {
+  if (not event_wgt_adjustment_PDFReplicaUp_isLoaded) {
+    if (event_wgt_adjustment_PDFReplicaUp_branch != 0) {
+      event_wgt_adjustment_PDFReplicaUp_branch->GetEntry(index);
+    } else {
+      printf("branch event_wgt_adjustment_PDFReplicaUp_branch does not exist!\n");
+      exit(1);
+    }
+    event_wgt_adjustment_PDFReplicaUp_isLoaded = true;
+  }
+  return event_wgt_adjustment_PDFReplicaUp_;
+}
+const float &SkimTree::event_wgt_adjustment_PDFScaleDn() {
+  if (not event_wgt_adjustment_PDFScaleDn_isLoaded) {
+    if (event_wgt_adjustment_PDFScaleDn_branch != 0) {
+      event_wgt_adjustment_PDFScaleDn_branch->GetEntry(index);
+    } else {
+      printf("branch event_wgt_adjustment_PDFScaleDn_branch does not exist!\n");
+      exit(1);
+    }
+    event_wgt_adjustment_PDFScaleDn_isLoaded = true;
+  }
+  return event_wgt_adjustment_PDFScaleDn_;
+}
+const float &SkimTree::event_wgt_adjustment_PDFScaleUp() {
+  if (not event_wgt_adjustment_PDFScaleUp_isLoaded) {
+    if (event_wgt_adjustment_PDFScaleUp_branch != 0) {
+      event_wgt_adjustment_PDFScaleUp_branch->GetEntry(index);
+    } else {
+      printf("branch event_wgt_adjustment_PDFScaleUp_branch does not exist!\n");
+      exit(1);
+    }
+    event_wgt_adjustment_PDFScaleUp_isLoaded = true;
+  }
+  return event_wgt_adjustment_PDFScaleUp_;
+}
+const float &SkimTree::event_wgt_adjustment_PythiaScaleDn() {
+  if (not event_wgt_adjustment_PythiaScaleDn_isLoaded) {
+    if (event_wgt_adjustment_PythiaScaleDn_branch != 0) {
+      event_wgt_adjustment_PythiaScaleDn_branch->GetEntry(index);
+    } else {
+      printf("branch event_wgt_adjustment_PythiaScaleDn_branch does not exist!\n");
+      exit(1);
+    }
+    event_wgt_adjustment_PythiaScaleDn_isLoaded = true;
+  }
+  return event_wgt_adjustment_PythiaScaleDn_;
+}
+const float &SkimTree::event_wgt_adjustment_PythiaScaleUp() {
+  if (not event_wgt_adjustment_PythiaScaleUp_isLoaded) {
+    if (event_wgt_adjustment_PythiaScaleUp_branch != 0) {
+      event_wgt_adjustment_PythiaScaleUp_branch->GetEntry(index);
+    } else {
+      printf("branch event_wgt_adjustment_PythiaScaleUp_branch does not exist!\n");
+      exit(1);
+    }
+    event_wgt_adjustment_PythiaScaleUp_isLoaded = true;
+  }
+  return event_wgt_adjustment_PythiaScaleUp_;
+}
+const float &SkimTree::event_wgt_adjustment_QCDScaleDn() {
+  if (not event_wgt_adjustment_QCDScaleDn_isLoaded) {
+    if (event_wgt_adjustment_QCDScaleDn_branch != 0) {
+      event_wgt_adjustment_QCDScaleDn_branch->GetEntry(index);
+    } else {
+      printf("branch event_wgt_adjustment_QCDScaleDn_branch does not exist!\n");
+      exit(1);
+    }
+    event_wgt_adjustment_QCDScaleDn_isLoaded = true;
+  }
+  return event_wgt_adjustment_QCDScaleDn_;
+}
+const float &SkimTree::event_wgt_adjustment_QCDScaleUp() {
+  if (not event_wgt_adjustment_QCDScaleUp_isLoaded) {
+    if (event_wgt_adjustment_QCDScaleUp_branch != 0) {
+      event_wgt_adjustment_QCDScaleUp_branch->GetEntry(index);
+    } else {
+      printf("branch event_wgt_adjustment_QCDScaleUp_branch does not exist!\n");
+      exit(1);
+    }
+    event_wgt_adjustment_QCDScaleUp_isLoaded = true;
+  }
+  return event_wgt_adjustment_QCDScaleUp_;
 }
 const float &SkimTree::event_wgt_triggers() {
   if (not event_wgt_triggers_isLoaded) {
@@ -1826,6 +2442,42 @@ const float &SkimTree::event_wgt_triggers_Dilepton() {
     event_wgt_triggers_Dilepton_isLoaded = true;
   }
   return event_wgt_triggers_Dilepton_;
+}
+const float &SkimTree::event_wgt_triggers_Dilepton_DF_Extra() {
+  if (not event_wgt_triggers_Dilepton_DF_Extra_isLoaded) {
+    if (event_wgt_triggers_Dilepton_DF_Extra_branch != 0) {
+      event_wgt_triggers_Dilepton_DF_Extra_branch->GetEntry(index);
+    } else {
+      printf("branch event_wgt_triggers_Dilepton_DF_Extra_branch does not exist!\n");
+      exit(1);
+    }
+    event_wgt_triggers_Dilepton_DF_Extra_isLoaded = true;
+  }
+  return event_wgt_triggers_Dilepton_DF_Extra_;
+}
+const float &SkimTree::event_wgt_triggers_PFHT_Control() {
+  if (not event_wgt_triggers_PFHT_Control_isLoaded) {
+    if (event_wgt_triggers_PFHT_Control_branch != 0) {
+      event_wgt_triggers_PFHT_Control_branch->GetEntry(index);
+    } else {
+      printf("branch event_wgt_triggers_PFHT_Control_branch does not exist!\n");
+      exit(1);
+    }
+    event_wgt_triggers_PFHT_Control_isLoaded = true;
+  }
+  return event_wgt_triggers_PFHT_Control_;
+}
+const float &SkimTree::event_wgt_triggers_PFMET_MHT_Control() {
+  if (not event_wgt_triggers_PFMET_MHT_Control_isLoaded) {
+    if (event_wgt_triggers_PFMET_MHT_Control_branch != 0) {
+      event_wgt_triggers_PFMET_MHT_Control_branch->GetEntry(index);
+    } else {
+      printf("branch event_wgt_triggers_PFMET_MHT_Control_branch does not exist!\n");
+      exit(1);
+    }
+    event_wgt_triggers_PFMET_MHT_Control_isLoaded = true;
+  }
+  return event_wgt_triggers_PFMET_MHT_Control_;
 }
 const float &SkimTree::event_wgt_triggers_SingleLepton() {
   if (not event_wgt_triggers_SingleLepton_isLoaded) {
@@ -1874,6 +2526,66 @@ const float &SkimTree::genmet_phimiss() {
     genmet_phimiss_isLoaded = true;
   }
   return genmet_phimiss_;
+}
+const float &SkimTree::lepton_eff() {
+  if (not lepton_eff_isLoaded) {
+    if (lepton_eff_branch != 0) {
+      lepton_eff_branch->GetEntry(index);
+    } else {
+      printf("branch lepton_eff_branch does not exist!\n");
+      exit(1);
+    }
+    lepton_eff_isLoaded = true;
+  }
+  return lepton_eff_;
+}
+const float &SkimTree::lepton_eff_StatDn() {
+  if (not lepton_eff_StatDn_isLoaded) {
+    if (lepton_eff_StatDn_branch != 0) {
+      lepton_eff_StatDn_branch->GetEntry(index);
+    } else {
+      printf("branch lepton_eff_StatDn_branch does not exist!\n");
+      exit(1);
+    }
+    lepton_eff_StatDn_isLoaded = true;
+  }
+  return lepton_eff_StatDn_;
+}
+const float &SkimTree::lepton_eff_StatUp() {
+  if (not lepton_eff_StatUp_isLoaded) {
+    if (lepton_eff_StatUp_branch != 0) {
+      lepton_eff_StatUp_branch->GetEntry(index);
+    } else {
+      printf("branch lepton_eff_StatUp_branch does not exist!\n");
+      exit(1);
+    }
+    lepton_eff_StatUp_isLoaded = true;
+  }
+  return lepton_eff_StatUp_;
+}
+const float &SkimTree::lepton_eff_SystDn() {
+  if (not lepton_eff_SystDn_isLoaded) {
+    if (lepton_eff_SystDn_branch != 0) {
+      lepton_eff_SystDn_branch->GetEntry(index);
+    } else {
+      printf("branch lepton_eff_SystDn_branch does not exist!\n");
+      exit(1);
+    }
+    lepton_eff_SystDn_isLoaded = true;
+  }
+  return lepton_eff_SystDn_;
+}
+const float &SkimTree::lepton_eff_SystUp() {
+  if (not lepton_eff_SystUp_isLoaded) {
+    if (lepton_eff_SystUp_branch != 0) {
+      lepton_eff_SystUp_branch->GetEntry(index);
+    } else {
+      printf("branch lepton_eff_SystUp_branch does not exist!\n");
+      exit(1);
+    }
+    lepton_eff_SystUp_isLoaded = true;
+  }
+  return lepton_eff_SystUp_;
 }
 const float &SkimTree::lepton_eta() {
   if (not lepton_eta_isLoaded) {
@@ -1947,18 +2659,6 @@ const float &SkimTree::lepton_pt() {
   }
   return lepton_pt_;
 }
-const float &SkimTree::lepton_relIso() {
-  if (not lepton_relIso_isLoaded) {
-    if (lepton_relIso_branch != 0) {
-      lepton_relIso_branch->GetEntry(index);
-    } else {
-      printf("branch lepton_relIso_branch does not exist!\n");
-      exit(1);
-    }
-    lepton_relIso_isLoaded = true;
-  }
-  return lepton_relIso_;
-}
 const vector<float> &SkimTree::leptons_eff() {
   if (not leptons_eff_isLoaded) {
     if (leptons_eff_branch != 0) {
@@ -1970,6 +2670,66 @@ const vector<float> &SkimTree::leptons_eff() {
     leptons_eff_isLoaded = true;
   }
   return *leptons_eff_;
+}
+const vector<float> &SkimTree::leptons_eff_DF() {
+  if (not leptons_eff_DF_isLoaded) {
+    if (leptons_eff_DF_branch != 0) {
+      leptons_eff_DF_branch->GetEntry(index);
+    } else {
+      printf("branch leptons_eff_DF_branch does not exist!\n");
+      exit(1);
+    }
+    leptons_eff_DF_isLoaded = true;
+  }
+  return *leptons_eff_DF_;
+}
+const vector<float> &SkimTree::leptons_eff_DF_StatDn() {
+  if (not leptons_eff_DF_StatDn_isLoaded) {
+    if (leptons_eff_DF_StatDn_branch != 0) {
+      leptons_eff_DF_StatDn_branch->GetEntry(index);
+    } else {
+      printf("branch leptons_eff_DF_StatDn_branch does not exist!\n");
+      exit(1);
+    }
+    leptons_eff_DF_StatDn_isLoaded = true;
+  }
+  return *leptons_eff_DF_StatDn_;
+}
+const vector<float> &SkimTree::leptons_eff_DF_StatUp() {
+  if (not leptons_eff_DF_StatUp_isLoaded) {
+    if (leptons_eff_DF_StatUp_branch != 0) {
+      leptons_eff_DF_StatUp_branch->GetEntry(index);
+    } else {
+      printf("branch leptons_eff_DF_StatUp_branch does not exist!\n");
+      exit(1);
+    }
+    leptons_eff_DF_StatUp_isLoaded = true;
+  }
+  return *leptons_eff_DF_StatUp_;
+}
+const vector<float> &SkimTree::leptons_eff_DF_SystDn() {
+  if (not leptons_eff_DF_SystDn_isLoaded) {
+    if (leptons_eff_DF_SystDn_branch != 0) {
+      leptons_eff_DF_SystDn_branch->GetEntry(index);
+    } else {
+      printf("branch leptons_eff_DF_SystDn_branch does not exist!\n");
+      exit(1);
+    }
+    leptons_eff_DF_SystDn_isLoaded = true;
+  }
+  return *leptons_eff_DF_SystDn_;
+}
+const vector<float> &SkimTree::leptons_eff_DF_SystUp() {
+  if (not leptons_eff_DF_SystUp_isLoaded) {
+    if (leptons_eff_DF_SystUp_branch != 0) {
+      leptons_eff_DF_SystUp_branch->GetEntry(index);
+    } else {
+      printf("branch leptons_eff_DF_SystUp_branch does not exist!\n");
+      exit(1);
+    }
+    leptons_eff_DF_SystUp_isLoaded = true;
+  }
+  return *leptons_eff_DF_SystUp_;
 }
 const vector<float> &SkimTree::leptons_eff_StatDn() {
   if (not leptons_eff_StatDn_isLoaded) {
@@ -2519,6 +3279,16 @@ void SkimTree::progress( int nEventsTotal, int nEventsChain ){
 }
 namespace tas {
   const unsigned long long &EventNumber() { return st.EventNumber(); }
+  const float &KFactor_EW_NLO_qqVV_Bkg_EWDn() { return st.KFactor_EW_NLO_qqVV_Bkg_EWDn(); }
+  const float &KFactor_EW_NLO_qqVV_Bkg_EWUp() { return st.KFactor_EW_NLO_qqVV_Bkg_EWUp(); }
+  const float &KFactor_EW_NLO_qqVV_Bkg_Nominal() { return st.KFactor_EW_NLO_qqVV_Bkg_Nominal(); }
+  const float &KFactor_EW_NLO_qqVV_Bkg_arg_mass() { return st.KFactor_EW_NLO_qqVV_Bkg_arg_mass(); }
+  const float &KFactor_EW_NLO_qqVV_Bkg_arg_pthat() { return st.KFactor_EW_NLO_qqVV_Bkg_arg_pthat(); }
+  const float &KFactor_EW_NLO_qqVV_Bkg_arg_rho() { return st.KFactor_EW_NLO_qqVV_Bkg_arg_rho(); }
+  const float &KFactor_EW_NLO_qqVV_Bkg_arg_that() { return st.KFactor_EW_NLO_qqVV_Bkg_arg_that(); }
+  const float &KFactor_QCD_NNLO_qqVV_Bkg_Nominal() { return st.KFactor_QCD_NNLO_qqVV_Bkg_Nominal(); }
+  const float &KFactor_QCD_NNLO_qqVV_Bkg_arg_mass() { return st.KFactor_QCD_NNLO_qqVV_Bkg_arg_mass(); }
+  const float &KFactor_QCD_NNLO_qqVV_Bkg_arg_pthat() { return st.KFactor_QCD_NNLO_qqVV_Bkg_arg_pthat(); }
   const unsigned int &LuminosityBlock() { return st.LuminosityBlock(); }
   const unsigned int &RunNumber() { return st.RunNumber(); }
   const vector<float> &ak4jets_CEMF() { return st.ak4jets_CEMF(); }
@@ -2553,6 +3323,7 @@ namespace tas {
   const vector<float> &electrons_seedTime() { return st.electrons_seedTime(); }
   const float &event_mTZZ() { return st.event_mTZZ(); }
   const float &event_mZZ() { return st.event_mZZ(); }
+  const float &event_mlg() { return st.event_mlg(); }
   const float &event_mllg() { return st.event_mllg(); }
   const unsigned int &event_n_ak4jets_pt20() { return st.event_n_ak4jets_pt20(); }
   const unsigned int &event_n_ak4jets_pt20_btagged_loose() { return st.event_n_ak4jets_pt20_btagged_loose(); }
@@ -2560,6 +3331,7 @@ namespace tas {
   const unsigned int &event_n_ak4jets_pt30() { return st.event_n_ak4jets_pt30(); }
   const unsigned int &event_n_ak4jets_pt30_btagged_loose() { return st.event_n_ak4jets_pt30_btagged_loose(); }
   const unsigned int &event_n_ak4jets_pt30_btagged_medium() { return st.event_n_ak4jets_pt30_btagged_medium(); }
+  const unsigned int &event_n_leptons_fakeableBase() { return st.event_n_leptons_fakeableBase(); }
   const unsigned int &event_n_vtxs_good() { return st.event_n_vtxs_good(); }
   const float &event_pTmiss() { return st.event_pTmiss(); }
   const bool &event_pass_tightMETFilters() { return st.event_pass_tightMETFilters(); }
@@ -2567,6 +3339,8 @@ namespace tas {
   const float &event_wgt() { return st.event_wgt(); }
   const float &event_wgt_L1PrefiringDn() { return st.event_wgt_L1PrefiringDn(); }
   const float &event_wgt_L1PrefiringUp() { return st.event_wgt_L1PrefiringUp(); }
+  const float &event_wgt_PUDn() { return st.event_wgt_PUDn(); }
+  const float &event_wgt_PUUp() { return st.event_wgt_PUUp(); }
   const float &event_wgt_SFs_PUJetId() { return st.event_wgt_SFs_PUJetId(); }
   const float &event_wgt_SFs_PUJetId_EffDn() { return st.event_wgt_SFs_PUJetId_EffDn(); }
   const float &event_wgt_SFs_PUJetId_EffUp() { return st.event_wgt_SFs_PUJetId_EffUp(); }
@@ -2590,21 +3364,47 @@ namespace tas {
   const float &event_wgt_SFs_photons() { return st.event_wgt_SFs_photons(); }
   const float &event_wgt_SFs_photons_EffDn() { return st.event_wgt_SFs_photons_EffDn(); }
   const float &event_wgt_SFs_photons_EffUp() { return st.event_wgt_SFs_photons_EffUp(); }
+  const float &event_wgt_adjustment_AsMZDn() { return st.event_wgt_adjustment_AsMZDn(); }
+  const float &event_wgt_adjustment_AsMZUp() { return st.event_wgt_adjustment_AsMZUp(); }
   const float &event_wgt_adjustment_NNPDF30() { return st.event_wgt_adjustment_NNPDF30(); }
+  const float &event_wgt_adjustment_NNPDF30_AsMZDn() { return st.event_wgt_adjustment_NNPDF30_AsMZDn(); }
+  const float &event_wgt_adjustment_NNPDF30_AsMZUp() { return st.event_wgt_adjustment_NNPDF30_AsMZUp(); }
+  const float &event_wgt_adjustment_NNPDF30_PDFReplicaDn() { return st.event_wgt_adjustment_NNPDF30_PDFReplicaDn(); }
+  const float &event_wgt_adjustment_NNPDF30_PDFReplicaUp() { return st.event_wgt_adjustment_NNPDF30_PDFReplicaUp(); }
+  const float &event_wgt_adjustment_PDFReplicaDn() { return st.event_wgt_adjustment_PDFReplicaDn(); }
+  const float &event_wgt_adjustment_PDFReplicaUp() { return st.event_wgt_adjustment_PDFReplicaUp(); }
+  const float &event_wgt_adjustment_PDFScaleDn() { return st.event_wgt_adjustment_PDFScaleDn(); }
+  const float &event_wgt_adjustment_PDFScaleUp() { return st.event_wgt_adjustment_PDFScaleUp(); }
+  const float &event_wgt_adjustment_PythiaScaleDn() { return st.event_wgt_adjustment_PythiaScaleDn(); }
+  const float &event_wgt_adjustment_PythiaScaleUp() { return st.event_wgt_adjustment_PythiaScaleUp(); }
+  const float &event_wgt_adjustment_QCDScaleDn() { return st.event_wgt_adjustment_QCDScaleDn(); }
+  const float &event_wgt_adjustment_QCDScaleUp() { return st.event_wgt_adjustment_QCDScaleUp(); }
   const float &event_wgt_triggers() { return st.event_wgt_triggers(); }
   const float &event_wgt_triggers_Dilepton() { return st.event_wgt_triggers_Dilepton(); }
+  const float &event_wgt_triggers_Dilepton_DF_Extra() { return st.event_wgt_triggers_Dilepton_DF_Extra(); }
+  const float &event_wgt_triggers_PFHT_Control() { return st.event_wgt_triggers_PFHT_Control(); }
+  const float &event_wgt_triggers_PFMET_MHT_Control() { return st.event_wgt_triggers_PFMET_MHT_Control(); }
   const float &event_wgt_triggers_SingleLepton() { return st.event_wgt_triggers_SingleLepton(); }
   const float &event_wgt_triggers_SinglePhoton() { return st.event_wgt_triggers_SinglePhoton(); }
   const float &genmet_pTmiss() { return st.genmet_pTmiss(); }
   const float &genmet_phimiss() { return st.genmet_phimiss(); }
+  const float &lepton_eff() { return st.lepton_eff(); }
+  const float &lepton_eff_StatDn() { return st.lepton_eff_StatDn(); }
+  const float &lepton_eff_StatUp() { return st.lepton_eff_StatUp(); }
+  const float &lepton_eff_SystDn() { return st.lepton_eff_SystDn(); }
+  const float &lepton_eff_SystUp() { return st.lepton_eff_SystUp(); }
   const float &lepton_eta() { return st.lepton_eta(); }
   const int &lepton_id() { return st.lepton_id(); }
   const bool &lepton_is_genMatched_prompt() { return st.lepton_is_genMatched_prompt(); }
   const float &lepton_mass() { return st.lepton_mass(); }
   const float &lepton_phi() { return st.lepton_phi(); }
   const float &lepton_pt() { return st.lepton_pt(); }
-  const float &lepton_relIso() { return st.lepton_relIso(); }
   const vector<float> &leptons_eff() { return st.leptons_eff(); }
+  const vector<float> &leptons_eff_DF() { return st.leptons_eff_DF(); }
+  const vector<float> &leptons_eff_DF_StatDn() { return st.leptons_eff_DF_StatDn(); }
+  const vector<float> &leptons_eff_DF_StatUp() { return st.leptons_eff_DF_StatUp(); }
+  const vector<float> &leptons_eff_DF_SystDn() { return st.leptons_eff_DF_SystDn(); }
+  const vector<float> &leptons_eff_DF_SystUp() { return st.leptons_eff_DF_SystUp(); }
   const vector<float> &leptons_eff_StatDn() { return st.leptons_eff_StatDn(); }
   const vector<float> &leptons_eff_StatUp() { return st.leptons_eff_StatUp(); }
   const vector<float> &leptons_eff_SystDn() { return st.leptons_eff_SystDn(); }
