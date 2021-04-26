@@ -1,0 +1,249 @@
+
+data_tester:
+  Run2016C:
+
+mc_tester:
+  WZTo3LNu: "TuneCUETP8M1,powheg"
+
+data_2016:
+  Run2016B:
+  Run2016C:
+  Run2016D:
+  Run2016E:
+  Run2016F:
+  Run2016G:
+  Run2016H:
+
+data_2017:
+  Run2017B:
+  Run2017C:
+  Run2017D:
+  Run2017E:
+  Run2017F:
+
+data_2018:
+  Run2018A:
+  Run2018B:
+  Run2018C:
+  Run2018D:
+
+bkg_3lskim_16:
+  DYJetsToLL_M-10to50:
+  DYJetsToLL_M-50:
+  QCD_HT:
+  ST:
+  TGJets:
+  TTGJets:
+  TTJets:
+  TTTo2L2Nu:
+  TTWJetsToLNu:
+  TTZToLLNuNu:
+  TTZToLL:
+  TTZToQQ:
+  WGToLNuG: "amcatnloFXFX"
+  # WminusG:
+  # WplusG:
+  WJetsToLNu: "amcatnloFXFX,ext2"
+  WWTo2L2Nu: "powheg_Run"
+  WWTo1L1Nu2Q:
+  WWToLNuQQ:
+  WWW:
+  WWZ:
+  WZG:
+  WZZ:
+  ZZZ:
+  WZTo1L1Nu2Q:
+  WZTo1L3Nu:
+  WZTo2L2Q:
+  WZTo3LNu: "LNu_Tune,powheg"
+  WZTo3LNu_Tune: "amcatnloFXFX"
+  WZTo3LNu_mllmin01: "ext1"
+  ZGTo2LG_PtG-130:
+  ZGTo2LG:
+  ZH_HToWWToLNuQQ:
+  ZZTo2L2Nu: "ext1"
+  ZZTo2L2Q:
+  ZZTo2Q2Nu:
+  tZq:
+
+bkg_3lskim_17:
+  DYJetsToLL_M-50: "ext1"
+  TGJets:
+  TTGJets:
+  TTJets:
+  TTTo2L2Nu:
+  TTWJetsToLNu:
+  TTZToLLNuNu:
+  TTZToLL:
+  TTZToQQ:
+  WGToLNuG_01J: "amcatnloFXFX,5f_PDFWeights"
+  WGToLNuG: "amcatnloFXFX,5f_Tune"
+  WJetsToLNu: "amcatnloFXFX"
+  WWTo2L2Nu: "PSweights"
+  WWW:
+  WWZ:
+  WZG:
+  WZZ:
+  ZZZ:
+  WZTo2L2Q:
+  WZTo3LNu: "LNu_13,powheg"
+  WZTo3LNu_Tune: "amcatnloFXFX"
+  WZTo3LNu_mllmin01:
+  WZTo1L3Nu: "amcatnloFXFX"
+  ZGTo2LG_PtG-130:
+  ZLLGJets:
+  ZZTo2L2Nu: "mZMin-18"
+  ZZTo2L2Q:
+  ZZTo2Q2Nu:
+  tZq:
+
+bkg_3lskim_18:
+  DYJetsToLL_M-50: "ext2"
+  TGJets:
+  TTGJets:
+  TTJets:
+  TTTo2L2Nu:
+  TTWJetsToLNu:
+  TTZToLLNuNu:
+  TTZToLL:
+  TTZToQQ:
+  WGToLNuG_01J: "amcatnloFXFX,5f_PDFWeights"
+  WGToLNuG: "amcatnloFXFX,5f_Tune"
+  WJetsToLNu: "amcatnloFXFX"
+  WWTo2L2Nu:
+  WWW:
+  WWZ:
+  WZG:
+  WZZ:
+  ZZZ:
+  WZTo2L2Q:
+  WZTo3LNu: "LNu_Tune,powheg"
+  WZTo3LNu_Tune: "amcatnloFXFX"
+  WZTo3LNu_mllmin01:
+  ZGTo2LG_PtG-130:
+  ZLLGJets:
+  ZZTo2L2Nu: "mZMin-18"
+  ZZTo2L2Q:
+  ZZTo2Q2Nu:
+  tZq:
+
+sig_3lskim_16:
+  WminusHToWW_2LOSFilter_M1000:
+  WminusHToWW_2LOSFilter_M125:
+  WminusHToWW_2LOSFilter_M125:
+  WminusHToWW_2LOSFilter_M125:
+  WminusHToWW_2LOSFilter_M1500:
+  WminusHToWW_2LOSFilter_M160:
+  WminusHToWW_2LOSFilter_M170:
+  WminusHToWW_2LOSFilter_M180:
+  WminusHToWW_2LOSFilter_M190:
+  WminusHToWW_2LOSFilter_M2000:
+  WminusHToWW_2LOSFilter_M200:
+  WminusHToWW_2LOSFilter_M210:
+  WminusHToWW_2LOSFilter_M230:
+  WminusHToWW_2LOSFilter_M2500:
+  WminusHToWW_2LOSFilter_M250:
+  WminusHToWW_2LOSFilter_M270:
+  WminusHToWW_2LOSFilter_M3000:
+  WminusHToWW_2LOSFilter_M300:
+  WminusHToWW_2LOSFilter_M300:
+  WminusHToWW_2LOSFilter_M300:
+  WminusHToWW_2LOSFilter_M350:
+  WminusHToWW_2LOSFilter_M400:
+  WminusHToWW_2LOSFilter_M450:
+  WminusHToWW_2LOSFilter_M500:
+  WminusHToWW_2LOSFilter_M550:
+  WminusHToWW_2LOSFilter_M600:
+  WminusHToWW_2LOSFilter_M700:
+  WminusHToWW_2LOSFilter_M800:
+  WminusHToWW_2LOSFilter_M900:
+  WplusHToWW_2LOSFilter_M1000:
+  WplusHToWW_2LOSFilter_M125:
+  WplusHToWW_2LOSFilter_M125:
+  WplusHToWW_2LOSFilter_M125:
+  WplusHToWW_2LOSFilter_M1500:
+  WplusHToWW_2LOSFilter_M160:
+  WplusHToWW_2LOSFilter_M170:
+  WplusHToWW_2LOSFilter_M180:
+  WplusHToWW_2LOSFilter_M190:
+  WplusHToWW_2LOSFilter_M2000:
+  WplusHToWW_2LOSFilter_M200:
+  WplusHToWW_2LOSFilter_M210:
+  WplusHToWW_2LOSFilter_M230:
+  WplusHToWW_2LOSFilter_M2500:
+  WplusHToWW_2LOSFilter_M250:
+  WplusHToWW_2LOSFilter_M270:
+  WplusHToWW_2LOSFilter_M3000:
+  WplusHToWW_2LOSFilter_M300:
+  WplusHToWW_2LOSFilter_M300:
+  WplusHToWW_2LOSFilter_M300:
+  WplusHToWW_2LOSFilter_M350:
+  WplusHToWW_2LOSFilter_M400:
+  WplusHToWW_2LOSFilter_M450:
+  WplusHToWW_2LOSFilter_M500:
+  WplusHToWW_2LOSFilter_M550:
+  WplusHToWW_2LOSFilter_M600:
+  WplusHToWW_2LOSFilter_M700:
+  WplusHToWW_2LOSFilter_M800:
+  WplusHToWW_2LOSFilter_M900:
+  HZJ_HToWW2L2NuInclusiveZ_M1000:
+  HZJ_HToWW2L2NuInclusiveZ_M125:
+  HZJ_HToWW2L2NuInclusiveZ_M125:
+  HZJ_HToWW2L2NuInclusiveZ_M125:
+  HZJ_HToWW2L2NuInclusiveZ_M1500:
+  HZJ_HToWW2L2NuInclusiveZ_M160:
+  HZJ_HToWW2L2NuInclusiveZ_M170:
+  HZJ_HToWW2L2NuInclusiveZ_M180:
+  HZJ_HToWW2L2NuInclusiveZ_M190:
+  HZJ_HToWW2L2NuInclusiveZ_M2000:
+  HZJ_HToWW2L2NuInclusiveZ_M200:
+  HZJ_HToWW2L2NuInclusiveZ_M210:
+  HZJ_HToWW2L2NuInclusiveZ_M230:
+  HZJ_HToWW2L2NuInclusiveZ_M2500:
+  HZJ_HToWW2L2NuInclusiveZ_M250:
+  HZJ_HToWW2L2NuInclusiveZ_M270:
+  HZJ_HToWW2L2NuInclusiveZ_M3000:
+  HZJ_HToWW2L2NuInclusiveZ_M300:
+  HZJ_HToWW2L2NuInclusiveZ_M300:
+  HZJ_HToWW2L2NuInclusiveZ_M300:
+  HZJ_HToWW2L2NuInclusiveZ_M350:
+  HZJ_HToWW2L2NuInclusiveZ_M400:
+  HZJ_HToWW2L2NuInclusiveZ_M450:
+  HZJ_HToWW2L2NuInclusiveZ_M500:
+  HZJ_HToWW2L2NuInclusiveZ_M550:
+  HZJ_HToWW2L2NuInclusiveZ_M600:
+  HZJ_HToWW2L2NuInclusiveZ_M700:
+  HZJ_HToWW2L2NuInclusiveZ_M800:
+  HZJ_HToWW2L2NuInclusiveZ_M900:
+  ZH_HToWWToLNuQQ_2LFilter_M1000:
+  ZH_HToWWToLNuQQ_2LFilter_M125:
+  ZH_HToWWToLNuQQ_2LFilter_M125:
+  ZH_HToWWToLNuQQ_2LFilter_M125:
+  ZH_HToWWToLNuQQ_2LFilter_M125:
+  ZH_HToWWToLNuQQ_2LFilter_M125:
+  ZH_HToWWToLNuQQ_2LFilter_M1500:
+  ZH_HToWWToLNuQQ_2LFilter_M160:
+  ZH_HToWWToLNuQQ_2LFilter_M170:
+  ZH_HToWWToLNuQQ_2LFilter_M180:
+  ZH_HToWWToLNuQQ_2LFilter_M190:
+  ZH_HToWWToLNuQQ_2LFilter_M2000:
+  ZH_HToWWToLNuQQ_2LFilter_M200:
+  ZH_HToWWToLNuQQ_2LFilter_M210:
+  ZH_HToWWToLNuQQ_2LFilter_M230:
+  ZH_HToWWToLNuQQ_2LFilter_M2500:
+  ZH_HToWWToLNuQQ_2LFilter_M250:
+  ZH_HToWWToLNuQQ_2LFilter_M270:
+  ZH_HToWWToLNuQQ_2LFilter_M3000:
+  ZH_HToWWToLNuQQ_2LFilter_M300:
+  ZH_HToWWToLNuQQ_2LFilter_M300:
+  ZH_HToWWToLNuQQ_2LFilter_M300:
+  ZH_HToWWToLNuQQ_2LFilter_M300:
+  ZH_HToWWToLNuQQ_2LFilter_M300:
+  ZH_HToWWToLNuQQ_2LFilter_M350:
+  ZH_HToWWToLNuQQ_2LFilter_M400:
+  ZH_HToWWToLNuQQ_2LFilter_M450:
+  ZH_HToWWToLNuQQ_2LFilter_M500:
+  ZH_HToWWToLNuQQ_2LFilter_M550:
+  ZH_HToWWToLNuQQ_2LFilter_M600:
+  ZH_HToWWToLNuQQ_2LFilter_M700:
+  ZH_HToWWToLNuQQ_2LFilter_M800:
