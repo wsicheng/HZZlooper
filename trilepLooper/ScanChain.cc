@@ -377,9 +377,9 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
       fillmasshists("_nocut");
 
       // Leading lepton pT cuts
-      if (leptons_pt().at(0) < 50) continue;
-
-      fillmasshists("_l1pt");
+      // if (leptons_pt().at(0) < 50) continue;
+      if (leptons_pt().at(ilep3) < 20) continue;
+      fillmasshists("_l3pt");
 
       njet = event_n_ak4jets_pt30();
       float dphiVjet = 4.0;
@@ -484,6 +484,8 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
         plot1d("h_dphi_ZW"+s, dPhi_Z_W(), weight, hvec, ";#Delta#phi(W, Z) ", 32,  0, 3.2);
         plot1d("h_min_dphiVjet"+s, dphiVjet , weight, hvec, ";min #Delta#phi(j, boson)", 32,  0, 3.2);;
 
+        plot2d("h2d_mtl3_met"+s, met, event_mTl(), weight, hvec, ";E_{T}^{miss} [GeV];M_{T} (lep3) [GeV]" , 100, 0, 500, 50, 0, 250);;
+
         if (njet >= 1) {
           plot1d("h_jet1pt"+s, ak4jets_pt()[0], weight, hvec, ";p_{T}^{jet1} [GeV]" , 160,  0, 800);
           plot1d("h_jet1eta"+s, ak4jets_eta()[0], weight, hvec, ";#eta(jet1)"  , 96,  -4.8f, 4.8f);
@@ -527,8 +529,16 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
           plot1d("h_lepWpt"+s,   lep3pt  , weight, hvec, ";p_{T}(lepW) [GeV]"  , 20,  0, 400);
           plot1d("h_lep1pt"+s,   leptons_pt().at(0)  , weight, hvec, ";p_{T}(lep1) [GeV]"  , 25,  0, 500);
           plot1d("h_lep2pt"+s,   leptons_pt().at(1)  , weight, hvec, ";p_{T}(lep2) [GeV]"  , 20,  0, 400);
+          plot1d("h_lep3pt"+s,   leptons_pt().at(2)  , weight, hvec, ";p_{T}(lep3) [GeV]"  , 20,  0, 400);
           plot1d("h_lep1eta"+s,  leptons_eta().at(0) , weight, hvec, ";#eta(lep1)"        , 36, -2.4, 2.4);
           plot1d("h_lep2eta"+s,  leptons_eta().at(1) , weight, hvec, ";#eta(lep2)"        , 36, -2.4, 2.4);
+
+          plot1d("h_lepZ1pt_finebin"+s, ((lep1pt > lep2pt)? lep1pt : lep2pt)  , weight, hvec, ";p_{T}(lepZ1) [GeV]"  , 40,  0, 200);
+          plot1d("h_lepZ2pt_finebin"+s, ((lep1pt > lep2pt)? lep2pt : lep1pt)  , weight, hvec, ";p_{T}(lepZ2) [GeV]"  , 40,  0, 200);
+          plot1d("h_lepWpt_finebin"+s,   lep3pt  , weight, hvec, ";p_{T}(lepW) [GeV]"  , 40,  0, 200);
+          plot1d("h_lep1pt_finebin"+s,   leptons_pt().at(0)  , weight, hvec, ";p_{T}(lep1) [GeV]"  , 40,  0, 200);
+          plot1d("h_lep2pt_finebin"+s,   leptons_pt().at(1)  , weight, hvec, ";p_{T}(lep2) [GeV]"  , 40,  0, 200);
+          plot1d("h_lep3pt_finebin"+s,   leptons_pt().at(2)  , weight, hvec, ";p_{T}(lep3) [GeV]"  , 40,  0, 200);
         }
 
       };

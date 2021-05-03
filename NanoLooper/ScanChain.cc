@@ -48,8 +48,9 @@ using namespace tas;
 
 // turn on to apply json file to data
 const bool applyGoodRunList = true;
-
-const bool applySyncCuts = false;
+const bool doDuplicateRemoval = false;
+const bool applySyncCuts = true;
+const bool ZGestCheck = false;
 
 int ScanChain(TChain *ch, string sample, string outdir, int nevtsamp = -1) {
 
@@ -86,6 +87,8 @@ int ScanChain(TChain *ch, string sample, string outdir, int nevtsamp = -1) {
   muoncorr = new RoccoR();
   randomGenerator = new TRandom3();
 
+  bool is_GJets_HT = (sample.find("GJets_HT") == 0);
+
   while ( (currentFile = (TFile*)fileIter.Next()) ) {
     TFile *file = TFile::Open( currentFile->GetTitle() );
     TTree *tree = (TTree*)file->Get("Events");
@@ -117,7 +120,7 @@ int ScanChain(TChain *ch, string sample, string outdir, int nevtsamp = -1) {
         }
         if (!found) {
           cerr << ">>> WARNING! Cannot find the xsec in the default list for sample " << sample << "!! Exiting!" << endl;
-          cout << __LINE__ << ": gconf.lumi= " << gconf.lumi << ", nevtsamp= " << nevtsamp << ", scaleToLumi= " << scaleToLumi << endl;
+          cout << "             gconf.lumi= " << gconf.lumi << ", nevtsamp= " << nevtsamp << ", scaleToLumi= " << scaleToLumi << endl;
           exit(4);
         }
       }
@@ -131,6 +134,7 @@ int ScanChain(TChain *ch, string sample, string outdir, int nevtsamp = -1) {
     nt.Init(tree);
 
     for( unsigned int evt = 0; evt < tree->GetEntriesFast(); ++evt) {
+      // if (evt > 500) break;
 
       nt.GetEntry(evt);
       tree->LoadTree(evt);
@@ -143,22 +147,24 @@ int ScanChain(TChain *ch, string sample, string outdir, int nevtsamp = -1) {
 
       if (show_progress) bar.progress(nEventsTotal, nEventsChain);
 
-      // if (event > 50000) break;
-
       if (gconf.is_data) {
         if (applyGoodRunList && !goodrun(run(), luminosityBlock())) continue;
-        duplicate_removal::DorkyEventIdentifier id(run(), event(), luminosityBlock());
-        if (is_duplicate(id)) {
-          ++nDuplicates;
-          continue;
+        if (doDuplicateRemoval) {
+          duplicate_removal::DorkyEventIdentifier id(run(), event(), luminosityBlock());
+          if (is_duplicate(id)) {
+            ++nDuplicates;
+            continue;
+          }
         }
       }
 
       float weight = (gconf.is_data)? 1 : (genWeight() > 0)? scaleToLumi : -1.0*scaleToLumi;
 
+      if ((event() == 165136538 || event() == 165588499 || event() == 569563314 || event() == 175850032 || event() == 922337055 || event() == 1257305638 || event() == 532551390 || event() == 628303537 || event() == 2803911702 || event() == 3077899767 || event() == 1055641106 || event() == 932848436 || event() == 120762842 || event() == 2485139493 || event() == 2303213037))
+        cout << __LINE__ << ": run()= " << run() << ", luminosityBlock()= " << luminosityBlock() << ", event()= " << event() << endl;
+
       // The following skim cuts are in the ntuple skiming steps
       // 2l2nu cut: nTightElection + nTightMuon >= 2, Z pt > 50, mZ > 50
-
 
       plot1d("h_preselec_steps", 0, 1, hvec, ";M_{ll} [GeV]" , 20,  0, 20);
 
@@ -167,18 +173,22 @@ int ScanChain(TChain *ch, string sample, string outdir, int nevtsamp = -1) {
 
       plot1d("h_preselec_steps", 1, 1, hvec, ";M_{ll} [GeV]" , 20,  0, 20);
 
-      plot1d("h_preselec_steps", 2, 1, hvec, ";M_{ll} [GeV]" , 20,  0, 20);
+      if ((event() == 165136538 || event() == 165588499 || event() == 569563314 || event() == 175850032 || event() == 922337055 || event() == 1257305638 || event() == 532551390 || event() == 628303537 || event() == 2803911702 || event() == 3077899767 || event() == 1055641106 || event() == 932848436 || event() == 120762842 || event() == 2485139493 || event() == 2303213037))
+        cout << __LINE__ << ": run()= " << run() << ", luminosityBlock()= " << luminosityBlock() << ", event()= " << event() << endl;
 
       // To apply the same skim cut as the NanoAOD
       if (applySyncCuts) {
         // if (isGamma)
         //   if (!InstrMETPrunerCuts()) continue;
         // else
-        if (!ZZ2l2vPrunerCuts()) continue;
-        // if (!InstrMETPrunerCuts()) continue;
+        // if (!ZZ2l2vPrunerCuts()) continue;
+        if (!InstrMETPrunerCuts()) continue;
       }
 
-      plot1d("h_preselec_steps", 3, 1, hvec, ";M_{ll} [GeV]" , 20,  0, 20);
+      if ((event() == 165136538 || event() == 165588499 || event() == 569563314 || event() == 175850032 || event() == 922337055 || event() == 1257305638 || event() == 532551390 || event() == 628303537 || event() == 2803911702 || event() == 3077899767 || event() == 1055641106 || event() == 932848436 || event() == 120762842 || event() == 2485139493 || event() == 2303213037))
+        cout << __LINE__ << ": run()= " << run() << ", luminosityBlock()= " << luminosityBlock() << ", event()= " << event() << endl;
+
+      plot1d("h_preselec_steps", 2, 1, hvec, ";M_{ll} [GeV]" , 20,  0, 20);
 
       nPassedTotal++;
 
@@ -186,24 +196,163 @@ int ScanChain(TChain *ch, string sample, string outdir, int nevtsamp = -1) {
 
       auto [tightElectrons, looseElectrons] = getElectrons();
       auto [tightMuons, looseMuons] = getMuons();
-      auto photons = getPhotons();
+      auto photons = getPhotons(looseMuons, looseElectrons);
+      auto jets = getJets(looseMuons, looseElectrons, photons);  // TODO: temporary move to later
 
+      // if ((sample == "ZGJets_nunu_nlo_incl" || sample == "ZGJets_ll_nlo_incl") && pt_photon() > 135) continue;
+      // if ((sample == "ZGJets_nunu_nlo_pTG_130" || sample == "ZGJets_ll_nlo_pTG_130") && pt_photon() < 135) continue;
+
+      if ((event() == 165136538 || event() == 165588499 || event() == 569563314 || event() == 175850032 || event() == 922337055 || event() == 1257305638 || event() == 532551390 || event() == 628303537 || event() == 2803911702 || event() == 3077899767 || event() == 1055641106 || event() == 932848436 || event() == 120762842 || event() == 2485139493 || event() == 2303213037))
+        cout << __LINE__ << ": run()= " << run() << ", luminosityBlock()= " << luminosityBlock() << ", event()= " << event() << endl;
+
+      auto fillZGhists = [&](string s = "ZGcheck") {
+        if (!ZGestCheck) return;
+        if (gconf.is_data) return;
+        if (nFailCuts > 0) return;
+
+        plot1d("h_nphotons_"+s, photons.size(), weight, hvec, ";N(photon)"  , 6,  0, 6);
+        if (photons.size() < 1) return;
+
+        plot1d("h_njets_"+s, jets.size(), weight, hvec, ";N(jets)"  , 6,  0, 6);
+        plot1d("h_nleptons_"+s, (looseMuons.size()+looseElectrons.size()), weight, hvec, ";N(leps)"  , 6,  0, 6);
+        plot1d("h_nmuons_"+s, looseMuons.size(), weight, hvec, ";N(muon)"  , 6,  0, 6);
+        plot1d("h_nelecs_"+s, looseElectrons.size(), weight, hvec, ";N(elec)"  , 6,  0, 6);
+
+        int nquarks(0), nleps(0), nnus(0), nphs(0), nqhard(0), nlephard(0), nphhard(0), nZs(0), nleps_fc(0);
+        int idxZ(-1), idxPh(-1), idxl1(-1), idxl2(-1);
+        int idxsumll(0), idxsumll_fc(0);
+        LorentzVector p4ll, p4ll_fc;
+        for (size_t i = 0; i < GenPart_pdgId().size(); ++i) {
+          int id = abs(GenPart_pdgId()[i]);
+
+          if ((id >= 11 && id <= 16) && (GenPart_statusFlags()[i] & 1<<12) != 0 && (GenPart_statusFlags()[i] & 1<<8) != 0) {
+            nleps_fc++;
+            p4ll_fc += GenPart_p4()[i];
+            idxsumll_fc += i;
+          }
+          if ((GenPart_statusFlags()[i] & 1<<13) == 0) continue;
+
+          if (id == 11 || id == 13 || id == 15) nleps++;
+          if (id == 22) nphs++;
+          if (id >= 1 && id <= 5) nquarks++;
+
+
+          if ((GenPart_statusFlags()[i] & 1<<8) == 0) continue;
+
+          if (id >= 11 && id <= 16) {
+            if (id % 2 == 1) nlephard++;
+            else nnus++;
+            p4ll += GenPart_p4()[i];
+            idxsumll += i;
+            if (idxl1 < 0) idxl1 = i;
+            else idxl2 = i;
+          }
+          if (id >= 1 && id <= 5) nqhard++;
+          if (id == 22) {
+            nphhard++;
+            idxPh = i;
+          }
+          if (id == 23) {
+            nZs++;
+            idxZ = i;
+          }
+        }
+        if (nlephard + nnus < 2) return;
+        if (GenPart_pt()[idxl2] > GenPart_pt()[idxl1]) std::swap(idxl1, idxl2);
+
+        plot1d("h_nZs_"+s, nZs, weight, hvec, ";N(gen-Zs)"  , 6,  0, 6);
+        plot1d("h_nleps_"+s, nleps, weight, hvec, ";N(gen-leps)"  , 6,  0, 6);
+        plot1d("h_nquarks_"+s, nquarks, weight, hvec, ";N(gen-quarks)"  , 6,  0, 6);
+        plot1d("h_nnus_"+s, nnus, weight, hvec, ";N(gen-#nus)"  , 6,  0, 6);
+        plot1d("h_nphs_"+s, nphs, weight, hvec, ";N(gen-#gamma)"  , 6,  0, 6);
+
+        plot1d("h_nleps_hard_"+s, nleps, weight, hvec, ";N(gen-leps hard)"  , 6,  0, 6);
+        plot1d("h_nqrks_hard_"+s, nqhard, weight, hvec, ";N(gen-quarks hard)"  , 6,  0, 6);
+        plot1d("h_nphs_hard_"+s, nphhard, weight, hvec, ";N(gen-#gamma hard)"  , 6,  0, 6);
+
+        plot1d("h_gen_lep1pt_"+s, GenPart_pt()[idxl1], weight, hvec, ";pT(gen-lep1)"  , 90,  0, 450);
+        plot1d("h_gen_lep2pt_"+s, GenPart_pt()[idxl2], weight, hvec, ";pT(gen-lep2)"  , 90,  0, 450);
+        
+        plot1d("h_gen_lep1eta_"+s, std::max(GenPart_eta()[idxl1], -4.99f), weight, hvec, ";#eta(gen-lep1)"  , 100,  -5.0f, 5.0f);
+        plot1d("h_gen_lep2eta_"+s, std::max(GenPart_eta()[idxl2], -4.99f), weight, hvec, ";#eta(gen-lep2)"  , 100,  -5.0f, 5.0f);
+
+        // plot1d("h_genmet_"+s, genmet_met(), weight, hvec, ";pT(gen-MET)"  , 90,  0, 450);
+
+        if (nZs == 0) {
+          plot1d("h_gen_mll_nonZ_"+s, p4ll.M(), weight, hvec, ";M(gen-ll)"  , 90,  0, 450);
+          plot1d("h_gen_llpt_nonZ_"+s, p4ll.pt(), weight, hvec, ";pT(gen-ll)"  , 90,  0, 450);
+        }
+
+        if (nZs < 1 || nphhard < 1) return;
+        // if (fabs(p4ll.M() - 91.2) > 10) return;
+
+        float dphiZG = deltaPhi(GenPart_phi()[idxPh], GenPart_phi()[idxZ]);
+        float dphillG = deltaPhi(p4ll.phi(), GenPart_phi()[idxPh]);
+        plot1d("h_dphiZG_"+s, dphiZG, weight, hvec, ";#Delta#phi(Z, #gamma)"  , 64,  0, 3.2f);
+        plot1d("h_dphillG_"+s, dphillG, weight, hvec, ";#Delta#phi(ll, #gamma)"  , 64,  0, 3.2f);
+        // if (dphiZG < 1.0) return;
+
+        if (nleps == 2 || nnus == 2) {
+          plot1d("h_genZ_mll_"+s, p4ll.M(), weight, hvec, ";M(gen-ll)"  , 90,  0, 180);
+          plot1d("h_genZ_llpt_"+s, p4ll.pt(), weight, hvec, ";pT(gen-ll)"  , 90,  0, 450);
+
+          plot1d("h_genZ_fc_mll_"+s, p4ll_fc.M(), weight, hvec, ";M(gen-ll) 1st copy"  , 90,  0, 180);
+          plot1d("h_genZ_fc_llpt_"+s, p4ll_fc.pt(), weight, hvec, ";pT(gen-ll) 1st copy"  , 90,  0, 450);
+        } 
+
+        if (static int pct284=0; fabs(p4ll.M()-GenPart_mass()[idxZ]) > 20 && s == "ZGcheck" && pct284++<20) {
+          plot1d("h_dphillG_dmlarge_"+s, dphillG, weight, hvec, ";#Delta#phi(ll, #gamma)"  , 64,  0, 3.2f);
+
+          cout << __LINE__ << ": evt= " << evt << ", p4ll.M()= " << p4ll.M() << ", p4ll_fc.M()= " << p4ll_fc.M() << ", GenPart_mass()[idxZ]= " << GenPart_mass()[idxZ] << ", idxsumll= " << idxsumll << ", idxsumll_fc= " << idxsumll_fc << ", dphillG= " << dphillG << endl;
+          for (size_t i = 0; i < GenPart_pdgId().size(); ++i) {
+            // if ((GenPart_statusFlags()[i] & 1<<8) == 0) continue;
+            int id = abs(GenPart_pdgId()[i]);
+            if ((id < 11 || id > 16) && id != 23 && id != 22 && GenPart_genPartIdxMother()[i] != idxZ) continue;
+            cout << __LINE__ << ": evt= " << evt << ", i= " << i << ", GenPart_pdgId[i]= " << GenPart_pdgId()[i] << ", pt[i]= " << GenPart_pt()[i] << ", eta[i]= " << GenPart_eta()[i] << ", phi[i]= " << GenPart_phi()[i] << ", mass[i]= " << GenPart_mass()[i] << ", GenPart_genPartIdxMother[i]= " << GenPart_genPartIdxMother()[i] << ", fromHardProcess= " << hex << (GenPart_statusFlags()[i] & (1<<8 | 1<<12 | 1<<13)) << dec << endl;
+          }
+          for (size_t i = 0; i < Electron_pt().size(); ++i) {
+            cout << __LINE__ << ": evt= " << evt << ", i= " << i << ", Electron_pdgId[i]= " << 11 << ", pt[i]= " << Electron_pt()[i] << ", eta[i]= " << Electron_eta()[i] << ", phi[i]= " << Electron_phi()[i] << ", mass[i]= " << Electron_mass()[i] << ", GenPart_genPartIdx[i]= " << Electron_genPartIdx()[i] << endl;
+          }
+          for (size_t i = 0; i < Photon_pt().size(); ++i) {
+            cout << __LINE__ << ": evt= " << evt << ", i= " << i << ", Photon_pdgId[i]= " << 22 << ", pt[i]= " << Photon_pt()[i] << ", eta[i]= " << Photon_eta()[i] << ", phi[i]= " << Photon_phi()[i] << ", mass[i]= " << Photon_mass()[i] << ", GenPart_genPartIdx[i]= " << Photon_genPartIdx()[i] << endl;
+          }
+          for (auto ph : photons) {
+            cout << __LINE__ << ": evt= " << evt << ", ph.p4.Pt()= " << ph.p4.Pt() << ", ph.p4.Eta()= " << ph.p4.Eta() << ", ph.p4.Phi()= " << ph.p4.Phi() << endl;
+          }
+
+        }
+
+        plot1d("h_genph_pt_"+s, GenPart_pt()[idxPh], weight, hvec, ";pT(gen-#gamma)"  , 90,  0, 450);
+        plot1d("h_genZ_pt_"+s, GenPart_pt()[idxZ], weight, hvec, ";pT(gen-Z)"  , 90,  0, 450);
+        plot1d("h_genZ_mZ_"+s, GenPart_mass()[idxZ], weight, hvec, ";M(gen-Z)"  , 90,  0, 180);
+
+      };
+      fillZGhists("ZGcheck");
+      
       bool isEE = (tightElectrons.size() == 2); //2 good Photon
       bool isMuMu = (tightMuons.size() == 2); //2 good muons
       bool isGamma = (photons.size() == 1 && !isEE && !isMuMu); //1 good photon
+      bool isllG = (isMuMu || isEE) && (photons.size() == 1);
+
+      if ((event() == 165136538 || event() == 165588499 || event() == 569563314 || event() == 175850032 || event() == 922337055 || event() == 1257305638 || event() == 532551390 || event() == 628303537 || event() == 2803911702 || event() == 3077899767 || event() == 1055641106 || event() == 932848436 || event() == 120762842 || event() == 2485139493 || event() == 2303213037))
+        cout << __LINE__ << ": run()= " << run() << ", luminosityBlock()= " << luminosityBlock() << ", event()= " << event() << endl;
 
       string lepcat = "gamma";
       if (isEE) lepcat = "ee";
       else if (isMuMu) lepcat = "mumu";
       else if (isGamma) lepcat = "gamma";
+      if (isllG) lepcat = "llg";
 
       int istep=0;
       plot1d("h_weight_"+to_string(istep), weight, 1, hvec, ";Event weight"  , 200,  0, 20);
       plot1d("h_met_step"+to_string(istep), MET_pt(), weight, hvec, ";E_{T}^{miss} [GeV]"  , 120,  0, 600);
       plot1d("h_met_unwgtd_step"+to_string(istep), MET_pt(), 1, hvec, ";E_{T}^{miss} [GeV]"  , 120,  0, 600);
 
-      auto fill_passedsteps = [&]() {
+      auto fill_passedsteps = [&](string s="") {
         if (nFailCuts == 0) {
+          if ((event() == 165136538 || event() == 165588499 || event() == 569563314 || event() == 175850032 || event() == 922337055 || event() == 1257305638 || event() == 532551390 || event() == 628303537 || event() == 2803911702 || event() == 3077899767 || event() == 1055641106 || event() == 932848436 || event() == 120762842 || event() == 2485139493 || event() == 2303213037))
+            cout << __LINE__ << ": run()= " << run() << ", luminosityBlock()= " << luminosityBlock() << ", event()= " << event() << ", istep= " << istep << ", MET_pt()= " << MET_pt() << ", s= " << s << endl;
+          
           plot1d("h_met_step"+to_string(istep), MET_pt(), weight, hvec, ";E_{T}^{miss} [GeV]"  , 120,  0, 600);
           plot1d("h_passed_steps_"+lepcat, istep , weight, hvec, ";M_{ll} [GeV]" , 20,  0, 20);
           plot1d("h_passed_steps", istep++ , weight, hvec, ";M_{ll} [GeV]" , 20,  0, 20);
@@ -219,19 +368,19 @@ int ScanChain(TChain *ch, string sample, string outdir, int nevtsamp = -1) {
       if (!isOppositeSign) continue;  // reject events that are not opposite sign
       fill_passedsteps();
 
-      if (gconf.is_data) {
-        if (isGamma) {
+      if (isGamma) {
+        if (gconf.is_data) {
           double prescale = getPhotonTrigPrescale(photons[0].p4.Pt());
           if (prescale <= 0.0) continue;
           weight *= prescale;
+        } else {
+          // do nothing for now
         }
-        else if (isEE && !passTriggerSelections(2))
-          continue;
-        else if (isMuMu && !passTriggerSelections(1))
-          continue;
-      } else {
-
       }
+      else if (isEE && !passTriggerSelections(2))
+        continue;
+      else if (isMuMu && !passTriggerSelections(1))
+        continue;
 
       bool passLeptonVeto = true;
       if (isGamma)
@@ -263,20 +412,17 @@ int ScanChain(TChain *ch, string sample, string outdir, int nevtsamp = -1) {
       }
 
       TLorentzVector boson;
-      if (isGamma) {
+      if (isGamma || isllG) {
         boson = photons[0].p4;
         giveMassToPhoton(boson);
       } else {
         boson = tightLeptons[0].p4 + tightLeptons[1].p4;
       }
 
-      if (isGamma && !gconf.is_data) {
-        // Apply the LO to NLO scale factor here
-        weight *= (boson.Pt() >= 600)? 1 : (1.72 - 0.0012 * boson.Pt());
-      }
+      // Apply the LO to NLO scale factor for GJets_HT samples here
+      if(is_GJets_HT) weight *= std::max(1., 1.716910-0.001221*boson.Pt());
 
-      // vector<Particle*> isoobjs;
-      auto jets = getJets(looseMuons, looseElectrons, photons);
+      // auto jets = getJets(looseMuons, looseElectrons, photons); // should be here, commented out temporarily
 
       bool passBTagVeto = true;
       for (auto const &jet : jets) {
@@ -301,10 +447,7 @@ int ScanChain(TChain *ch, string sample, string outdir, int nevtsamp = -1) {
 
       TLorentzVector met_p4;
       met_p4.SetPtEtaPhiM(MET_pt(), 0., MET_phi(), 0.);
-
-      // TLorentzVector puppimet_p4;
-      // puppimet_p4.SetPtEtaPhiM(PuppiMET_pt(), 0., PuppiMET_phi(), 0.);
-      // float met_sig = MET_significance();
+      if (isllG) met_p4 += tightLeptons[0].p4 + tightLeptons[1].p4;
 
       auto fill_mll_hists = [&](string s) {
         if (!isMuMu && !isEE) return;
@@ -314,6 +457,12 @@ int ScanChain(TChain *ch, string sample, string outdir, int nevtsamp = -1) {
       };
       fill_mll_hists("full");
 
+      bool passZmassWindow = (fabs(boson.M() - mZ) < 15);
+      if (isllG) passZmassWindow = (fabs((tightLeptons[0].p4 + tightLeptons[1].p4).M() - mZ) < 15);
+      if (!passZmassWindow) nFailCuts++;
+      if (nFailCuts > 1) continue;
+      fill_passedsteps();
+
       bool passBosonPtCut = (boson.Pt() >= 55.);
       if (!passBosonPtCut) nFailCuts++;
       if (nFailCuts > 1) continue;
@@ -321,23 +470,22 @@ int ScanChain(TChain *ch, string sample, string outdir, int nevtsamp = -1) {
 
       // fill_mll_hists("Zpt55");
 
-      bool passZmassWindow = (fabs(boson.M() - mZ) < 15);
-      if (!passZmassWindow) nFailCuts++;
-      if (nFailCuts > 1) continue;
-      fill_passedsteps();
-
-      float deltaPhi_MET_Boson = deltaPhi(boson.Phi(), MET_phi());
+      float deltaPhi_MET_Boson = deltaPhi(boson.Phi(), met_p4.Phi());
       bool passDeltaPhiZMET = (deltaPhi_MET_Boson > 1.0);
       if (!passDeltaPhiZMET) nFailCuts++;
       if (nFailCuts > 1) continue;
       fill_passedsteps();
 
+      fillZGhists("ZGaDphiZmet");
+
       TLorentzVector p4_lljets = boson;
 
       float min_dphijmet = 4.0;
+      float ht_reco_j30 = 0;  // extra variable
       for (auto const &jet : jets) {
+        ht_reco_j30 += jet.p4.Pt();
         p4_lljets += jet.p4;
-        float dphi = deltaPhi(jet.p4.Phi(), MET_phi());
+        float dphi = deltaPhi(jet.p4.Phi(), met_p4.Phi());
         if (dphi < min_dphijmet) min_dphijmet = dphi;
       }
       bool passDeltaPhiJetMET = (min_dphijmet > 0.25);
@@ -346,23 +494,24 @@ int ScanChain(TChain *ch, string sample, string outdir, int nevtsamp = -1) {
       if (nFailCuts > 1) continue;
       fill_passedsteps();
 
-      float deltaPhi_MET_lljets = deltaPhi(p4_lljets.Phi(), MET_phi());
+      float deltaPhi_MET_lljets = deltaPhi(p4_lljets.Phi(), met_p4.Phi());
       bool passDeltaPhiMETlljets = (deltaPhi_MET_lljets > 2.5);
       if (!passDeltaPhiMETlljets) nFailCuts++;
       if (nFailCuts > 1) continue;
       fill_passedsteps();
 
       /// Get crude HT value from all jets
-      float ht_all = 0;
+      float ht_reco_all = 0;
       for (auto jetpt : Jet_pt()) {
-        ht_all += jetpt;
+        ht_reco_all += jetpt;
       }
 
       auto fill_Zmet_hists = [&](string s) {
         if (nFailCuts == 0) {
           plot1d("h_met_"+s, met_p4.Pt(), weight, hvec, ";E_{T}^{miss} [GeV]"  , 120,  0, 600);
           plot1d("h_njets_"+s,  jets.size(), weight, hvec, ";N(jets)"  , 6,  0, 6);
-          plot1d("h_ht_all_"+s, ht_all, weight, hvec, ";H_{T}(all jets) [GeV]"  , 80,  0, 800);
+          plot1d("h_ht_reco_all_"+s, ht_reco_all, weight, hvec, ";H_{T}(all jets) [GeV]"  , 80,  0, 800);
+          plot1d("h_ht_reco_j30_"+s, ht_reco_j30, weight, hvec, ";H_{T}(good jets) [GeV]"  , 80,  0, 800);
           plot1d("h_boson_pt_"+s, boson.Pt(), weight, hvec, ";p_{T}(boson) [GeV]"  , 120,  0, 600);
           plot1d("h_boson_eta_"+s, boson.Eta(), weight, hvec, ";#eta(boson) "  , 100,  -5.0f, 5.0f);
           plot1d("h_dphiZmet_"+s, deltaPhi_MET_Boson , weight, hvec, ";#Delta#phi(ll, E_{T}^{miss}) ", 32,  0, 3.2);
@@ -376,7 +525,7 @@ int ScanChain(TChain *ch, string sample, string outdir, int nevtsamp = -1) {
       fill_Zmet_hists(metsuf+"unwgtd_"+jetcat);
 
       // const bool doNvtxReweight = false;
-      const bool doBosonPtReweight = true;
+      const bool doBosonPtReweight = false;
       if (isGamma && !gconf.is_data) {
         // if (doNvtxReweight) {
         //   int nvtx = PV_npvsGood();
@@ -415,9 +564,15 @@ int ScanChain(TChain *ch, string sample, string outdir, int nevtsamp = -1) {
         fill_Zmet_hists(metsuf+"_vbf_"+lepcat);
       }
 
-      bool passMETcut = (MET_pt() > 125.);
+      fillZGhists("ZGfullMET");
+      fillZGhists("ZGfullMET_"+lepcat);
+
+      bool passMETcut = (met_p4.Pt() > 125.);
       if (!passMETcut) nFailCuts++;
       if (nFailCuts > 1) continue;
+
+      fillZGhists("ZGfinal");
+      fillZGhists("ZGfinal_"+lepcat);
 
       // Now fill all the N-1 plots
       if (nFailCuts == 1) {
@@ -425,6 +580,7 @@ int ScanChain(TChain *ch, string sample, string outdir, int nevtsamp = -1) {
           if (!passZmassWindow && (isEE || isMuMu)) plot1d("h_mll"+s, boson.M() , weight, hvec, ";M(ll) [GeV]" , 125,  0, 500);
           else if (!passBosonPtCut && (isEE || isMuMu)) plot1d("h_ptll"+s,  boson.Pt() , weight, hvec, ";p_{T}(ll) [GeV]" , 200,  0, 800);
           // else if (!passMET85) plot1d("h_met"+s, met_p4.Pt(), weight, hvec, ";E_{T}^{miss} [GeV]"  , 160,  0, 800);
+          else if (!passMETcut) plot1d("h_met"+s, met_p4.Pt(), weight, hvec, ";E_{T}^{miss} [GeV]"  , 160,  0, 800);
           else if (!passDeltaPhiJetMET) plot1d("h_min_dphijmet"+s, min_dphijmet , weight, hvec, ";min #Delta#phi(j, E_{T}^{miss}) ", 32,  0, 3.2);
           else if (!passDeltaPhiZMET) plot1d("h_dphiZmet"+s, deltaPhi_MET_Boson , weight, hvec, ";#Delta#phi(ll, E_{T}^{miss}) ", 32,  0, 3.2);
           else if (!passDeltaPhiMETlljets) plot1d("h_dphiMETlljets"+s, deltaPhi_MET_lljets , weight, hvec, ";#Delta#phi(ll+jets, E_{T}^{miss}) ", 32,  0, 3.2);
@@ -443,14 +599,12 @@ int ScanChain(TChain *ch, string sample, string outdir, int nevtsamp = -1) {
       if (nFailCuts > 0) continue;
       // Events passes all sphotontions
 
-      // if (!passTrackVeto) continue;
-
       float mtZZ = getDileptonMT(boson, met_p4);
 
       auto fillhists = [&](string s) {
         plot1d("h_njets"+s,  jets.size(), weight, hvec, ";N(jets)"  , 6,  0, 6);
-        plot1d("h_met"+s,    MET_pt()  , weight, hvec, ";E_{T}^{miss} [GeV]"  , 30,  0, 750);
-        plot1d("h_metphi"+s, MET_phi() , weight, hvec, ";#phi(E_{T}^{miss})"  , 34, -3.4, 3.4);
+        plot1d("h_met"+s,    met_p4.Pt()  , weight, hvec, ";E_{T}^{miss} [GeV]"  , 30,  0, 750);
+        plot1d("h_metphi"+s, met_p4.Phi() , weight, hvec, ";#phi(E_{T}^{miss})"  , 34, -3.4, 3.4);
         // plot1d("h_metsig"+s, met_sig   , weight, hvec, ";#sigma(E_{T}^{miss}) " , 20,  0, 40);
         // Z quantities
         if (isEE || isMuMu) {
@@ -486,12 +640,13 @@ int ScanChain(TChain *ch, string sample, string outdir, int nevtsamp = -1) {
         fillhists(metsuf+"_geq1j_"+lepcat);
       }
 
-      // float weight = genWeight();
+      if (isGamma && met_p4.Pt() > 500 && jetcat == "eq0j") {
+        cout << __LINE__ << ": met_p4.Pt()= " << met_p4.Pt() << ", boson.Pt()= " << boson.Pt() << ", eta_boson()= " << boson.Eta() << ", run()= " << run() << ", luminosityBlock()= " << luminosityBlock() << ", event()= " << event() << endl;
+      }
 
     } // Event loop
 
     delete file;
-
   } // File loop
   if (show_progress) bar.finish();
 
@@ -534,15 +689,20 @@ int ScanChain(TChain *ch, string sample, string outdir, int nevtsamp = -1) {
     if (h.first.find("phi") == string::npos && h.first.find("2d") == string::npos)
       moveOverFlowToLastBin1D(h.second);
     string dirname = "hzz2l2nu";
-    for (string dirsuf : {
-        "_eq0j_ee", "_eq0j_mumu", "_geq1j_ee", "_geq1j_mumu",
-            "_eq1j_ee", "_eq1j_mumu", "_eq2j_ee", "_eq2j_mumu", "_vbf_ee", "_vbf_mumu",
-            "_eq0j_gamma", "_geq1j_gamma", "_eq1j_gamma", "_eq2j_gamma", "_vbf_gamma", 
-            "_geq2j_ee", "_geq2j_mumu", "_geq2j_gamma",
-            "_ee", "_mumu", "_gamma", "_eq0j", "_eq1j", "_eq2j", "_geq1j", "_vbf", "_geq2j",
-            }) {
-      if (h.first.find(dirsuf) != string::npos) {
-        dirname += dirsuf;
+    vector<string> jetsufs = {"_eq0j", "_eq1j", "_eq2j", "_1j20", "_vbf", "_eq0j_lowdphi", };
+    vector<string> lepsufs = {"_gamma", "_ee", "_mumu", "_emu", "_ll", "_llg"};
+    vector<string> dirsufs;
+    for (string jsuf : jetsufs) {
+      for (string lsuf : lepsufs) {
+        dirsufs.push_back(jsuf+lsuf);
+      }
+    }
+    dirsufs.insert(dirsufs.end(), jetsufs.begin(), jetsufs.end());
+    dirsufs.insert(dirsufs.end(), lepsufs.begin(), lepsufs.end());
+
+    for (string dsuf : dirsufs) {
+      if (TString(h.first).EndsWith(dsuf.c_str())) {
+        dirname += dsuf;
         break;
       }
     }

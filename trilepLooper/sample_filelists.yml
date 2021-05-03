@@ -1,0 +1,233 @@
+
+data_tester:
+  Run2016C:
+
+mc_tester:
+  WZTo3LNu: "TuneCUETP8M1,powheg"
+
+flist_data_2016:
+  Run2016B:
+    - Run2016B_Nominal_0_of_4.root
+    - Run2016B_Nominal_1_of_4.root
+    - Run2016B_Nominal_3_of_4.root
+    - Run2016B_Nominal_2_of_4.root
+  Run2016C:
+    - Run2016C_Nominal_0_of_4.root
+    - Run2016C_Nominal_2_of_4.root
+    - Run2016C_Nominal_3_of_4.root
+    - Run2016C_Nominal_1_of_4.root
+  Run2016D:
+    - Run2016D_Nominal_2_of_4.root
+    - Run2016D_Nominal_3_of_4.root
+    - Run2016D_Nominal_1_of_4.root
+    - Run2016D_Nominal_0_of_4.root
+  Run2016E:
+    - Run2016E_Nominal_0_of_4.root
+    - Run2016E_Nominal_2_of_4.root
+    - Run2016E_Nominal_3_of_4.root
+    - Run2016E_Nominal_1_of_4.root
+  Run2016F:
+    - Run2016F_Nominal_3_of_4.root
+    - Run2016F_Nominal_0_of_4.root
+    - Run2016F_Nominal_1_of_4.root
+    - Run2016F_Nominal_2_of_4.root
+  Run2016G:
+    - Run2016G_Nominal_1_of_4.root
+    - Run2016G_Nominal_3_of_4.root
+    - Run2016G_Nominal_0_of_4.root
+    - Run2016G_Nominal_2_of_4.root
+  Run2016H:
+    - Run2016H_Nominal_3_of_4.root
+    - Run2016H_Nominal_0_of_4.root
+    - Run2016H_Nominal_1_of_4.root
+    - Run2016H_Nominal_2_of_4.root
+
+flist_data_2017:
+  Run2017B:
+    - Run2017B_Nominal_3_of_4.root
+    - Run2017B_Nominal_2_of_4.root
+    - Run2017B_Nominal_1_of_4.root
+    - Run2017B_Nominal_0_of_4.root
+  Run2017C:
+    - Run2017C_Nominal_1_of_4.root
+    - Run2017C_Nominal_2_of_4.root
+    - Run2017C_Nominal_0_of_4.root
+    - Run2017C_Nominal_3_of_4.root
+  Run2017D:
+    - Run2017D_Nominal_0_of_4.root
+    - Run2017D_Nominal_3_of_4.root
+    - Run2017D_Nominal_1_of_4.root
+    - Run2017D_Nominal_2_of_4.root
+  Run2017E:
+    - Run2017E_Nominal_7_of_8.root
+    - Run2017E_Nominal_5_of_8.root
+    - Run2017E_Nominal_1_of_8.root
+    - Run2017E_Nominal_2_of_8.root
+    - Run2017E_Nominal_6_of_8.root
+    - Run2017E_Nominal_3_of_8.root
+    - Run2017E_Nominal_4_of_8.root
+    - Run2017E_Nominal_0_of_8.root
+  Run2017F:
+    - Run2017F_Nominal_7_of_8.root
+    - Run2017F_Nominal_5_of_8.root
+    - Run2017F_Nominal_0_of_8.root
+    - Run2017F_Nominal_2_of_8.root
+    - Run2017F_Nominal_4_of_8.root
+    - Run2017F_Nominal_3_of_8.root
+    - Run2017F_Nominal_1_of_8.root
+    - Run2017F_Nominal_6_of_8.root
+
+flist_data_2018:
+  Run2018A:
+    - Run2018A_Nominal_6_of_10.root
+    - Run2018A_Nominal_8_of_10.root
+    - Run2018A_Nominal_0_of_10.root
+    - Run2018A_Nominal_5_of_10.root
+    - Run2018A_Nominal_7_of_10.root
+    - Run2018A_Nominal_9_of_10.root
+    - Run2018A_Nominal_4_of_10.root
+    - Run2018A_Nominal_1_of_10.root
+    - Run2018A_Nominal_2_of_10.root
+    - Run2018A_Nominal_3_of_10.root
+  Run2018B:
+    - Run2018B_Nominal_3_of_4.root
+    - Run2018B_Nominal_1_of_4.root
+    - Run2018B_Nominal_0_of_4.root
+    - Run2018B_Nominal_2_of_4.root
+  Run2018C:
+    - Run2018C_Nominal_1_of_4.root
+    - Run2018C_Nominal_2_of_4.root
+    - Run2018C_Nominal_3_of_4.root
+    - Run2018C_Nominal_0_of_4.root
+  Run2018D:
+    - Run2018D_Nominal_7_of_30.root
+    - Run2018D_Nominal_2_of_30.root
+    - Run2018D_Nominal_11_of_30.root
+    - Run2018D_Nominal_23_of_30.root
+    - Run2018D_Nominal_29_of_30.root
+    - Run2018D_Nominal_12_of_30.root
+    - Run2018D_Nominal_21_of_30.root
+    - Run2018D_Nominal_10_of_30.root
+    - Run2018D_Nominal_3_of_30.root
+    - Run2018D_Nominal_17_of_30.root
+    - Run2018D_Nominal_9_of_30.root
+    - Run2018D_Nominal_13_of_30.root
+    - Run2018D_Nominal_1_of_30.root
+    - Run2018D_Nominal_18_of_30.root
+    - Run2018D_Nominal_15_of_30.root
+    - Run2018D_Nominal_14_of_30.root
+    - Run2018D_Nominal_22_of_30.root
+    - Run2018D_Nominal_28_of_30.root
+    - Run2018D_Nominal_20_of_30.root
+    - Run2018D_Nominal_0_of_30.root
+    - Run2018D_Nominal_16_of_30.root
+    - Run2018D_Nominal_19_of_30.root
+    - Run2018D_Nominal_4_of_30.root
+    - Run2018D_Nominal_5_of_30.root
+    - Run2018D_Nominal_24_of_30.root
+    - Run2018D_Nominal_26_of_30.root
+    - Run2018D_Nominal_6_of_30.root
+    - Run2018D_Nominal_8_of_30.root
+    - Run2018D_Nominal_25_of_30.root
+    - Run2018D_Nominal_27_of_30.root
+
+bkg_3lskim_16:
+  DYJetsToLL_M-10to50:
+  DYJetsToLL_M-50:
+  QCD_HT:
+  ST:
+  TGJets:
+  TTGJets:
+  TTJets:
+  TTTo2L2Nu:
+  TTWJetsToLNu:
+  TTZToLLNuNu:
+  TTZToLL:
+  TTZToQQ:
+  WGToLNuG: "amcatnloFXFX"
+  # WminusG:
+  # WplusG:
+  WJetsToLNu: "amcatnloFXFX,ext2"
+  WWTo2L2Nu: "powheg_Run"
+  WWTo1L1Nu2Q:
+  WWToLNuQQ:
+  WWW:
+  WWZ:
+  WZG:
+  WZZ:
+  ZZZ:
+  WZTo1L1Nu2Q:
+  WZTo1L3Nu:
+  WZTo2L2Q:
+  WZTo3LNu: "LNu_Tune,powheg"
+  WZTo3LNu_Tune: "amcatnloFXFX"
+  WZTo3LNu_mllmin01: "ext1"
+  ZGTo2LG_PtG-130:
+  ZGTo2LG:
+  ZH_HToWWToLNuQQ:
+  ZZTo2L2Nu: "ext1"
+  ZZTo2L2Q:
+  ZZTo2Q2Nu:
+  tZq:
+
+bkg_3lskim_17:
+  DYJetsToLL_M-50: "ext1"
+  TGJets:
+  TTGJets:
+  TTJets:
+  TTTo2L2Nu:
+  TTWJetsToLNu:
+  TTZToLLNuNu:
+  TTZToLL:
+  TTZToQQ:
+  WGToLNuG_01J: "amcatnloFXFX,5f_PDFWeights"
+  WGToLNuG: "amcatnloFXFX,5f_Tune"
+  WJetsToLNu: "amcatnloFXFX"
+  WWTo2L2Nu: "PSweights"
+  WWW:
+  WWZ:
+  WZG:
+  WZZ:
+  ZZZ:
+  WZTo2L2Q:
+  WZTo3LNu: "LNu_13,powheg"
+  WZTo3LNu_Tune: "amcatnloFXFX"
+  WZTo3LNu_mllmin01:
+  WZTo1L3Nu: "amcatnloFXFX"
+  ZGTo2LG_PtG-130:
+  ZLLGJets:
+  ZZTo2L2Nu: "mZMin-18"
+  ZZTo2L2Q:
+  ZZTo2Q2Nu:
+  tZq:
+
+bkg_3lskim_18:
+  DYJetsToLL_M-50: "ext2"
+  TGJets:
+  TTGJets:
+  TTJets:
+  TTTo2L2Nu:
+  TTWJetsToLNu:
+  TTZToLLNuNu:
+  TTZToLL:
+  TTZToQQ:
+  WGToLNuG_01J: "amcatnloFXFX,5f_PDFWeights"
+  WGToLNuG: "amcatnloFXFX,5f_Tune"
+  WJetsToLNu: "amcatnloFXFX"
+  WWTo2L2Nu:
+  WWW:
+  WWZ:
+  WZG:
+  WZZ:
+  ZZZ:
+  WZTo2L2Q:
+  WZTo3LNu: "LNu_Tune,powheg"
+  WZTo3LNu_Tune: "amcatnloFXFX"
+  WZTo3LNu_mllmin01:
+  ZGTo2LG_PtG-130:
+  ZLLGJets:
+  ZZTo2L2Nu: "mZMin-18"
+  ZZTo2L2Q:
+  ZZTo2Q2Nu:
+  tZq:
+

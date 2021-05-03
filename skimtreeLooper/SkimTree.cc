@@ -8,6 +8,11 @@ void SkimTree::Init(TTree *tree) {
     pt_photon_branch = tree->GetBranch("pt_photon");
     if (pt_photon_branch) { pt_photon_branch->SetAddress(&pt_photon_); }
   }
+  chiso_photon_branch = 0;
+  if (tree->GetBranch("chiso_photon") != 0) {
+    chiso_photon_branch = tree->GetBranch("chiso_photon");
+    if (chiso_photon_branch) { chiso_photon_branch->SetAddress(&chiso_photon_); }
+  }
   id_photon_Hgg_branch = 0;
   if (tree->GetBranch("id_photon_Hgg") != 0) {
     id_photon_Hgg_branch = tree->GetBranch("id_photon_Hgg");
@@ -18,10 +23,10 @@ void SkimTree::Init(TTree *tree) {
     is_emu_branch = tree->GetBranch("is_emu");
     if (is_emu_branch) { is_emu_branch->SetAddress(&is_emu_); }
   }
-  phi_jet2_branch = 0;
-  if (tree->GetBranch("phi_jet2") != 0) {
-    phi_jet2_branch = tree->GetBranch("phi_jet2");
-    if (phi_jet2_branch) { phi_jet2_branch->SetAddress(&phi_jet2_); }
+  mipE_photon_branch = 0;
+  if (tree->GetBranch("mipE_photon") != 0) {
+    mipE_photon_branch = tree->GetBranch("mipE_photon");
+    if (mipE_photon_branch) { mipE_photon_branch->SetAddress(&mipE_photon_); }
   }
   met_uncorr_phi_branch = 0;
   if (tree->GetBranch("met_uncorr_phi") != 0) {
@@ -43,15 +48,25 @@ void SkimTree::Init(TTree *tree) {
     dphi_boson_met_branch = tree->GetBranch("dphi_boson_met");
     if (dphi_boson_met_branch) { dphi_boson_met_branch->SetAddress(&dphi_boson_met_); }
   }
-  event_nvtxs_good_branch = 0;
-  if (tree->GetBranch("event_nvtxs_good") != 0) {
-    event_nvtxs_good_branch = tree->GetBranch("event_nvtxs_good");
-    if (event_nvtxs_good_branch) { event_nvtxs_good_branch->SetAddress(&event_nvtxs_good_); }
+  dphi_lljets20_met_branch = 0;
+  if (tree->GetBranch("dphi_lljets20_met") != 0) {
+    dphi_lljets20_met_branch = tree->GetBranch("dphi_lljets20_met");
+    if (dphi_lljets20_met_branch) { dphi_lljets20_met_branch->SetAddress(&dphi_lljets20_met_); }
+  }
+  event_event_branch = 0;
+  if (tree->GetBranch("event_event") != 0) {
+    event_event_branch = tree->GetBranch("event_event");
+    if (event_event_branch) { event_event_branch->SetAddress(&event_event_); }
   }
   eta_jet2_branch = 0;
   if (tree->GetBranch("eta_jet2") != 0) {
     eta_jet2_branch = tree->GetBranch("eta_jet2");
     if (eta_jet2_branch) { eta_jet2_branch->SetAddress(&eta_jet2_); }
+  }
+  event_run_branch = 0;
+  if (tree->GetBranch("event_run") != 0) {
+    event_run_branch = tree->GetBranch("event_run");
+    if (event_run_branch) { event_run_branch->SetAddress(&event_run_); }
   }
   event_Njets20_btagged_medium_branch = 0;
   if (tree->GetBranch("event_Njets20_btagged_medium") != 0) {
@@ -62,6 +77,11 @@ void SkimTree::Init(TTree *tree) {
   if (tree->GetBranch("pt_boson") != 0) {
     pt_boson_branch = tree->GetBranch("pt_boson");
     if (pt_boson_branch) { pt_boson_branch->SetAddress(&pt_boson_); }
+  }
+  id_track_branch = 0;
+  if (tree->GetBranch("id_track") != 0) {
+    id_track_branch = tree->GetBranch("id_track");
+    if (id_track_branch) { id_track_branch->SetAddress(&id_track_); }
   }
   is_mumu_branch = 0;
   if (tree->GetBranch("is_mumu") != 0) {
@@ -83,10 +103,10 @@ void SkimTree::Init(TTree *tree) {
     is_VBFcat_branch = tree->GetBranch("is_VBFcat");
     if (is_VBFcat_branch) { is_VBFcat_branch->SetAddress(&is_VBFcat_); }
   }
-  dphi_lljets20_met_branch = 0;
-  if (tree->GetBranch("dphi_lljets20_met") != 0) {
-    dphi_lljets20_met_branch = tree->GetBranch("dphi_lljets20_met");
-    if (dphi_lljets20_met_branch) { dphi_lljets20_met_branch->SetAddress(&dphi_lljets20_met_); }
+  event_wgt_pileup_branch = 0;
+  if (tree->GetBranch("event_wgt_pileup") != 0) {
+    event_wgt_pileup_branch = tree->GetBranch("event_wgt_pileup");
+    if (event_wgt_pileup_branch) { event_wgt_pileup_branch->SetAddress(&event_wgt_pileup_); }
   }
   event_Njets_btagged_medium_branch = 0;
   if (tree->GetBranch("event_Njets_btagged_medium") != 0) {
@@ -118,10 +138,10 @@ void SkimTree::Init(TTree *tree) {
     event_wgt_branch = tree->GetBranch("event_wgt");
     if (event_wgt_branch) { event_wgt_branch->SetAddress(&event_wgt_); }
   }
-  id_track_branch = 0;
-  if (tree->GetBranch("id_track") != 0) {
-    id_track_branch = tree->GetBranch("id_track");
-    if (id_track_branch) { id_track_branch->SetAddress(&id_track_); }
+  pass_trackveto_branch = 0;
+  if (tree->GetBranch("pass_trackveto") != 0) {
+    pass_trackveto_branch = tree->GetBranch("pass_trackveto");
+    if (pass_trackveto_branch) { pass_trackveto_branch->SetAddress(&pass_trackveto_); }
   }
   is_ee_branch = 0;
   if (tree->GetBranch("is_ee") != 0) {
@@ -163,6 +183,21 @@ void SkimTree::Init(TTree *tree) {
     id_l1_branch = tree->GetBranch("id_l1");
     if (id_l1_branch) { id_l1_branch->SetAddress(&id_l1_); }
   }
+  seedtime_photon_branch = 0;
+  if (tree->GetBranch("seedtime_photon") != 0) {
+    seedtime_photon_branch = tree->GetBranch("seedtime_photon");
+    if (seedtime_photon_branch) { seedtime_photon_branch->SetAddress(&seedtime_photon_); }
+  }
+  pt_jet2_branch = 0;
+  if (tree->GetBranch("pt_jet2") != 0) {
+    pt_jet2_branch = tree->GetBranch("pt_jet2");
+    if (pt_jet2_branch) { pt_jet2_branch->SetAddress(&pt_jet2_); }
+  }
+  sipip_photon_branch = 0;
+  if (tree->GetBranch("sipip_photon") != 0) {
+    sipip_photon_branch = tree->GetBranch("sipip_photon");
+    if (sipip_photon_branch) { sipip_photon_branch->SetAddress(&sipip_photon_); }
+  }
   pass_lepveto_branch = 0;
   if (tree->GetBranch("pass_lepveto") != 0) {
     pass_lepveto_branch = tree->GetBranch("pass_lepveto");
@@ -173,10 +208,20 @@ void SkimTree::Init(TTree *tree) {
     phi_jet1_branch = tree->GetBranch("phi_jet1");
     if (phi_jet1_branch) { phi_jet1_branch->SetAddress(&phi_jet1_); }
   }
-  pt_jet1_branch = 0;
-  if (tree->GetBranch("pt_jet1") != 0) {
-    pt_jet1_branch = tree->GetBranch("pt_jet1");
-    if (pt_jet1_branch) { pt_jet1_branch->SetAddress(&pt_jet1_); }
+  sieie_photon_branch = 0;
+  if (tree->GetBranch("sieie_photon") != 0) {
+    sieie_photon_branch = tree->GetBranch("sieie_photon");
+    if (sieie_photon_branch) { sieie_photon_branch->SetAddress(&sieie_photon_); }
+  }
+  is_gamma_branch = 0;
+  if (tree->GetBranch("is_gamma") != 0) {
+    is_gamma_branch = tree->GetBranch("is_gamma");
+    if (is_gamma_branch) { is_gamma_branch->SetAddress(&is_gamma_); }
+  }
+  nhiso_photon_branch = 0;
+  if (tree->GetBranch("nhiso_photon") != 0) {
+    nhiso_photon_branch = tree->GetBranch("nhiso_photon");
+    if (nhiso_photon_branch) { nhiso_photon_branch->SetAddress(&nhiso_photon_); }
   }
   isEB_photon_branch = 0;
   if (tree->GetBranch("isEB_photon") != 0) {
@@ -213,35 +258,50 @@ void SkimTree::Init(TTree *tree) {
     event_DjjVBF_branch = tree->GetBranch("event_DjjVBF");
     if (event_DjjVBF_branch) { event_DjjVBF_branch->SetAddress(&event_DjjVBF_); }
   }
-  event_wgt_trig_photon_branch = 0;
-  if (tree->GetBranch("event_wgt_trig_photon") != 0) {
-    event_wgt_trig_photon_branch = tree->GetBranch("event_wgt_trig_photon");
-    if (event_wgt_trig_photon_branch) { event_wgt_trig_photon_branch->SetAddress(&event_wgt_trig_photon_); }
+  event_Njets_branch = 0;
+  if (tree->GetBranch("event_Njets") != 0) {
+    event_Njets_branch = tree->GetBranch("event_Njets");
+    if (event_Njets_branch) { event_Njets_branch->SetAddress(&event_Njets_); }
   }
   event_DjjVBF_rl_branch = 0;
   if (tree->GetBranch("event_DjjVBF_rl") != 0) {
     event_DjjVBF_rl_branch = tree->GetBranch("event_DjjVBF_rl");
     if (event_DjjVBF_rl_branch) { event_DjjVBF_rl_branch->SetAddress(&event_DjjVBF_rl_); }
   }
+  pfiso_photon_branch = 0;
+  if (tree->GetBranch("pfiso_photon") != 0) {
+    pfiso_photon_branch = tree->GetBranch("pfiso_photon");
+    if (pfiso_photon_branch) { pfiso_photon_branch->SetAddress(&pfiso_photon_); }
+  }
   event_Njets20_branch = 0;
   if (tree->GetBranch("event_Njets20") != 0) {
     event_Njets20_branch = tree->GetBranch("event_Njets20");
     if (event_Njets20_branch) { event_Njets20_branch->SetAddress(&event_Njets20_); }
+  }
+  event_wgt_trig_electron_branch = 0;
+  if (tree->GetBranch("event_wgt_trig_electron") != 0) {
+    event_wgt_trig_electron_branch = tree->GetBranch("event_wgt_trig_electron");
+    if (event_wgt_trig_electron_branch) { event_wgt_trig_electron_branch->SetAddress(&event_wgt_trig_electron_); }
   }
   genmet_pt_branch = 0;
   if (tree->GetBranch("genmet_pt") != 0) {
     genmet_pt_branch = tree->GetBranch("genmet_pt");
     if (genmet_pt_branch) { genmet_pt_branch->SetAddress(&genmet_pt_); }
   }
+  r9_photon_branch = 0;
+  if (tree->GetBranch("r9_photon") != 0) {
+    r9_photon_branch = tree->GetBranch("r9_photon");
+    if (r9_photon_branch) { r9_photon_branch->SetAddress(&r9_photon_); }
+  }
   phi_l2_branch = 0;
   if (tree->GetBranch("phi_l2") != 0) {
     phi_l2_branch = tree->GetBranch("phi_l2");
     if (phi_l2_branch) { phi_l2_branch->SetAddress(&phi_l2_); }
   }
-  pass_trackveto_branch = 0;
-  if (tree->GetBranch("pass_trackveto") != 0) {
-    pass_trackveto_branch = tree->GetBranch("pass_trackveto");
-    if (pass_trackveto_branch) { pass_trackveto_branch->SetAddress(&pass_trackveto_); }
+  event_wgt_L1prefire_branch = 0;
+  if (tree->GetBranch("event_wgt_L1prefire") != 0) {
+    event_wgt_L1prefire_branch = tree->GetBranch("event_wgt_L1prefire");
+    if (event_wgt_L1prefire_branch) { event_wgt_L1prefire_branch->SetAddress(&event_wgt_L1prefire_); }
   }
   event_Nphotons_branch = 0;
   if (tree->GetBranch("event_Nphotons") != 0) {
@@ -253,10 +313,10 @@ void SkimTree::Init(TTree *tree) {
     phi_l1_branch = tree->GetBranch("phi_l1");
     if (phi_l1_branch) { phi_l1_branch->SetAddress(&phi_l1_); }
   }
-  event_Njets_branch = 0;
-  if (tree->GetBranch("event_Njets") != 0) {
-    event_Njets_branch = tree->GetBranch("event_Njets");
-    if (event_Njets_branch) { event_Njets_branch->SetAddress(&event_Njets_); }
+  event_wgt_trig_photon_branch = 0;
+  if (tree->GetBranch("event_wgt_trig_photon") != 0) {
+    event_wgt_trig_photon_branch = tree->GetBranch("event_wgt_trig_photon");
+    if (event_wgt_trig_photon_branch) { event_wgt_trig_photon_branch->SetAddress(&event_wgt_trig_photon_); }
   }
   dphi_jet20_met_branch = 0;
   if (tree->GetBranch("dphi_jet20_met") != 0) {
@@ -283,10 +343,15 @@ void SkimTree::Init(TTree *tree) {
     pt_l1_branch = tree->GetBranch("pt_l1");
     if (pt_l1_branch) { pt_l1_branch->SetAddress(&pt_l1_); }
   }
-  event_wgt_trig_electron_branch = 0;
-  if (tree->GetBranch("event_wgt_trig_electron") != 0) {
-    event_wgt_trig_electron_branch = tree->GetBranch("event_wgt_trig_electron");
-    if (event_wgt_trig_electron_branch) { event_wgt_trig_electron_branch->SetAddress(&event_wgt_trig_electron_); }
+  event_nvtxs_good_branch = 0;
+  if (tree->GetBranch("event_nvtxs_good") != 0) {
+    event_nvtxs_good_branch = tree->GetBranch("event_nvtxs_good");
+    if (event_nvtxs_good_branch) { event_nvtxs_good_branch->SetAddress(&event_nvtxs_good_); }
+  }
+  e4oe1_photon_branch = 0;
+  if (tree->GetBranch("e4oe1_photon") != 0) {
+    e4oe1_photon_branch = tree->GetBranch("e4oe1_photon");
+    if (e4oe1_photon_branch) { e4oe1_photon_branch->SetAddress(&e4oe1_photon_); }
   }
   phi_track_branch = 0;
   if (tree->GetBranch("phi_track") != 0) {
@@ -308,20 +373,25 @@ void SkimTree::Init(TTree *tree) {
     met_uncorr_pt_branch = tree->GetBranch("met_uncorr_pt");
     if (met_uncorr_pt_branch) { met_uncorr_pt_branch->SetAddress(&met_uncorr_pt_); }
   }
-  pt_jet2_branch = 0;
-  if (tree->GetBranch("pt_jet2") != 0) {
-    pt_jet2_branch = tree->GetBranch("pt_jet2");
-    if (pt_jet2_branch) { pt_jet2_branch->SetAddress(&pt_jet2_); }
+  pt_jet1_branch = 0;
+  if (tree->GetBranch("pt_jet1") != 0) {
+    pt_jet1_branch = tree->GetBranch("pt_jet1");
+    if (pt_jet1_branch) { pt_jet1_branch->SetAddress(&pt_jet1_); }
   }
-  is_gamma_branch = 0;
-  if (tree->GetBranch("is_gamma") != 0) {
-    is_gamma_branch = tree->GetBranch("is_gamma");
-    if (is_gamma_branch) { is_gamma_branch->SetAddress(&is_gamma_); }
+  event_lumi_branch = 0;
+  if (tree->GetBranch("event_lumi") != 0) {
+    event_lumi_branch = tree->GetBranch("event_lumi");
+    if (event_lumi_branch) { event_lumi_branch->SetAddress(&event_lumi_); }
   }
   eta_l2_branch = 0;
   if (tree->GetBranch("eta_l2") != 0) {
     eta_l2_branch = tree->GetBranch("eta_l2");
     if (eta_l2_branch) { eta_l2_branch->SetAddress(&eta_l2_); }
+  }
+  phi_jet2_branch = 0;
+  if (tree->GetBranch("phi_jet2") != 0) {
+    phi_jet2_branch = tree->GetBranch("phi_jet2");
+    if (phi_jet2_branch) { phi_jet2_branch->SetAddress(&phi_jet2_); }
   }
   event_wgt_OSDF_triggers_branch = 0;
   if (tree->GetBranch("event_wgt_OSDF_triggers") != 0) {
@@ -353,29 +423,33 @@ void SkimTree::Init(TTree *tree) {
 void SkimTree::GetEntry(unsigned int idx) {
   index = idx;
   pt_photon_isLoaded = false;
+  chiso_photon_isLoaded = false;
   id_photon_Hgg_isLoaded = false;
   is_emu_isLoaded = false;
-  phi_jet2_isLoaded = false;
+  mipE_photon_isLoaded = false;
   met_uncorr_phi_isLoaded = false;
   mZZ_isLoaded = false;
   convveto_photon_isLoaded = false;
   dphi_boson_met_isLoaded = false;
-  event_nvtxs_good_isLoaded = false;
+  dphi_lljets20_met_isLoaded = false;
+  event_event_isLoaded = false;
   eta_jet2_isLoaded = false;
+  event_run_isLoaded = false;
   event_Njets20_btagged_medium_isLoaded = false;
   pt_boson_isLoaded = false;
+  id_track_isLoaded = false;
   is_mumu_isLoaded = false;
   event_wgt_trig_muon_isLoaded = false;
   eta_photon_isLoaded = false;
   is_VBFcat_isLoaded = false;
-  dphi_lljets20_met_isLoaded = false;
+  event_wgt_pileup_isLoaded = false;
   event_Njets_btagged_medium_isLoaded = false;
   event_Njets20_btagged_loose_isLoaded = false;
   eta_track_isLoaded = false;
   pt_track_isLoaded = false;
   eta_jet1_isLoaded = false;
   event_wgt_isLoaded = false;
-  id_track_isLoaded = false;
+  pass_trackveto_isLoaded = false;
   is_ee_isLoaded = false;
   mass_boson_isLoaded = false;
   phi_boson_isLoaded = false;
@@ -384,9 +458,14 @@ void SkimTree::GetEntry(unsigned int idx) {
   eta_l1_isLoaded = false;
   has_ak4jets_inHEM1516_isLoaded = false;
   id_l1_isLoaded = false;
+  seedtime_photon_isLoaded = false;
+  pt_jet2_isLoaded = false;
+  sipip_photon_isLoaded = false;
   pass_lepveto_isLoaded = false;
   phi_jet1_isLoaded = false;
-  pt_jet1_isLoaded = false;
+  sieie_photon_isLoaded = false;
+  is_gamma_isLoaded = false;
+  nhiso_photon_isLoaded = false;
   isEB_photon_isLoaded = false;
   has_electrons_inHEM1516_isLoaded = false;
   id_l2_isLoaded = false;
@@ -394,28 +473,33 @@ void SkimTree::GetEntry(unsigned int idx) {
   eta_boson_isLoaded = false;
   phi_photon_isLoaded = false;
   event_DjjVBF_isLoaded = false;
-  event_wgt_trig_photon_isLoaded = false;
+  event_Njets_isLoaded = false;
   event_DjjVBF_rl_isLoaded = false;
+  pfiso_photon_isLoaded = false;
   event_Njets20_isLoaded = false;
+  event_wgt_trig_electron_isLoaded = false;
   genmet_pt_isLoaded = false;
+  r9_photon_isLoaded = false;
   phi_l2_isLoaded = false;
-  pass_trackveto_isLoaded = false;
+  event_wgt_L1prefire_isLoaded = false;
   event_Nphotons_isLoaded = false;
   phi_l1_isLoaded = false;
-  event_Njets_isLoaded = false;
+  event_wgt_trig_photon_isLoaded = false;
   dphi_jet20_met_isLoaded = false;
   mindphi_jet_met_isLoaded = false;
   pt_l2_isLoaded = false;
   genmet_phi_isLoaded = false;
   pt_l1_isLoaded = false;
-  event_wgt_trig_electron_isLoaded = false;
+  event_nvtxs_good_isLoaded = false;
+  e4oe1_photon_isLoaded = false;
   phi_track_isLoaded = false;
   dphi_lljets_met_isLoaded = false;
   pTmiss_isLoaded = false;
   met_uncorr_pt_isLoaded = false;
-  pt_jet2_isLoaded = false;
-  is_gamma_isLoaded = false;
+  pt_jet1_isLoaded = false;
+  event_lumi_isLoaded = false;
   eta_l2_isLoaded = false;
+  phi_jet2_isLoaded = false;
   event_wgt_OSDF_triggers_isLoaded = false;
   phimiss_isLoaded = false;
   event_HT_isLoaded = false;
@@ -424,29 +508,33 @@ void SkimTree::GetEntry(unsigned int idx) {
 }
 void SkimTree::LoadAllBranches() {
   if (pt_photon_branch != 0) pt_photon();
+  if (chiso_photon_branch != 0) chiso_photon();
   if (id_photon_Hgg_branch != 0) id_photon_Hgg();
   if (is_emu_branch != 0) is_emu();
-  if (phi_jet2_branch != 0) phi_jet2();
+  if (mipE_photon_branch != 0) mipE_photon();
   if (met_uncorr_phi_branch != 0) met_uncorr_phi();
   if (mZZ_branch != 0) mZZ();
   if (convveto_photon_branch != 0) convveto_photon();
   if (dphi_boson_met_branch != 0) dphi_boson_met();
-  if (event_nvtxs_good_branch != 0) event_nvtxs_good();
+  if (dphi_lljets20_met_branch != 0) dphi_lljets20_met();
+  if (event_event_branch != 0) event_event();
   if (eta_jet2_branch != 0) eta_jet2();
+  if (event_run_branch != 0) event_run();
   if (event_Njets20_btagged_medium_branch != 0) event_Njets20_btagged_medium();
   if (pt_boson_branch != 0) pt_boson();
+  if (id_track_branch != 0) id_track();
   if (is_mumu_branch != 0) is_mumu();
   if (event_wgt_trig_muon_branch != 0) event_wgt_trig_muon();
   if (eta_photon_branch != 0) eta_photon();
   if (is_VBFcat_branch != 0) is_VBFcat();
-  if (dphi_lljets20_met_branch != 0) dphi_lljets20_met();
+  if (event_wgt_pileup_branch != 0) event_wgt_pileup();
   if (event_Njets_btagged_medium_branch != 0) event_Njets_btagged_medium();
   if (event_Njets20_btagged_loose_branch != 0) event_Njets20_btagged_loose();
   if (eta_track_branch != 0) eta_track();
   if (pt_track_branch != 0) pt_track();
   if (eta_jet1_branch != 0) eta_jet1();
   if (event_wgt_branch != 0) event_wgt();
-  if (id_track_branch != 0) id_track();
+  if (pass_trackveto_branch != 0) pass_trackveto();
   if (is_ee_branch != 0) is_ee();
   if (mass_boson_branch != 0) mass_boson();
   if (phi_boson_branch != 0) phi_boson();
@@ -455,9 +543,14 @@ void SkimTree::LoadAllBranches() {
   if (eta_l1_branch != 0) eta_l1();
   if (has_ak4jets_inHEM1516_branch != 0) has_ak4jets_inHEM1516();
   if (id_l1_branch != 0) id_l1();
+  if (seedtime_photon_branch != 0) seedtime_photon();
+  if (pt_jet2_branch != 0) pt_jet2();
+  if (sipip_photon_branch != 0) sipip_photon();
   if (pass_lepveto_branch != 0) pass_lepveto();
   if (phi_jet1_branch != 0) phi_jet1();
-  if (pt_jet1_branch != 0) pt_jet1();
+  if (sieie_photon_branch != 0) sieie_photon();
+  if (is_gamma_branch != 0) is_gamma();
+  if (nhiso_photon_branch != 0) nhiso_photon();
   if (isEB_photon_branch != 0) isEB_photon();
   if (has_electrons_inHEM1516_branch != 0) has_electrons_inHEM1516();
   if (id_l2_branch != 0) id_l2();
@@ -465,28 +558,33 @@ void SkimTree::LoadAllBranches() {
   if (eta_boson_branch != 0) eta_boson();
   if (phi_photon_branch != 0) phi_photon();
   if (event_DjjVBF_branch != 0) event_DjjVBF();
-  if (event_wgt_trig_photon_branch != 0) event_wgt_trig_photon();
+  if (event_Njets_branch != 0) event_Njets();
   if (event_DjjVBF_rl_branch != 0) event_DjjVBF_rl();
+  if (pfiso_photon_branch != 0) pfiso_photon();
   if (event_Njets20_branch != 0) event_Njets20();
+  if (event_wgt_trig_electron_branch != 0) event_wgt_trig_electron();
   if (genmet_pt_branch != 0) genmet_pt();
+  if (r9_photon_branch != 0) r9_photon();
   if (phi_l2_branch != 0) phi_l2();
-  if (pass_trackveto_branch != 0) pass_trackveto();
+  if (event_wgt_L1prefire_branch != 0) event_wgt_L1prefire();
   if (event_Nphotons_branch != 0) event_Nphotons();
   if (phi_l1_branch != 0) phi_l1();
-  if (event_Njets_branch != 0) event_Njets();
+  if (event_wgt_trig_photon_branch != 0) event_wgt_trig_photon();
   if (dphi_jet20_met_branch != 0) dphi_jet20_met();
   if (mindphi_jet_met_branch != 0) mindphi_jet_met();
   if (pt_l2_branch != 0) pt_l2();
   if (genmet_phi_branch != 0) genmet_phi();
   if (pt_l1_branch != 0) pt_l1();
-  if (event_wgt_trig_electron_branch != 0) event_wgt_trig_electron();
+  if (event_nvtxs_good_branch != 0) event_nvtxs_good();
+  if (e4oe1_photon_branch != 0) e4oe1_photon();
   if (phi_track_branch != 0) phi_track();
   if (dphi_lljets_met_branch != 0) dphi_lljets_met();
   if (pTmiss_branch != 0) pTmiss();
   if (met_uncorr_pt_branch != 0) met_uncorr_pt();
-  if (pt_jet2_branch != 0) pt_jet2();
-  if (is_gamma_branch != 0) is_gamma();
+  if (pt_jet1_branch != 0) pt_jet1();
+  if (event_lumi_branch != 0) event_lumi();
   if (eta_l2_branch != 0) eta_l2();
+  if (phi_jet2_branch != 0) phi_jet2();
   if (event_wgt_OSDF_triggers_branch != 0) event_wgt_OSDF_triggers();
   if (phimiss_branch != 0) phimiss();
   if (event_HT_branch != 0) event_HT();
@@ -504,6 +602,18 @@ const float &SkimTree::pt_photon() {
     pt_photon_isLoaded = true;
   }
   return pt_photon_;
+}
+const float &SkimTree::chiso_photon() {
+  if (not chiso_photon_isLoaded) {
+    if (chiso_photon_branch != 0) {
+      chiso_photon_branch->GetEntry(index);
+    } else {
+      printf("branch chiso_photon_branch does not exist!\n");
+      exit(1);
+    }
+    chiso_photon_isLoaded = true;
+  }
+  return chiso_photon_;
 }
 const bool &SkimTree::id_photon_Hgg() {
   if (not id_photon_Hgg_isLoaded) {
@@ -529,17 +639,17 @@ const bool &SkimTree::is_emu() {
   }
   return is_emu_;
 }
-const float &SkimTree::phi_jet2() {
-  if (not phi_jet2_isLoaded) {
-    if (phi_jet2_branch != 0) {
-      phi_jet2_branch->GetEntry(index);
+const float &SkimTree::mipE_photon() {
+  if (not mipE_photon_isLoaded) {
+    if (mipE_photon_branch != 0) {
+      mipE_photon_branch->GetEntry(index);
     } else {
-      printf("branch phi_jet2_branch does not exist!\n");
+      printf("branch mipE_photon_branch does not exist!\n");
       exit(1);
     }
-    phi_jet2_isLoaded = true;
+    mipE_photon_isLoaded = true;
   }
-  return phi_jet2_;
+  return mipE_photon_;
 }
 const float &SkimTree::met_uncorr_phi() {
   if (not met_uncorr_phi_isLoaded) {
@@ -589,17 +699,29 @@ const float &SkimTree::dphi_boson_met() {
   }
   return dphi_boson_met_;
 }
-const unsigned int &SkimTree::event_nvtxs_good() {
-  if (not event_nvtxs_good_isLoaded) {
-    if (event_nvtxs_good_branch != 0) {
-      event_nvtxs_good_branch->GetEntry(index);
+const float &SkimTree::dphi_lljets20_met() {
+  if (not dphi_lljets20_met_isLoaded) {
+    if (dphi_lljets20_met_branch != 0) {
+      dphi_lljets20_met_branch->GetEntry(index);
     } else {
-      printf("branch event_nvtxs_good_branch does not exist!\n");
+      printf("branch dphi_lljets20_met_branch does not exist!\n");
       exit(1);
     }
-    event_nvtxs_good_isLoaded = true;
+    dphi_lljets20_met_isLoaded = true;
   }
-  return event_nvtxs_good_;
+  return dphi_lljets20_met_;
+}
+const unsigned long long &SkimTree::event_event() {
+  if (not event_event_isLoaded) {
+    if (event_event_branch != 0) {
+      event_event_branch->GetEntry(index);
+    } else {
+      printf("branch event_event_branch does not exist!\n");
+      exit(1);
+    }
+    event_event_isLoaded = true;
+  }
+  return event_event_;
 }
 const float &SkimTree::eta_jet2() {
   if (not eta_jet2_isLoaded) {
@@ -612,6 +734,18 @@ const float &SkimTree::eta_jet2() {
     eta_jet2_isLoaded = true;
   }
   return eta_jet2_;
+}
+const unsigned int &SkimTree::event_run() {
+  if (not event_run_isLoaded) {
+    if (event_run_branch != 0) {
+      event_run_branch->GetEntry(index);
+    } else {
+      printf("branch event_run_branch does not exist!\n");
+      exit(1);
+    }
+    event_run_isLoaded = true;
+  }
+  return event_run_;
 }
 const unsigned int &SkimTree::event_Njets20_btagged_medium() {
   if (not event_Njets20_btagged_medium_isLoaded) {
@@ -636,6 +770,18 @@ const float &SkimTree::pt_boson() {
     pt_boson_isLoaded = true;
   }
   return pt_boson_;
+}
+const int &SkimTree::id_track() {
+  if (not id_track_isLoaded) {
+    if (id_track_branch != 0) {
+      id_track_branch->GetEntry(index);
+    } else {
+      printf("branch id_track_branch does not exist!\n");
+      exit(1);
+    }
+    id_track_isLoaded = true;
+  }
+  return id_track_;
 }
 const bool &SkimTree::is_mumu() {
   if (not is_mumu_isLoaded) {
@@ -685,17 +831,17 @@ const bool &SkimTree::is_VBFcat() {
   }
   return is_VBFcat_;
 }
-const float &SkimTree::dphi_lljets20_met() {
-  if (not dphi_lljets20_met_isLoaded) {
-    if (dphi_lljets20_met_branch != 0) {
-      dphi_lljets20_met_branch->GetEntry(index);
+const float &SkimTree::event_wgt_pileup() {
+  if (not event_wgt_pileup_isLoaded) {
+    if (event_wgt_pileup_branch != 0) {
+      event_wgt_pileup_branch->GetEntry(index);
     } else {
-      printf("branch dphi_lljets20_met_branch does not exist!\n");
+      printf("branch event_wgt_pileup_branch does not exist!\n");
       exit(1);
     }
-    dphi_lljets20_met_isLoaded = true;
+    event_wgt_pileup_isLoaded = true;
   }
-  return dphi_lljets20_met_;
+  return event_wgt_pileup_;
 }
 const unsigned int &SkimTree::event_Njets_btagged_medium() {
   if (not event_Njets_btagged_medium_isLoaded) {
@@ -769,17 +915,17 @@ const float &SkimTree::event_wgt() {
   }
   return event_wgt_;
 }
-const int &SkimTree::id_track() {
-  if (not id_track_isLoaded) {
-    if (id_track_branch != 0) {
-      id_track_branch->GetEntry(index);
+const bool &SkimTree::pass_trackveto() {
+  if (not pass_trackveto_isLoaded) {
+    if (pass_trackveto_branch != 0) {
+      pass_trackveto_branch->GetEntry(index);
     } else {
-      printf("branch id_track_branch does not exist!\n");
+      printf("branch pass_trackveto_branch does not exist!\n");
       exit(1);
     }
-    id_track_isLoaded = true;
+    pass_trackveto_isLoaded = true;
   }
-  return id_track_;
+  return pass_trackveto_;
 }
 const bool &SkimTree::is_ee() {
   if (not is_ee_isLoaded) {
@@ -877,6 +1023,42 @@ const int &SkimTree::id_l1() {
   }
   return id_l1_;
 }
+const float &SkimTree::seedtime_photon() {
+  if (not seedtime_photon_isLoaded) {
+    if (seedtime_photon_branch != 0) {
+      seedtime_photon_branch->GetEntry(index);
+    } else {
+      printf("branch seedtime_photon_branch does not exist!\n");
+      exit(1);
+    }
+    seedtime_photon_isLoaded = true;
+  }
+  return seedtime_photon_;
+}
+const float &SkimTree::pt_jet2() {
+  if (not pt_jet2_isLoaded) {
+    if (pt_jet2_branch != 0) {
+      pt_jet2_branch->GetEntry(index);
+    } else {
+      printf("branch pt_jet2_branch does not exist!\n");
+      exit(1);
+    }
+    pt_jet2_isLoaded = true;
+  }
+  return pt_jet2_;
+}
+const float &SkimTree::sipip_photon() {
+  if (not sipip_photon_isLoaded) {
+    if (sipip_photon_branch != 0) {
+      sipip_photon_branch->GetEntry(index);
+    } else {
+      printf("branch sipip_photon_branch does not exist!\n");
+      exit(1);
+    }
+    sipip_photon_isLoaded = true;
+  }
+  return sipip_photon_;
+}
 const bool &SkimTree::pass_lepveto() {
   if (not pass_lepveto_isLoaded) {
     if (pass_lepveto_branch != 0) {
@@ -901,17 +1083,41 @@ const float &SkimTree::phi_jet1() {
   }
   return phi_jet1_;
 }
-const float &SkimTree::pt_jet1() {
-  if (not pt_jet1_isLoaded) {
-    if (pt_jet1_branch != 0) {
-      pt_jet1_branch->GetEntry(index);
+const float &SkimTree::sieie_photon() {
+  if (not sieie_photon_isLoaded) {
+    if (sieie_photon_branch != 0) {
+      sieie_photon_branch->GetEntry(index);
     } else {
-      printf("branch pt_jet1_branch does not exist!\n");
+      printf("branch sieie_photon_branch does not exist!\n");
       exit(1);
     }
-    pt_jet1_isLoaded = true;
+    sieie_photon_isLoaded = true;
   }
-  return pt_jet1_;
+  return sieie_photon_;
+}
+const bool &SkimTree::is_gamma() {
+  if (not is_gamma_isLoaded) {
+    if (is_gamma_branch != 0) {
+      is_gamma_branch->GetEntry(index);
+    } else {
+      printf("branch is_gamma_branch does not exist!\n");
+      exit(1);
+    }
+    is_gamma_isLoaded = true;
+  }
+  return is_gamma_;
+}
+const float &SkimTree::nhiso_photon() {
+  if (not nhiso_photon_isLoaded) {
+    if (nhiso_photon_branch != 0) {
+      nhiso_photon_branch->GetEntry(index);
+    } else {
+      printf("branch nhiso_photon_branch does not exist!\n");
+      exit(1);
+    }
+    nhiso_photon_isLoaded = true;
+  }
+  return nhiso_photon_;
 }
 const bool &SkimTree::isEB_photon() {
   if (not isEB_photon_isLoaded) {
@@ -997,17 +1203,17 @@ const float &SkimTree::event_DjjVBF() {
   }
   return event_DjjVBF_;
 }
-const float &SkimTree::event_wgt_trig_photon() {
-  if (not event_wgt_trig_photon_isLoaded) {
-    if (event_wgt_trig_photon_branch != 0) {
-      event_wgt_trig_photon_branch->GetEntry(index);
+const unsigned int &SkimTree::event_Njets() {
+  if (not event_Njets_isLoaded) {
+    if (event_Njets_branch != 0) {
+      event_Njets_branch->GetEntry(index);
     } else {
-      printf("branch event_wgt_trig_photon_branch does not exist!\n");
+      printf("branch event_Njets_branch does not exist!\n");
       exit(1);
     }
-    event_wgt_trig_photon_isLoaded = true;
+    event_Njets_isLoaded = true;
   }
-  return event_wgt_trig_photon_;
+  return event_Njets_;
 }
 const float &SkimTree::event_DjjVBF_rl() {
   if (not event_DjjVBF_rl_isLoaded) {
@@ -1021,6 +1227,18 @@ const float &SkimTree::event_DjjVBF_rl() {
   }
   return event_DjjVBF_rl_;
 }
+const float &SkimTree::pfiso_photon() {
+  if (not pfiso_photon_isLoaded) {
+    if (pfiso_photon_branch != 0) {
+      pfiso_photon_branch->GetEntry(index);
+    } else {
+      printf("branch pfiso_photon_branch does not exist!\n");
+      exit(1);
+    }
+    pfiso_photon_isLoaded = true;
+  }
+  return pfiso_photon_;
+}
 const unsigned int &SkimTree::event_Njets20() {
   if (not event_Njets20_isLoaded) {
     if (event_Njets20_branch != 0) {
@@ -1032,6 +1250,18 @@ const unsigned int &SkimTree::event_Njets20() {
     event_Njets20_isLoaded = true;
   }
   return event_Njets20_;
+}
+const float &SkimTree::event_wgt_trig_electron() {
+  if (not event_wgt_trig_electron_isLoaded) {
+    if (event_wgt_trig_electron_branch != 0) {
+      event_wgt_trig_electron_branch->GetEntry(index);
+    } else {
+      printf("branch event_wgt_trig_electron_branch does not exist!\n");
+      exit(1);
+    }
+    event_wgt_trig_electron_isLoaded = true;
+  }
+  return event_wgt_trig_electron_;
 }
 const float &SkimTree::genmet_pt() {
   if (not genmet_pt_isLoaded) {
@@ -1045,6 +1275,18 @@ const float &SkimTree::genmet_pt() {
   }
   return genmet_pt_;
 }
+const float &SkimTree::r9_photon() {
+  if (not r9_photon_isLoaded) {
+    if (r9_photon_branch != 0) {
+      r9_photon_branch->GetEntry(index);
+    } else {
+      printf("branch r9_photon_branch does not exist!\n");
+      exit(1);
+    }
+    r9_photon_isLoaded = true;
+  }
+  return r9_photon_;
+}
 const float &SkimTree::phi_l2() {
   if (not phi_l2_isLoaded) {
     if (phi_l2_branch != 0) {
@@ -1057,17 +1299,17 @@ const float &SkimTree::phi_l2() {
   }
   return phi_l2_;
 }
-const bool &SkimTree::pass_trackveto() {
-  if (not pass_trackveto_isLoaded) {
-    if (pass_trackveto_branch != 0) {
-      pass_trackveto_branch->GetEntry(index);
+const float &SkimTree::event_wgt_L1prefire() {
+  if (not event_wgt_L1prefire_isLoaded) {
+    if (event_wgt_L1prefire_branch != 0) {
+      event_wgt_L1prefire_branch->GetEntry(index);
     } else {
-      printf("branch pass_trackveto_branch does not exist!\n");
+      printf("branch event_wgt_L1prefire_branch does not exist!\n");
       exit(1);
     }
-    pass_trackveto_isLoaded = true;
+    event_wgt_L1prefire_isLoaded = true;
   }
-  return pass_trackveto_;
+  return event_wgt_L1prefire_;
 }
 const unsigned int &SkimTree::event_Nphotons() {
   if (not event_Nphotons_isLoaded) {
@@ -1093,17 +1335,17 @@ const float &SkimTree::phi_l1() {
   }
   return phi_l1_;
 }
-const unsigned int &SkimTree::event_Njets() {
-  if (not event_Njets_isLoaded) {
-    if (event_Njets_branch != 0) {
-      event_Njets_branch->GetEntry(index);
+const float &SkimTree::event_wgt_trig_photon() {
+  if (not event_wgt_trig_photon_isLoaded) {
+    if (event_wgt_trig_photon_branch != 0) {
+      event_wgt_trig_photon_branch->GetEntry(index);
     } else {
-      printf("branch event_Njets_branch does not exist!\n");
+      printf("branch event_wgt_trig_photon_branch does not exist!\n");
       exit(1);
     }
-    event_Njets_isLoaded = true;
+    event_wgt_trig_photon_isLoaded = true;
   }
-  return event_Njets_;
+  return event_wgt_trig_photon_;
 }
 const float &SkimTree::dphi_jet20_met() {
   if (not dphi_jet20_met_isLoaded) {
@@ -1165,17 +1407,29 @@ const float &SkimTree::pt_l1() {
   }
   return pt_l1_;
 }
-const float &SkimTree::event_wgt_trig_electron() {
-  if (not event_wgt_trig_electron_isLoaded) {
-    if (event_wgt_trig_electron_branch != 0) {
-      event_wgt_trig_electron_branch->GetEntry(index);
+const unsigned int &SkimTree::event_nvtxs_good() {
+  if (not event_nvtxs_good_isLoaded) {
+    if (event_nvtxs_good_branch != 0) {
+      event_nvtxs_good_branch->GetEntry(index);
     } else {
-      printf("branch event_wgt_trig_electron_branch does not exist!\n");
+      printf("branch event_nvtxs_good_branch does not exist!\n");
       exit(1);
     }
-    event_wgt_trig_electron_isLoaded = true;
+    event_nvtxs_good_isLoaded = true;
   }
-  return event_wgt_trig_electron_;
+  return event_nvtxs_good_;
+}
+const float &SkimTree::e4oe1_photon() {
+  if (not e4oe1_photon_isLoaded) {
+    if (e4oe1_photon_branch != 0) {
+      e4oe1_photon_branch->GetEntry(index);
+    } else {
+      printf("branch e4oe1_photon_branch does not exist!\n");
+      exit(1);
+    }
+    e4oe1_photon_isLoaded = true;
+  }
+  return e4oe1_photon_;
 }
 const float &SkimTree::phi_track() {
   if (not phi_track_isLoaded) {
@@ -1225,29 +1479,29 @@ const float &SkimTree::met_uncorr_pt() {
   }
   return met_uncorr_pt_;
 }
-const float &SkimTree::pt_jet2() {
-  if (not pt_jet2_isLoaded) {
-    if (pt_jet2_branch != 0) {
-      pt_jet2_branch->GetEntry(index);
+const float &SkimTree::pt_jet1() {
+  if (not pt_jet1_isLoaded) {
+    if (pt_jet1_branch != 0) {
+      pt_jet1_branch->GetEntry(index);
     } else {
-      printf("branch pt_jet2_branch does not exist!\n");
+      printf("branch pt_jet1_branch does not exist!\n");
       exit(1);
     }
-    pt_jet2_isLoaded = true;
+    pt_jet1_isLoaded = true;
   }
-  return pt_jet2_;
+  return pt_jet1_;
 }
-const bool &SkimTree::is_gamma() {
-  if (not is_gamma_isLoaded) {
-    if (is_gamma_branch != 0) {
-      is_gamma_branch->GetEntry(index);
+const unsigned int &SkimTree::event_lumi() {
+  if (not event_lumi_isLoaded) {
+    if (event_lumi_branch != 0) {
+      event_lumi_branch->GetEntry(index);
     } else {
-      printf("branch is_gamma_branch does not exist!\n");
+      printf("branch event_lumi_branch does not exist!\n");
       exit(1);
     }
-    is_gamma_isLoaded = true;
+    event_lumi_isLoaded = true;
   }
-  return is_gamma_;
+  return event_lumi_;
 }
 const float &SkimTree::eta_l2() {
   if (not eta_l2_isLoaded) {
@@ -1260,6 +1514,18 @@ const float &SkimTree::eta_l2() {
     eta_l2_isLoaded = true;
   }
   return eta_l2_;
+}
+const float &SkimTree::phi_jet2() {
+  if (not phi_jet2_isLoaded) {
+    if (phi_jet2_branch != 0) {
+      phi_jet2_branch->GetEntry(index);
+    } else {
+      printf("branch phi_jet2_branch does not exist!\n");
+      exit(1);
+    }
+    phi_jet2_isLoaded = true;
+  }
+  return phi_jet2_;
 }
 const float &SkimTree::event_wgt_OSDF_triggers() {
   if (not event_wgt_OSDF_triggers_isLoaded) {
@@ -1341,29 +1607,33 @@ void SkimTree::progress( int nEventsTotal, int nEventsChain ){
 }
 namespace tas {
   const float &pt_photon() { return st.pt_photon(); }
+  const float &chiso_photon() { return st.chiso_photon(); }
   const bool &id_photon_Hgg() { return st.id_photon_Hgg(); }
   const bool &is_emu() { return st.is_emu(); }
-  const float &phi_jet2() { return st.phi_jet2(); }
+  const float &mipE_photon() { return st.mipE_photon(); }
   const float &met_uncorr_phi() { return st.met_uncorr_phi(); }
   const float &mZZ() { return st.mZZ(); }
   const bool &convveto_photon() { return st.convveto_photon(); }
   const float &dphi_boson_met() { return st.dphi_boson_met(); }
-  const unsigned int &event_nvtxs_good() { return st.event_nvtxs_good(); }
+  const float &dphi_lljets20_met() { return st.dphi_lljets20_met(); }
+  const unsigned long long &event_event() { return st.event_event(); }
   const float &eta_jet2() { return st.eta_jet2(); }
+  const unsigned int &event_run() { return st.event_run(); }
   const unsigned int &event_Njets20_btagged_medium() { return st.event_Njets20_btagged_medium(); }
   const float &pt_boson() { return st.pt_boson(); }
+  const int &id_track() { return st.id_track(); }
   const bool &is_mumu() { return st.is_mumu(); }
   const float &event_wgt_trig_muon() { return st.event_wgt_trig_muon(); }
   const float &eta_photon() { return st.eta_photon(); }
   const bool &is_VBFcat() { return st.is_VBFcat(); }
-  const float &dphi_lljets20_met() { return st.dphi_lljets20_met(); }
+  const float &event_wgt_pileup() { return st.event_wgt_pileup(); }
   const unsigned int &event_Njets_btagged_medium() { return st.event_Njets_btagged_medium(); }
   const unsigned int &event_Njets20_btagged_loose() { return st.event_Njets20_btagged_loose(); }
   const float &eta_track() { return st.eta_track(); }
   const float &pt_track() { return st.pt_track(); }
   const float &eta_jet1() { return st.eta_jet1(); }
   const float &event_wgt() { return st.event_wgt(); }
-  const int &id_track() { return st.id_track(); }
+  const bool &pass_trackveto() { return st.pass_trackveto(); }
   const bool &is_ee() { return st.is_ee(); }
   const float &mass_boson() { return st.mass_boson(); }
   const float &phi_boson() { return st.phi_boson(); }
@@ -1372,9 +1642,14 @@ namespace tas {
   const float &eta_l1() { return st.eta_l1(); }
   const bool &has_ak4jets_inHEM1516() { return st.has_ak4jets_inHEM1516(); }
   const int &id_l1() { return st.id_l1(); }
+  const float &seedtime_photon() { return st.seedtime_photon(); }
+  const float &pt_jet2() { return st.pt_jet2(); }
+  const float &sipip_photon() { return st.sipip_photon(); }
   const bool &pass_lepveto() { return st.pass_lepveto(); }
   const float &phi_jet1() { return st.phi_jet1(); }
-  const float &pt_jet1() { return st.pt_jet1(); }
+  const float &sieie_photon() { return st.sieie_photon(); }
+  const bool &is_gamma() { return st.is_gamma(); }
+  const float &nhiso_photon() { return st.nhiso_photon(); }
   const bool &isEB_photon() { return st.isEB_photon(); }
   const bool &has_electrons_inHEM1516() { return st.has_electrons_inHEM1516(); }
   const int &id_l2() { return st.id_l2(); }
@@ -1382,28 +1657,33 @@ namespace tas {
   const float &eta_boson() { return st.eta_boson(); }
   const float &phi_photon() { return st.phi_photon(); }
   const float &event_DjjVBF() { return st.event_DjjVBF(); }
-  const float &event_wgt_trig_photon() { return st.event_wgt_trig_photon(); }
+  const unsigned int &event_Njets() { return st.event_Njets(); }
   const float &event_DjjVBF_rl() { return st.event_DjjVBF_rl(); }
+  const float &pfiso_photon() { return st.pfiso_photon(); }
   const unsigned int &event_Njets20() { return st.event_Njets20(); }
+  const float &event_wgt_trig_electron() { return st.event_wgt_trig_electron(); }
   const float &genmet_pt() { return st.genmet_pt(); }
+  const float &r9_photon() { return st.r9_photon(); }
   const float &phi_l2() { return st.phi_l2(); }
-  const bool &pass_trackveto() { return st.pass_trackveto(); }
+  const float &event_wgt_L1prefire() { return st.event_wgt_L1prefire(); }
   const unsigned int &event_Nphotons() { return st.event_Nphotons(); }
   const float &phi_l1() { return st.phi_l1(); }
-  const unsigned int &event_Njets() { return st.event_Njets(); }
+  const float &event_wgt_trig_photon() { return st.event_wgt_trig_photon(); }
   const float &dphi_jet20_met() { return st.dphi_jet20_met(); }
   const float &mindphi_jet_met() { return st.mindphi_jet_met(); }
   const float &pt_l2() { return st.pt_l2(); }
   const float &genmet_phi() { return st.genmet_phi(); }
   const float &pt_l1() { return st.pt_l1(); }
-  const float &event_wgt_trig_electron() { return st.event_wgt_trig_electron(); }
+  const unsigned int &event_nvtxs_good() { return st.event_nvtxs_good(); }
+  const float &e4oe1_photon() { return st.e4oe1_photon(); }
   const float &phi_track() { return st.phi_track(); }
   const float &dphi_lljets_met() { return st.dphi_lljets_met(); }
   const float &pTmiss() { return st.pTmiss(); }
   const float &met_uncorr_pt() { return st.met_uncorr_pt(); }
-  const float &pt_jet2() { return st.pt_jet2(); }
-  const bool &is_gamma() { return st.is_gamma(); }
+  const float &pt_jet1() { return st.pt_jet1(); }
+  const unsigned int &event_lumi() { return st.event_lumi(); }
   const float &eta_l2() { return st.eta_l2(); }
+  const float &phi_jet2() { return st.phi_jet2(); }
   const float &event_wgt_OSDF_triggers() { return st.event_wgt_OSDF_triggers(); }
   const float &phimiss() { return st.phimiss(); }
   const unsigned int &event_HT() { return st.event_HT(); }

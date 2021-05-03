@@ -11,8 +11,8 @@ verbose = 2
 poolsize = 8
 dryrun = False
 # File location
-# osoutdir = "/hadoop/cms/store/user/usarica/Offshell_2L2Nu/Worker/output";
-osoutdir = "root://cmsxrootd.fnal.gov//store/user/usarica/Offshell_2L2Nu/Worker/output";
+osoutdir = "/hadoop/cms/store/user/usarica/Offshell_2L2Nu/Worker/output";
+# osoutdir = "root://cmsxrootd.fnal.gov//store/user/usarica/Offshell_2L2Nu/Worker/output";
 
 skimver  = "v4_08";
 skimdate = "/SkimTrees/210315/AK4Jets_WithPUJetId_NoTightLeptonJetId_ParticleCleaned";
@@ -36,7 +36,6 @@ def mergeOutputHists(outdir, merge_map, suf='', lst_samp=None, clean_unmerge=Fal
         if lst_samp != None and target not in lst_samp: continue
         fins = [ f+'*.root' for f in finlist ]
         fins = [ glob.glob(f+'*.root') for f in finlist]
-        # print( fins, sum(fins, []))
         if len(fins) == 0: continue
         print( 'hadd -f {}.root {}'.format(target+suf, ' '.join(sum(fins, []))) )
         # if not dryrun:
@@ -77,6 +76,9 @@ if __name__ == '__main__':
     with open('sample_lists.yml', 'r') as flst:
         samplists = yaml.safe_load(flst)
 
+    with open('sample_filelists.yml', 'r') as flst:
+        filelists = yaml.safe_load(flst)
+
     if args.merge_only != False:
         lst_samp = args.merge_only.split(',') if len(args.merge_only) > 0 else None
         if len(lst_samp) == 1 and lst_samp[0] == 'all': lst_samp = None
@@ -87,11 +89,11 @@ if __name__ == '__main__':
     samp_flists_17 = {}
     samp_flists_18 = {}
     samp_flists_16.update(samplists['data_2016'])
-    # samp_flists_17.update(samplists['data_2017'])
-    # samp_flists_18.update(samplists['data_2018'])
-    # samp_flists_16.update(samplists['bkg_3lskim_16'])
-    # samp_flists_17.update(samplists['bkg_3lskim_17'])
-    # samp_flists_18.update(samplists['bkg_3lskim_18'])
+    samp_flists_17.update(samplists['data_2017'])
+    samp_flists_18.update(samplists['data_2018'])
+    samp_flists_16.update(samplists['bkg_3lskim_16'])
+    samp_flists_17.update(samplists['bkg_3lskim_17'])
+    samp_flists_18.update(samplists['bkg_3lskim_18'])
 
     yrsamp_flists = {
         "2016:3LEvents:3lCR" : samp_flists_16,

@@ -543,6 +543,26 @@ void SkimTree::Init(TTree *tree) {
     event_wgt_triggers_SinglePhoton_branch = tree->GetBranch("event_wgt_triggers_SinglePhoton");
     if (event_wgt_triggers_SinglePhoton_branch) { event_wgt_triggers_SinglePhoton_branch->SetAddress(&event_wgt_triggers_SinglePhoton_); }
   }
+  genak4jets_eta_branch = 0;
+  if (tree->GetBranch("genak4jets_eta") != 0) {
+    genak4jets_eta_branch = tree->GetBranch("genak4jets_eta");
+    if (genak4jets_eta_branch) { genak4jets_eta_branch->SetAddress(&genak4jets_eta_); }
+  }
+  genak4jets_mass_branch = 0;
+  if (tree->GetBranch("genak4jets_mass") != 0) {
+    genak4jets_mass_branch = tree->GetBranch("genak4jets_mass");
+    if (genak4jets_mass_branch) { genak4jets_mass_branch->SetAddress(&genak4jets_mass_); }
+  }
+  genak4jets_phi_branch = 0;
+  if (tree->GetBranch("genak4jets_phi") != 0) {
+    genak4jets_phi_branch = tree->GetBranch("genak4jets_phi");
+    if (genak4jets_phi_branch) { genak4jets_phi_branch->SetAddress(&genak4jets_phi_); }
+  }
+  genak4jets_pt_branch = 0;
+  if (tree->GetBranch("genak4jets_pt") != 0) {
+    genak4jets_pt_branch = tree->GetBranch("genak4jets_pt");
+    if (genak4jets_pt_branch) { genak4jets_pt_branch->SetAddress(&genak4jets_pt_); }
+  }
   genmet_pTmiss_branch = 0;
   if (tree->GetBranch("genmet_pTmiss") != 0) {
     genmet_pTmiss_branch = tree->GetBranch("genmet_pTmiss");
@@ -607,6 +627,21 @@ void SkimTree::Init(TTree *tree) {
   if (tree->GetBranch("lepton_pt") != 0) {
     lepton_pt_branch = tree->GetBranch("lepton_pt");
     if (lepton_pt_branch) { lepton_pt_branch->SetAddress(&lepton_pt_); }
+  }
+  genpromptparticles_sump4_mass_branch = 0;
+  if (tree->GetBranch("genpromptparticles_sump4_mass") != 0) {
+    genpromptparticles_sump4_mass_branch = tree->GetBranch("genpromptparticles_sump4_mass");
+    if (genpromptparticles_sump4_mass_branch) { genpromptparticles_sump4_mass_branch->SetAddress(&genpromptparticles_sump4_mass_); }
+  }
+  genpromptparticles_sump4_pt_branch = 0;
+  if (tree->GetBranch("genpromptparticles_sump4_pt") != 0) {
+    genpromptparticles_sump4_pt_branch = tree->GetBranch("genpromptparticles_sump4_pt");
+    if (genpromptparticles_sump4_pt_branch) { genpromptparticles_sump4_pt_branch->SetAddress(&genpromptparticles_sump4_pt_); }
+  }
+  genpromptparticles_sump4_rapidity_branch = 0;
+  if (tree->GetBranch("genpromptparticles_sump4_rapidity") != 0) {
+    genpromptparticles_sump4_rapidity_branch = tree->GetBranch("genpromptparticles_sump4_rapidity");
+    if (genpromptparticles_sump4_rapidity_branch) { genpromptparticles_sump4_rapidity_branch->SetAddress(&genpromptparticles_sump4_rapidity_); }
   }
   leptons_eff_branch = 0;
   if (tree->GetBranch("leptons_eff") != 0) {
@@ -970,6 +1005,10 @@ void SkimTree::GetEntry(unsigned int idx) {
   event_wgt_triggers_PFMET_MHT_Control_isLoaded = false;
   event_wgt_triggers_SingleLepton_isLoaded = false;
   event_wgt_triggers_SinglePhoton_isLoaded = false;
+  genak4jets_eta_isLoaded = false;
+  genak4jets_mass_isLoaded = false;
+  genak4jets_phi_isLoaded = false;
+  genak4jets_pt_isLoaded = false;
   genmet_pTmiss_isLoaded = false;
   genmet_phimiss_isLoaded = false;
   lepton_eff_isLoaded = false;
@@ -983,6 +1022,9 @@ void SkimTree::GetEntry(unsigned int idx) {
   lepton_mass_isLoaded = false;
   lepton_phi_isLoaded = false;
   lepton_pt_isLoaded = false;
+  genpromptparticles_sump4_mass_isLoaded = false;
+  genpromptparticles_sump4_pt_isLoaded = false;
+  genpromptparticles_sump4_rapidity_isLoaded = false;
   leptons_eff_isLoaded = false;
   leptons_eff_DF_isLoaded = false;
   leptons_eff_DF_StatDn_isLoaded = false;
@@ -1143,6 +1185,10 @@ void SkimTree::LoadAllBranches() {
   if (event_wgt_triggers_PFMET_MHT_Control_branch != 0) event_wgt_triggers_PFMET_MHT_Control();
   if (event_wgt_triggers_SingleLepton_branch != 0) event_wgt_triggers_SingleLepton();
   if (event_wgt_triggers_SinglePhoton_branch != 0) event_wgt_triggers_SinglePhoton();
+  if (genak4jets_eta_branch != 0) genak4jets_eta();
+  if (genak4jets_mass_branch != 0) genak4jets_mass();
+  if (genak4jets_phi_branch != 0) genak4jets_phi();
+  if (genak4jets_pt_branch != 0) genak4jets_pt();
   if (genmet_pTmiss_branch != 0) genmet_pTmiss();
   if (genmet_phimiss_branch != 0) genmet_phimiss();
   if (lepton_eff_branch != 0) lepton_eff();
@@ -1156,6 +1202,9 @@ void SkimTree::LoadAllBranches() {
   if (lepton_mass_branch != 0) lepton_mass();
   if (lepton_phi_branch != 0) lepton_phi();
   if (lepton_pt_branch != 0) lepton_pt();
+  if (genpromptparticles_sump4_mass_branch != 0) genpromptparticles_sump4_mass();
+  if (genpromptparticles_sump4_pt_branch != 0) genpromptparticles_sump4_pt();
+  if (genpromptparticles_sump4_rapidity_branch != 0) genpromptparticles_sump4_rapidity();
   if (leptons_eff_branch != 0) leptons_eff();
   if (leptons_eff_DF_branch != 0) leptons_eff_DF();
   if (leptons_eff_DF_StatDn_branch != 0) leptons_eff_DF_StatDn();
@@ -2659,6 +2708,90 @@ const float &SkimTree::lepton_pt() {
   }
   return lepton_pt_;
 }
+const vector<float> &SkimTree::genak4jets_eta() {
+  if (not genak4jets_eta_isLoaded) {
+    if (genak4jets_eta_branch != 0) {
+      genak4jets_eta_branch->GetEntry(index);
+    } else {
+      printf("branch genak4jets_eta_branch does not exist!\n");
+      exit(1);
+    }
+    genak4jets_eta_isLoaded = true;
+  }
+  return *genak4jets_eta_;
+}
+const vector<float> &SkimTree::genak4jets_mass() {
+  if (not genak4jets_mass_isLoaded) {
+    if (genak4jets_mass_branch != 0) {
+      genak4jets_mass_branch->GetEntry(index);
+    } else {
+      printf("branch genak4jets_mass_branch does not exist!\n");
+      exit(1);
+    }
+    genak4jets_mass_isLoaded = true;
+  }
+  return *genak4jets_mass_;
+}
+const vector<float> &SkimTree::genak4jets_phi() {
+  if (not genak4jets_phi_isLoaded) {
+    if (genak4jets_phi_branch != 0) {
+      genak4jets_phi_branch->GetEntry(index);
+    } else {
+      printf("branch genak4jets_phi_branch does not exist!\n");
+      exit(1);
+    }
+    genak4jets_phi_isLoaded = true;
+  }
+  return *genak4jets_phi_;
+}
+const vector<float> &SkimTree::genak4jets_pt() {
+  if (not genak4jets_pt_isLoaded) {
+    if (genak4jets_pt_branch != 0) {
+      genak4jets_pt_branch->GetEntry(index);
+    } else {
+      printf("branch genak4jets_pt_branch does not exist!\n");
+      exit(1);
+    }
+    genak4jets_pt_isLoaded = true;
+  }
+  return *genak4jets_pt_;
+}
+const float &SkimTree::genpromptparticles_sump4_mass() {
+  if (not genpromptparticles_sump4_mass_isLoaded) {
+    if (genpromptparticles_sump4_mass_branch != 0) {
+      genpromptparticles_sump4_mass_branch->GetEntry(index);
+    } else {
+      printf("branch genpromptparticles_sump4_mass_branch does not exist!\n");
+      exit(1);
+    }
+    genpromptparticles_sump4_mass_isLoaded = true;
+  }
+  return genpromptparticles_sump4_mass_;
+}
+const float &SkimTree::genpromptparticles_sump4_pt() {
+  if (not genpromptparticles_sump4_pt_isLoaded) {
+    if (genpromptparticles_sump4_pt_branch != 0) {
+      genpromptparticles_sump4_pt_branch->GetEntry(index);
+    } else {
+      printf("branch genpromptparticles_sump4_pt_branch does not exist!\n");
+      exit(1);
+    }
+    genpromptparticles_sump4_pt_isLoaded = true;
+  }
+  return genpromptparticles_sump4_pt_;
+}
+const float &SkimTree::genpromptparticles_sump4_rapidity() {
+  if (not genpromptparticles_sump4_rapidity_isLoaded) {
+    if (genpromptparticles_sump4_rapidity_branch != 0) {
+      genpromptparticles_sump4_rapidity_branch->GetEntry(index);
+    } else {
+      printf("branch genpromptparticles_sump4_rapidity_branch does not exist!\n");
+      exit(1);
+    }
+    genpromptparticles_sump4_rapidity_isLoaded = true;
+  }
+  return genpromptparticles_sump4_rapidity_;
+}
 const vector<float> &SkimTree::leptons_eff() {
   if (not leptons_eff_isLoaded) {
     if (leptons_eff_branch != 0) {
@@ -3386,6 +3519,10 @@ namespace tas {
   const float &event_wgt_triggers_PFMET_MHT_Control() { return st.event_wgt_triggers_PFMET_MHT_Control(); }
   const float &event_wgt_triggers_SingleLepton() { return st.event_wgt_triggers_SingleLepton(); }
   const float &event_wgt_triggers_SinglePhoton() { return st.event_wgt_triggers_SinglePhoton(); }
+  const vector<float> &genak4jets_eta() { return st.genak4jets_eta(); }
+  const vector<float> &genak4jets_mass() { return st.genak4jets_mass(); }
+  const vector<float> &genak4jets_phi() { return st.genak4jets_phi(); }
+  const vector<float> &genak4jets_pt() { return st.genak4jets_pt(); }
   const float &genmet_pTmiss() { return st.genmet_pTmiss(); }
   const float &genmet_phimiss() { return st.genmet_phimiss(); }
   const float &lepton_eff() { return st.lepton_eff(); }
@@ -3399,6 +3536,9 @@ namespace tas {
   const float &lepton_mass() { return st.lepton_mass(); }
   const float &lepton_phi() { return st.lepton_phi(); }
   const float &lepton_pt() { return st.lepton_pt(); }
+  const float &genpromptparticles_sump4_mass() { return st.genpromptparticles_sump4_mass(); }
+  const float &genpromptparticles_sump4_pt() { return st.genpromptparticles_sump4_pt(); }
+  const float &genpromptparticles_sump4_rapidity() { return st.genpromptparticles_sump4_rapidity(); }
   const vector<float> &leptons_eff() { return st.leptons_eff(); }
   const vector<float> &leptons_eff_DF() { return st.leptons_eff_DF(); }
   const vector<float> &leptons_eff_DF_StatDn() { return st.leptons_eff_DF_StatDn(); }

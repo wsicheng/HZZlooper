@@ -23,7 +23,7 @@ int main(int argc, char** argv)
 {
 
   if (argc < 4) {
-    cout << "   Usage: runStopLooper <input_files> <sample> <output_dir> [nevt_samp]" << endl;
+    cout << "   Usage: runlooper <input_files> <sample> <output_dir> [nevt_samp]" << endl;
     return 1;
   }
 
@@ -51,7 +51,7 @@ int main(int argc, char** argv)
   for (TString file : vecInFiles) {
     if (usexrootd && file.BeginsWith("/store"))
       file = "root://cmsxrootd.fnal.gov/"+file;
-    cout << "[runHZZlooper] >> Adding file " << file << " to be process." << endl;
+    cout << "[runlooper] >> Adding file " << file << " to be process." << endl;
     ch->Add(file);
   }
 

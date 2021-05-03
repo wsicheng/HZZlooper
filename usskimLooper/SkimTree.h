@@ -14,7 +14,7 @@
 #include <unistd.h>
 typedef ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<float> > LorentzVector;
 
-// Generated with command: -t SkimTree -n tas -o st -c SkimTree -plv /hadoop/cms/store/user/usarica/Offshell_2L2Nu/Worker/output/SinglePhotonEvents/SkimTrees/210107/AK4Jets_WithPUJetId_NoTightLeptonJetId_ParticleCleaned/PFMET_WithXY_WithPartMomCorr_P4Preserved/2018D/Run2018D_Nominal_9_of_30.root 
+// Generated with command: -t SkimTree -n tas -o st -c SkimTree -plv /hadoop/cms/store/user/usarica/Offshell_2L2Nu/Worker/output/DileptonEvents/SkimTrees/210107/AK4Jets_WithPUJetId_NoTightLeptonJetId_ParticleCleaned/PFMET_WithXY_NoJER_WithPartMomCorr_P4Preserved_ResolutionCorrected/2017/ZZTo2L2Nu_mZMin-18_TuneCP5_13TeV-powheg-pythia8_RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1_Nominal_0_of_6.root 
 
 using namespace std;
 class SkimTree {
@@ -384,6 +384,27 @@ protected:
   float lepton_pt_;
   TBranch *lepton_pt_branch;
   bool lepton_pt_isLoaded;
+  vector<float> *genak4jets_eta_;
+  TBranch *genak4jets_eta_branch;
+  bool genak4jets_eta_isLoaded;
+  vector<float> *genak4jets_mass_;
+  TBranch *genak4jets_mass_branch;
+  bool genak4jets_mass_isLoaded;
+  vector<float> *genak4jets_phi_;
+  TBranch *genak4jets_phi_branch;
+  bool genak4jets_phi_isLoaded;
+  vector<float> *genak4jets_pt_;
+  TBranch *genak4jets_pt_branch;
+  bool genak4jets_pt_isLoaded;
+  float genpromptparticles_sump4_mass_;
+  TBranch *genpromptparticles_sump4_mass_branch;
+  bool genpromptparticles_sump4_mass_isLoaded;
+  float genpromptparticles_sump4_pt_;
+  TBranch *genpromptparticles_sump4_pt_branch;
+  bool genpromptparticles_sump4_pt_isLoaded;
+  float genpromptparticles_sump4_rapidity_;
+  TBranch *genpromptparticles_sump4_rapidity_branch;
+  bool genpromptparticles_sump4_rapidity_isLoaded;
   vector<float> *leptons_eff_;
   TBranch *leptons_eff_branch;
   bool leptons_eff_isLoaded;
@@ -646,6 +667,10 @@ public:
   const float &event_wgt_triggers_PFMET_MHT_Control();
   const float &event_wgt_triggers_SingleLepton();
   const float &event_wgt_triggers_SinglePhoton();
+  const vector<float> &genak4jets_eta();
+  const vector<float> &genak4jets_mass();
+  const vector<float> &genak4jets_phi();
+  const vector<float> &genak4jets_pt();
   const float &genmet_pTmiss();
   const float &genmet_phimiss();
   const float &lepton_eff();
@@ -659,6 +684,9 @@ public:
   const float &lepton_mass();
   const float &lepton_phi();
   const float &lepton_pt();
+  const float &genpromptparticles_sump4_mass();
+  const float &genpromptparticles_sump4_pt();
+  const float &genpromptparticles_sump4_rapidity();
   const vector<float> &leptons_eff();
   const vector<float> &leptons_eff_DF();
   const vector<float> &leptons_eff_DF_StatDn();
@@ -826,6 +854,10 @@ namespace tas {
   const float &event_wgt_triggers_PFMET_MHT_Control();
   const float &event_wgt_triggers_SingleLepton();
   const float &event_wgt_triggers_SinglePhoton();
+  const vector<float> &genak4jets_eta();
+  const vector<float> &genak4jets_mass();
+  const vector<float> &genak4jets_phi();
+  const vector<float> &genak4jets_pt();
   const float &genmet_pTmiss();
   const float &genmet_phimiss();
   const float &lepton_eff();
@@ -839,6 +871,9 @@ namespace tas {
   const float &lepton_mass();
   const float &lepton_phi();
   const float &lepton_pt();
+  const float &genpromptparticles_sump4_mass();
+  const float &genpromptparticles_sump4_pt();
+  const float &genpromptparticles_sump4_rapidity();
   const vector<float> &leptons_eff();
   const vector<float> &leptons_eff_DF();
   const vector<float> &leptons_eff_DF_StatDn();

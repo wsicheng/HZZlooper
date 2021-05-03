@@ -12,24 +12,28 @@ def makePlots3lCR():
     exts = ['pdf', 'png']
 
     base_plots = [
-        # ("njets",True,None,None),
+        ("njets",True,None,None),
         ("met",True,(0,560.),None,4),
         # ("rlmet",True,(0,560.),None,4),
         ("rlmtZZ",True,(150,650),None,4),
-        ("mtWZ",True,(150,650),None,4),
-        ("mWZ",True,(150,650),None,4),
+        ("mtWZ",True,(150,1000),None,4),
+        ("mWZ",True,(150,1000),None,4),
         ("mtl3",True,None,None,2),
-        # # ("mllmin",True,None,None,2),
+        # ("mllmin",True,None,None,2),
+        ("mtWZbins",True,None,None),
 
         ("ptll",True,None,None,4),
-        # ("mll",True,None,None,2),
+        ("mll",True,None,None,2),
         ("boson_pt",True,(55,855),None,4),
         ("boson_mass",True,None,None,3),
 
         # ("llid",True,None,None,1),
-        ("lepZ1pt",True,None,None,2),
-        ("lepZ2pt",True,None,None,2),
-        ("lepWpt",True,None,None,2),
+        ("lepZ1pt_finebin",True,None,None),
+        ("lepZ2pt_finebin",True,None,None),
+        ("lepWpt_finebin",True,None,None),
+        ("lep1pt_finebin",True,None,None),
+        ("lep2pt_finebin",True,None,None),
+        ("lep3pt_finebin",True,None,None),
 
         ("dphi_boson_met",True,(1.0,3.2),None),
         ("dphi_lepW_met",True,None,None),
@@ -44,27 +48,24 @@ def makePlots3lCR():
 
     # year = '2018'
     year = 'run2'
-    input_dir = '../trilepLooper/output/v4_08_3lCR2_{}'.format(year)
-    output_dir = 'plots{}_3lCR_Apr20'.format(year[2:])
-    # bkg_set = bkgnames
-    bkg_set = [ 'WZ', 'DY', 'ZG', 'ttZ', 'triboson', 'Others' ] # 2016
+    input_dir = '../trilepLooper/output/v4_08_3lCR_{}'.format(year)
+    output_dir = 'plots{}_3lCR_Apr26'.format(year[2:])
+    bkg_set = [ 'WZ', 'DY', 'ZG', 'ttZ', 'triboson', 'Others' ]
     dataname = 'data_3lskim'.format(year)
     
     systset = ['EW',]
     metsufs = ['_fullMET', '_final' ]
     ljsuffs = []
-    for jsuf in ['_eq0j', '_eq1j', '_ge2j']:
-    # for jsuf in [ '']:
+    # for jsuf in ['_eq0j', '_eq1j', '_ge2j']:
+    for jsuf in ['',]:
         for lsuf in ['_lle', '_llmu']:
             ljsuffs.append(jsuf+lsuf)
 
     for ljsuf in ljsuffs:
         outdir = output_dir
         for srn in srNames:
-            # multsuf = True if '_ll' in ljsuf else False
             multsuf = False
             sr = srn if multsuf else srn+ljsuf
-            # slst = [ljsuf.replace('_ll', '_ee'), ljsuf.replace('_ll', '_mumu')] if multsuf else None
             slst = None
             suf, tag = ('', ljsuf) if multsuf else (ljsuf, '')
             for msuf in metsufs:

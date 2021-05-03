@@ -18,13 +18,24 @@ if __name__ == "__main__":
     dsinfos = {
         # diBoson
         # '/WZTo1L3Nu_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM|3.05|1.00262|1',
-        'DYJetsToLL_M-50' : '/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18NanoAODv6-Nano25Oct2019_102X_upgrade2018_realistic_v20_ext2-v1/NANOAODSIM|130939668',
+        # 'DYJetsToLL_M-50' : '/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18NanoAODv6-Nano25Oct2019_102X_upgrade2018_realistic_v20_ext2-v1/NANOAODSIM|130939668',
+
+        'ZGTo2NuG' : '/ZGTo2NuG_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18NanoAODv6-Nano25Oct2019_102X_upgrade2018_realistic_v20-v1/NANOAODSIM',
+        'ZGTo2NuG_PtG-130' : '/ZGTo2NuG_PtG-130_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18NanoAODv6-Nano25Oct2019_102X_upgrade2018_realistic_v20-v1/NANOAODSIM',
+        'ZNuNuGJets_MonoPhoton_PtG-40to130' : '/ZNuNuGJets_MonoPhoton_PtG-40to130_TuneCP5_13TeV-madgraph/RunIIAutumn18NanoAODv6-Nano25Oct2019_102X_upgrade2018_realistic_v20-v1/NANOAODSIM',
+        'ZNuNuGJets_MonoPhoton_PtG-130' : '/ZNuNuGJets_MonoPhoton_PtG-130_TuneCP5_13TeV-madgraph/RunIIAutumn18NanoAODv6-Nano25Oct2019_102X_upgrade2018_realistic_v20-v1/NANOAODSIM',
+        'ZGTo2LG_PtG-130' : '/ZGTo2LG_PtG-130_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18NanoAODv6-Nano25Oct2019_102X_upgrade2018_realistic_v20-v1/NANOAODSIM',
 
         'GJets_HT-40To100' : '/GJets_HT-40To100_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18NanoAODv6-Nano25Oct2019_102X_upgrade2018_realistic_v20-v1/NANOAODSIM|9371355',
         'GJets_HT-100To200' : '/GJets_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18NanoAODv6-Nano25Oct2019_4cores5k_102X_upgrade2018_realistic_v20-v1/NANOAODSIM|9798176',
         'GJets_HT-200To400' : '/GJets_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18NanoAODv6-Nano25Oct2019_102X_upgrade2018_realistic_v20-v1/NANOAODSIM|19062809',
         'GJets_HT-400To600' : '/GJets_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18NanoAODv6-Nano25Oct2019_102X_upgrade2018_realistic_v20-v1/NANOAODSIM|4655985',
         'GJets_HT-600ToInf' : '/GJets_HT-600ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18NanoAODv6-Nano25Oct2019_102X_upgrade2018_realistic_v20_ext1-v1/NANOAODSIM|4981121',
+
+        'EGamma_2018A' : '/EGamma/Run2018A-Nano25Oct2019-v1/NANOAOD',
+        'EGamma_2018B' : '/EGamma/Run2018B-Nano25Oct2019-v1/NANOAOD',
+        'EGamma_2018C' : '/EGamma/Run2018C-Nano25Oct2019-v1/NANOAOD',
+        'EGamma_2018D' : '/EGamma/Run2018D-Nano25Oct2019-v1/NANOAOD',
 
         # 'data_2018A_singlemu' : '/SingleMuon/Run2018A-Nano25Oct2019-v1/NANOAOD',
     }
@@ -40,7 +51,7 @@ if __name__ == "__main__":
 
         cmsswver = "CMSSW_10_1_0"
         scramarch = "slc6_amd64_gcc700"
-        tag = "v1_3"
+        tag = "v1_6"
 
         tarfile = "tarfiles/input_"+tag+".tar.gz"
 
@@ -48,7 +59,7 @@ if __name__ == "__main__":
         task = CondorTask(
             sample = sample,
             # events_per_output = 450e3,
-            files_per_output = 5,
+            files_per_output = 50 if 'data' in outname else 5,
             outdir_name = "HZZlooperOutput",
             output_name = outname+".root",
             tag = tag,

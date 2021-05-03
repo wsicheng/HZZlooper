@@ -1,7 +1,7 @@
 #include "HZZSelections.h"
 // #include "Utilities.h"
-// #include "config/prescales/photon_prescales_2018.hh"
-#include "config/prescales/photon_prescales_run2.hh"
+#include "config/prescales/photon_prescales_2018.hh"
+// #include "config/prescales/photon_prescales_run2.hh"
 
 
 inline bool isCloseObject(const float eta1, const float phi1, const float eta2, const float phi2, const float conesize, float* deltaR = nullptr) {
@@ -96,19 +96,19 @@ bool passTriggerSelections(int trigtype) {
         if (false) {
           prescaled = (
               HLT_Photon50_R9Id90_HE10_IsoM() ||  // eff lumi: 0.
-              HLT_Photon50_R9Id90_HE10_IsoM_EBOnly_PFJetsMJJ300DEta3_PFMET50() ||
+              // HLT_Photon50_R9Id90_HE10_IsoM_EBOnly_PFJetsMJJ300DEta3_PFMET50() ||
               HLT_Photon75_R9Id90_HE10_IsoM() ||
-              HLT_Photon75_R9Id90_HE10_IsoM_EBOnly_CaloMJJ300_PFJetsMJJ400DEta3() ||
-              HLT_Photon75_R9Id90_HE10_IsoM_EBOnly_CaloMJJ400_PFJetsMJJ600DEta3() ||
-              HLT_Photon75_R9Id90_HE10_IsoM_EBOnly_PFJetsMJJ300DEta3() ||
-              HLT_Photon75_R9Id90_HE10_IsoM_EBOnly_PFJetsMJJ600DEta3() ||
+              // HLT_Photon75_R9Id90_HE10_IsoM_EBOnly_CaloMJJ300_PFJetsMJJ400DEta3() ||
+              // HLT_Photon75_R9Id90_HE10_IsoM_EBOnly_CaloMJJ400_PFJetsMJJ600DEta3() ||
+              // HLT_Photon75_R9Id90_HE10_IsoM_EBOnly_PFJetsMJJ300DEta3() ||
+              // HLT_Photon75_R9Id90_HE10_IsoM_EBOnly_PFJetsMJJ600DEta3() ||
               HLT_Photon90_R9Id90_HE10_IsoM() ||
-              HLT_Photon120_R9Id90_HE10_IsoM() );
+              HLT_Photon120_R9Id90_HE10_IsoM() ||
+              HLT_Photon165_R9Id90_HE10_IsoM()
+              );
         }
 
-        // unprescaled in 2016, prescaled in 2017 & 2018
-        return ( prescaled || HLT_Photon300_NoHE() );
-        // HLT_Photon175() || HLT_Photon200()  // unprescaled, but not use
+        return ( prescaled || HLT_Photon200() );
     }
 
     // Lepton triggers that doesn't exist
@@ -125,7 +125,7 @@ double getPhotonTrigPrescale(double objpt) {
   // Take 10% more, so that we are on the plateau (the pT in the name is the one at the middle of the turn-on curve, so at 50% efficiency).
   if (!gconf.is_data) return 1.0;
 
-  bool useSinglePrescale = false;
+  bool useSinglePrescale = true;
   const std::map<unsigned,std::map<unsigned,int>>* runMap = nullptr;
 
   switch (gconf.year) {
@@ -159,25 +159,14 @@ double getPhotonTrigPrescale(double objpt) {
             runMap = &tab_prescales_HLT_Photon50_R9Id90_HE10_IsoM;
           else
             return 0.0; // 1./(1.-0.98606)
-        } else if ( objpt > 39.3 ) {
-          if (HLT_Photon36_R9Id90_HE10_IsoM())
-            runMap = &tab_prescales_HLT_Photon36_R9Id90_HE10_IsoM;
-          else
-            return 0.0; // 1./(1.-0.99392)
-        } else if ( objpt > 33. ) {
-          if (HLT_Photon30_R9Id90_HE10_IsoM())
-            runMap = &tab_prescales_HLT_Photon30_R9Id90_HE10_IsoM;
-          else
-            return 0.0; // 1./(1.-0.99728)
-        } else if ( objpt > 24.2 ) {
-          if (HLT_Photon22_R9Id90_HE10_IsoM())
-            runMap = &tab_prescales_HLT_Photon22_R9Id90_HE10_IsoM;
-          else
-            return 0.0; // 1./(1.-0.99946)
+        } else {
+          return 0.0;
         }
       }
       else if (useSinglePrescale) {
-        if ( objpt > 181.5 )
+        if ( objpt > 190 )
+          return (HLT_Photon175())? 1.0 : 0.0;
+        else if ( objpt > 181.5 )
           return (HLT_Photon165_R9Id90_HE10_IsoM())? 1.0 : 0.0;
         else if ( objpt > 132. )
           return (HLT_Photon120_R9Id90_HE10_IsoM())? 2.4773 : 0.0; // 1./(1.-0.59633)
@@ -226,6 +215,8 @@ double getPhotonTrigPrescale(double objpt) {
             runMap = &tab_prescales_HLT_Photon50_R9Id90_HE10_IsoM;
           else
             return 0.0;
+        } else {
+          return 0.0;
         }
       }
     default:
@@ -424,12 +415,13 @@ vector<int> getIsoTrackIndices(const vector<Muon>& mus, const vector<Electron>& 
   return trackIdxs;
 }
 
-vector<Photon> getPhotons() {
+vector<Photon> getPhotons(const vector<Muon>& mus, const vector<Electron>& els) {
   vector<Photon> photons;
 
   for (unsigned i = 0; i < Photon_pt().size(); ++i) {
     // Tight ID
-    const bool passId = (gconf.year == 2016)? (Photon_cutBased()[i] >= 3) : (Photon_cutBasedBitmap()[i] & 0b0100);
+    // const bool passId = (gconf.year == 2016)? (Photon_cutBased()[i] >= 3) : (Photon_cutBasedBitmap()[i] & 0b0100);
+    const bool passId = (Photon_cutBased()[i] >= 3);  // new format for 2018 data...
 
     if (Photon_pt()[i] < k_minPt_photon or not passId)
       continue;
@@ -439,12 +431,21 @@ vector<Photon> getPhotons() {
       continue;
 
     Photon gamma;
-    gamma.p4.SetPtEtaPhiM(Photon_pt()[i], Photon_eta()[i], Photon_phi()[i], 0.);
-
     // Perform angular cleaning
     // if (IsDuplicate(gamma.p4, 0.1)) continue; // <-- to be revisit
+    for (auto lep : mus) {
+      if (isCloseObject(Photon_eta()[i], Photon_phi()[i], lep.p4.Eta(), lep.p4.Phi(), 0.4))
+        goto end_of_loop_photons;
+    }
+    for (auto lep : els) {
+      if (isCloseObject(Photon_eta()[i], Photon_phi()[i], lep.p4.Eta(), lep.p4.Phi(), 0.4))
+        goto end_of_loop_photons;
+    }
 
+    gamma.p4.SetPtEtaPhiM(Photon_pt()[i], Photon_eta()[i], Photon_phi()[i], 0.);
     photons.emplace_back(gamma);
+
+ end_of_loop_photons:;
   }
 
   // Make sure the collection is ordered in pt
@@ -634,3 +635,20 @@ bool ZZ2l2vPrunerCuts() {
   return false;
 }
 
+bool InstrMETPrunerCuts() {
+  // for (unsigned i = 0; i < nPhoton(); ++i) {
+  for (unsigned i = 0; i < Photon_pt().size(); ++i) {
+    // Tight ID
+    if (Photon_pt()[i] < 50) continue;
+
+    // const bool passId = (gconf.year == 2016)? (Photon_cutBased()[i] >= 3) : (Photon_cutBasedBitmap()[i] & 0b0100);
+    const bool passId = (Photon_cutBased()[i] >= 3);
+
+    if (!passId) continue;
+    // Only consider photons in the barrel
+    // if (photons_eta()[i] > 2.5) continue;
+    return true;
+  }
+
+  return false;
+}

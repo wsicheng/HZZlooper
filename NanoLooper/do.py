@@ -5,6 +5,7 @@ import os, sys, math, glob
 from multiprocessing.dummy import Pool as ThreadPool
 import yaml
 import argparse
+from metis.Sample import DBSSample, DirectorySample
 
 # Control variables
 verbose = 2
@@ -16,6 +17,9 @@ proddir = '/pnfs/iihe/cms/store/group/HZZ2l2nu/Production/'
 dir17 = proddir+'2019-11-01_2017/DDF/'
 dir16p2 = proddir+'2019-09-05_2016/DDF/'
 dir16p1 = proddir+'2019-08-16_2016/DDF/'
+
+proddir = '/hadoop/cms/store/user/sicheng/NanoAOD'
+dir16v7 = proddir+'/mc2016_v7'
 
 # Dataset names
 test17 = [
@@ -73,6 +77,49 @@ data16p1 = [
 ]
 
 ds17 = data17 + mc17
+
+dsinfos = {
+    # diBoson
+    # '/WZTo1L3Nu_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM|3.05|1.00262|1',
+    # 'DYJetsToLL_M-50' : '/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18NanoAODv6-Nano25Oct2019_102X_upgrade2018_realistic_v20_ext2-v1/NANOAODSIM|130939668', # total 193215674
+    # "GJets_HT-40To100" : "/GJets_HT-40To100_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18NanoAODv6-Nano25Oct2019_102X_upgrade2018_realistic_v20-v1/NANOAODSIM",
+    # "GJets_HT-100To200" : "/GJets_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18NanoAODv6-Nano25Oct2019_4cores5k_102X_upgrade2018_realistic_v20-v1/NANOAODSIM",
+    # "GJets_HT-200To400" : "/GJets_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18NanoAODv6-Nano25Oct2019_102X_upgrade2018_realistic_v20-v1/NANOAODSIM",
+    # "GJets_HT-400To600" : "/GJets_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18NanoAODv6-Nano25Oct2019_102X_upgrade2018_realistic_v20-v1/NANOAODSIM",
+    # "GJets_HT-600ToInf" : "/GJets_HT-600ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18NanoAODv6-Nano25Oct2019_102X_upgrade2018_realistic_v20_ext1-v1/NANOAODSIM",
+
+    # "GJets_DR-0p4_HT-600ToInf" : "/GJets_DR-0p4_HT-600ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18NanoAODv6-Nano25Oct2019_102X_upgrade2018_realistic_v20-v1/NANOAODSIM",
+    # "GJets_DR-0p4_HT-400To600" : "/GJets_DR-0p4_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18NanoAODv6-Nano25Oct2019_102X_upgrade2018_realistic_v20-v1/NANOAODSIM",
+    # "GJets_DR-0p4_HT-200To400" : "/GJets_DR-0p4_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18NanoAODv6-Nano25Oct2019_102X_upgrade2018_realistic_v20-v1/NANOAODSIM",
+    # "GJets_DR-0p4_HT-100To200" : "/GJets_DR-0p4_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18NanoAODv6-Nano25Oct2019_102X_upgrade2018_realistic_v20-v1/NANOAODSIM",
+
+    # 'data_egamma_2018A' : '/EGamma/Run2018A-02Apr2020-v1/NANOAOD',
+    # 'data_egamma_2018B' : '/EGamma/Run2018B-02Apr2020-v1/NANOAOD',
+    # 'data_egamma_2018C' : '/EGamma/Run2018C-02Apr2020-v1/NANOAOD',
+    # 'data_egamma_2018D' : '/EGamma/Run2018D-02Apr2020-v1/NANOAOD',
+
+    # 'data_egamma_2018A' : '/EGamma/Run2018A-Nano25Oct2019-v1/NANOAOD',
+    # 'data_egamma_2018B' : '/EGamma/Run2018B-Nano25Oct2019-v1/NANOAOD',
+    # 'data_egamma_2018C' : '/EGamma/Run2018C-Nano25Oct2019-v1/NANOAOD',
+    # 'data_egamma_2018D' : '/EGamma/Run2018D-Nano25Oct2019-v1/NANOAOD',
+
+    # 'data_photon_2016B' : "/SinglePhoton/Run2016B_ver2-Nano25Oct2019_ver2-v1/NANOAOD",
+    'data_photon_2016C' : "/SinglePhoton/Run2016C-Nano25Oct2019-v1/NANOAOD",
+    'data_photon_2016D' : "/SinglePhoton/Run2016D-Nano25Oct2019-v1/NANOAOD",
+    'data_photon_2016E' : "/SinglePhoton/Run2016E-Nano25Oct2019-v1/NANOAOD",
+    'data_photon_2016F' : "/SinglePhoton/Run2016F-Nano25Oct2019-v1/NANOAOD",
+    'data_photon_2016G' : "/SinglePhoton/Run2016G-Nano25Oct2019-v1/NANOAOD",
+    'data_photon_2016H' : "/SinglePhoton/Run2016H-Nano25Oct2019-v1/NANOAOD",
+
+    # 'data_photon_2016B' : "/SinglePhoton/Run2016B-02Apr2020_ver2-v1/NANOAOD",
+    # 'data_photon_2016C' : "/SinglePhoton/Run2016C-02Apr2020-v1/NANOAOD",
+    # 'data_photon_2016D' : "/SinglePhoton/Run2016D-02Apr2020-v1/NANOAOD",
+    # 'data_photon_2016E' : "/SinglePhoton/Run2016E-02Apr2020-v1/NANOAOD",
+    # 'data_photon_2016F' : "/SinglePhoton/Run2016F-02Apr2020-v1/NANOAOD",
+    # 'data_photon_2016G' : "/SinglePhoton/Run2016G-02Apr2020-v1/NANOAOD",
+    # 'data_photon_2016H' : "/SinglePhoton/Run2016H-02Apr2020-v1/NANOAOD",
+
+}
 
 merge_map = {
     'Wjets' : [ 'WJetsToLNu_HT-100To200', 'WJetsToLNu_HT-200To400',
@@ -138,6 +185,36 @@ def getFileList(dsloc, dslist=None):
 
     return ds_flists
 
+def getDBSFileList(dsinfos, dslist=None):
+    if dslist == None:
+        dslist = dsinfos.keys()
+    ds_flists = {}
+    for dsname in dslist:
+        dsinfo = dsinfos[dsname].split('|')
+        dataset = dsinfo[0]
+        sample = DBSSample(dataset=dataset)
+        nevts = dsinfo[1] if len(dsinfo) > 1 else sample.get_nevents()
+        ds_flists[dsname] = ([ef.get_name() for ef in sample.get_files()], nevts)
+
+    return ds_flists
+
+def getDirFileList(findir, dslist=None):
+    ds_flists = {}
+    
+    dins = glob.glob(findir+'/*') 
+    dsel = dins if dslist==None else [ d for d in dins if any(k in d for k in dslist) ]
+                
+    for d in dsel:
+        with open(d+'/info.yml') as finfo:
+            info = yaml.safe_load(finfo)
+        fins = glob.glob(d+'/*.root') 
+        # dsname = info.get('dsname', d.replace(findir,'').replace('__','/')+'/NANOAODSIM')
+        dsname = info.get('dsname', reduce(sum, [ k for k in dslist if k in d ]) if dslist!=None else d.replace(findir+'/',''))
+        nevts = info.get('nevents', -1)
+        ds_flists[dsname] = (fins, nevts)
+
+    return ds_flists
+
 def runHZZlooper(args):
     
     if verbose >= 3:
@@ -176,7 +253,7 @@ if __name__ == '__main__':
     parser.add_argument('-mo', '--merge_only', default=False)
     parser.add_argument('-dr', '--dryrun', action='store_true', default=False)
     parser.add_argument('-fg', '--nolog', action='store_true', default=False)
-    parser.add_argument('--nomerge', action='store_true', default=False)
+    parser.add_argument('--merge', action='store_true', default=False)
     parser.add_argument('--nice', default=10)
 
     args = parser.parse_args()
@@ -205,8 +282,10 @@ if __name__ == '__main__':
     data_flists = {}
     samp_flists = {}
 
-    samp_flists = samp16_flists
+    # samp_flists = samp16_flists
+    samp_flists = getDBSFileList(dsinfos)
     # samp_flists = getFileList(dir16p1, [ 'MuonEG',])
+    # samp_flists = getDirFileList(dir16v7, [ 'ZGTo2',])
 
     rv = os.system('make -j 12')
     if rv != 0: exit()          # quit if make is not successful
@@ -235,14 +314,14 @@ if __name__ == '__main__':
 
     # The samples that can be separated
     for dsname, (flist, nevt) in samp_flists.items():
-        nfile_per_job = 20
+        nfile_per_job = 10
         njobs = int(math.ceil(len(flist) / nfile_per_job))
         njobs_total += njobs
 
         for i in range(njobs):
             infilestr = ','.join(flist[ i*nfile_per_job : (i+1)*nfile_per_job ])
             argstr = '{0} {1}_{3} {2} {4}'.format(infilestr, dsname, outdir, i, nevt)
-            if not args.nolog: argstr += ' >& {}/logs/log_{}.txt'.format(outdir, dsname)
+            if not args.nolog: argstr += ' >& {}/logs/log_{}_{}.txt'.format(outdir, dsname, i)
             arglist.append(argstr)
 
         if verbose >= 1:
@@ -258,7 +337,7 @@ if __name__ == '__main__':
             
     if njobs_done >= njobs_total-1:
         print( 'All {} job done!'.format(njobs_done) )
-        if not args.nomerge:
+        if args.merge:
             # mergeOutputHists(outdir,'',['allData',])
             mergeOutputHists(outdir)
     else:

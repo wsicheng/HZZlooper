@@ -72,34 +72,146 @@ def countXrange(h, xmin, xmax):
     return res, float(err)
 
 
+# def getPoissonCountingConfidenceInterval_Frequentist(sw_total, swsq_total, CL):
+#     quant = (1. - CL) / 2.0;
+#     count = (swsq_total<=0. ? (sw_total==0. ? 0. : sw_total) : std::pow(sw_total, 2)/swsq_total);
+
+#     vlow = (count == 0. ? 0. : r.Math.chisquared_quantile(quant, 2. * count) / 2.);
+#     vhigh = r.Math.chisquared_quantile_c(quant, 2 * (count + 1.)) / 2.;
+#     if count>0.:
+#         vlow *= sw_total/count;
+#         vhigh *= sw_total/count;
+
+#     return vlow, vhigh
+
+def makeNjetSF(year='2016', config=2):
+    indir = '../usskimLooper/output/v4_07_llgCR_{}'.format(year)
+
+    # fdat = r.TFile('{}/{}.root'.format(indir, 'data_{}_llgskim'.format(year)))
+    fdat = r.TFile('{}/{}.root'.format(indir, 'data_llgskim'))
+    if config == 1:
+        fbkg = r.TFile('{}/{}.root'.format(indir, 'allBkgs_llg'))
+    else:
+        fzg = r.TFile('{}/{}.root'.format(indir, 'ZGTo2LG'))
+        fdy = r.TFile('{}/{}.root'.format(indir, 'DY'))
+    
+    hdat = fdat.Get('OffShell/h_njets_fullMET')
+    if config == 1:
+        hbkg = fbkg.Get('OffShell/h_njets_fullMET')
+    elif config == 2:
+        hdy  = fdy.Get('OffShell/h_njets_fullMET')
+        hdat.Add(hdy, -1)
+        hbkg = fzg.Get('OffShell/h_njets_fullMET')
+    else:
+        print('Unknown config')
+
+    err = r.Double()
+    ibc = hdat.IntegralAndError(3, -1, err)
+    hdat.SetBinContent(3, ibc)
+    hdat.SetBinError(3, err)
+
+    ibc = hbkg.IntegralAndError(3, -1, err)
+    hbkg.SetBinContent(3, ibc)
+    hbkg.SetBinError(3, err)
+    hdat.Divide(hbkg)
+
+
+    print('| {} | ver{} '.format(year, config), end='')
+    for ib in range(1, 4):
+        print ('| {0:.3f} +- {1:.4f} '.format(hdat.GetBinContent(ib), hdat.GetBinError(ib)), end='')
+
+    print('|')
+
+def makeCombinedHists():
+
+    year = '2018'
+    indir = '../usskimLooper/output/v4_06_llgCR_{}'.format(year)
+    flists = ['data_{}_llgskim'.format(year), 'ZGTo2LG', 'DY', 'others', 'allBkgs_llg']
+
+    tarsuf = '_ll'
+    srcsufs = ['_ee', '_mumu']
+
+    # hlist = ['mtZZ', 'mtZZ_b1', 'njets', 'boson_pt', 'met', 'DjjVBF', 'min_dphijemt', 'dphi_boson_met', 'dphi_lljets_met']
+
+    for fn in flists:
+        f = r.TFile('{}/{}.root'.format(indir, fn), "UPDATE")
+        dns = f.GetListOfKeys()
+        for sdn in dns:
+            sdn = sdn.GetName()
+            ssuf0 = srcsufs[0]
+            if not ssuf0 in sdn: continue
+            tdn = sdn.replace(ssuf0, tarsuf)
+            if tdn not in dns: tdir = f.mkdir(tdn)
+            else: tdir = f.Get(tdn)
+            sdir1 = f.Get('{}'.format(sdn))
+            if not sdir1: print("ERROR: cannot find {} in file ".format(sdn))
+            hlist = sdir1.GetListOfKeys()
+            for hkey in hlist:
+                hn = hkey.GetName()
+                thn = hn.replace(ssuf0, tarsuf)
+                htst = f.Get('{}/{}'.format(tdn, thn))
+                if htst: continue
+                hnew = f.Get('{}/{}'.format(sdn, hn)).Clone(thn)
+                for ssuf in srcsufs[1:]:
+                    hsi = f.Get('{}/{}'.format(sdn.replace(ssuf0, ssuf), hn.replace(ssuf0, ssuf)))
+                    if not hsi:
+                        if not 'h_el' in hn: print("ERROR: cannot find {}/{} in file ".format(sdn, hn).replace(ssuf0,ssuf))
+                        continue
+                    hnew.Add(hsi) 
+                tdir.cd()
+                hnew.Write()
+
+
 def makeSubtraction():
 
-    year = '2016'
+    year = '2018'
     indir = '../usskimLooper/output/'
-    skimver = 'v4_02'
-    phsuf = '_ee2j_flateta_rwgtd'
-    sdir = 'dyest_v4_02_Nov11/data{}_{}'.format(phsuf, year)
+    skimver = 'v4_04'
+    # phsuf = '_ee2j_flateta_rwgtd'
+    phsuf = '2_ee2j_flateta_rwgtd_metge125'
 
     fdat = r.TFile('{0}{2}_phCR{3}_{1}/data_{1}_phskim.root'.format(indir, year, skimver, phsuf))
     fbkg = r.TFile('{0}{2}_phCR{3}_{1}/subtractor.root'.format(indir, year, skimver, phsuf))
     fout = r.TFile('{0}{2}_phCR{3}_{1}/DYestFromCR.root'.format(indir, year, skimver, phsuf), 'RECREATE')
 
+
+    year = 'run2'
+    indir = '../usskimLooper/output/fthists_'
+    skimver = 'v4_06_dphi0p5_met140'
+    fdat = r.TFile('{0}{2}_{1}/data.root'.format(indir, year, skimver, phsuf))
+    fbkg = r.TFile('{0}{2}_{1}/subtractor.root'.format(indir, year, skimver, phsuf))
+    fout = r.TFile('{0}{2}_{1}/DYestFromCR.root'.format(indir, year, skimver, phsuf), 'RECREATE')
+
     nfast = 'data single-#gamma'
     nfull = ''
 
-    hlist = ['h_mtZZ', 'h_mZZ', 'h_mtZZ_b1', 'h_mtZZ_b3', 'h_njets', 'h_boson_pt', 'h_met', 'h_DjjVBF']
+    # hlist = ['mtZZ', 'mZZ', 'mtZZ_b1', 'mtZZ_b3', 'njets', 'boson_pt', 'met', 'DjjVBF', 'usmetrat' ]
+    # hlist = ['mtZZ', 'mZZ', 'mtZZ_b1', 'mtZZ_b3', 'njets', 'boson_pt', 'met', 'DjjVBF', 'min_dphijemt', 'dphi_boson_met', 'dphi_lljets_met']
+    hlist = ['mtZZ', 'mtZZ_b1', 'njets', 'boson_pt', 'met', 'DjjVBF', 'min_dphijemt', 'dphi_boson_met', 'dphi_lljets_met']
 
-    lsuf = '_ll'
-    for metsuf in ['_fullMET', '_metge125',  '_metlt125']:
-        for jsuf in ['_eq0j', '_eq1j', '_eq2j']:
-            for hname in hlist:
-                dn = 'OffShell'+jsuf+lsuf
-                hn = hname+metsuf+jsuf+lsuf
+    for lsuf in ['_ll',]:
+    # for metsuf in ['_fullMET', '_metge125',  '_metlt125']:
+        for jsuf in ['_eq0j', '_eq1j', '_ge2j']:
+            dn = 'OffShell'+jsuf+lsuf
+            hdir = fdat.Get('{}'.format(dn))
+            if not hdir:
+                print("ERROR: cannot find {} in data ".format(dn))
+            hlst = hdir.GetListOfKeys()
+
+            for hkey in hlst:
+                hn = hkey.GetName()
+                inlist = False
+                for hname in hlist:
+                    if hname in hn: inlist = True
+
+                if not inlist: continue
+
                 hdat = fdat.Get('{}/{}'.format(dn, hn))
                 hbkg = fbkg.Get('{}/{}'.format(dn, hn))
                 if not hdat or not hbkg:
                     print("ERROR: cannot find {}/{} in either data or the subtractor".format(dn,hn))
                     continue
+
                 dout = fout.Get(dn)
                 if not dout: dout = fout.mkdir(dn)
                 dout.cd()
@@ -126,17 +238,18 @@ def plotDYComparePlots(hdir, hname='met', samp='', rebin=1, y2=None, newrange=No
     year  = kwargs.get('year', '2018')
     indir = '../usskimLooper/output/'
     phsuf = kwargs.get('phsuf', '_ee2j_rwgtd')
+    llsuf = kwargs.get('llsuf', phsuf)
     # phsuf = '_ee2j_flateta_rwgtd'
     sdir = '{}/data{}_{}'.format(kwargs.get('sdir', 'dyest_v4_01_nosub'), phsuf, year)
 
     # y2 = True
     ffast = r.TFile('{0}{2}_phCR{3}_{1}/data_{1}_phskim.root'.format(indir, year, kwargs.get('skimver', 'v4_02'), phsuf))
-    ffull = r.TFile('{0}{2}_2lSR_{1}/data_{1}_llskim.root'.format(indir, year, kwargs.get('skimver', 'v4_02')))
+    ffull = r.TFile('{0}{2}_2lSR{3}_{1}/data_{1}_llskim.root'.format(indir, year, kwargs.get('skimver', 'v4_02'), llsuf))
     if y2: fy2 = r.TFile('{0}{2}_phCR{2}_{1}/subtractor.root'.format(indir, year, kwargs.get('skimver', 'v4_02'), phsuf))
     nfast = 'data single-#gamma'
     nfull = 'data ee/#mu#mu'
 
-    gsuf = 'll' if 'rwgtd' in phsuf else 'gamma'
+    # gsuf = 'll' if 'rwgtd' in phsuf else 'gamma'
     # ffast = r.TFile('{}v4_01_metcrtd_phCR{}_{}/GJets.root'.format(indir, phsuf, year))
     # ffull = r.TFile('{}v4_01_metcrtd_2lSR_{}/DYJetsToLL_M-50.root'.format(indir, year))
     # nfast = '#gamma+Jets'
@@ -145,7 +258,15 @@ def plotDYComparePlots(hdir, hname='met', samp='', rebin=1, y2=None, newrange=No
 
     hfull = ffull.Get('{0}{2}_mumu/h_{1}{2}_mumu'.format(hdir,hname,sampsuf))
     hee = ffull.Get('{0}{2}_ee/h_{1}{2}_ee'.format(hdir,hname,sampsuf))
-    hfull.Add(hee)
+    lsuf = kwargs.get('lsuf', 'll')
+    if lsuf == 'mumu':
+        pass
+    elif lsuf == 'ee':
+        hfull = hee
+    else: # 'll'
+        hfull.Add(hee)
+
+    gsuf = lsuf if 'rwgtd' in phsuf else 'gamma'
     hfast = ffast.Get('{0}{2}_{3}/h_{1}{2}_{3}'.format(hdir,hname,sampsuf,gsuf))
     if y2: hy2 = fy2.Get('{0}{2}_{3}/h_{1}{2}_{3}'.format(hdir,hname,sampsuf,gsuf))
 
@@ -305,6 +426,8 @@ def plotDYComparePlots(hdir, hname='met', samp='', rebin=1, y2=None, newrange=No
     # printweights = printweights or ('boson_eta' in hname and 'metlt125' in hname and 'eq2j' in sampsuf)
     if 'flateta_rwgtd' in phsuf:
         printweights = False
+    elif 'rwgtd_raweta' in phsuf:
+        printweights = 'boson_aeta' in hname and 'metlt125' in hname and '2j' in sampsuf
     elif 'rwgtd' in phsuf:
         printweights = 'boson_aeta' in hname and 'metlt125' in hname and '2j' in sampsuf
 
@@ -320,21 +443,22 @@ def plotDYComparePlots(hdir, hname='met', samp='', rebin=1, y2=None, newrange=No
             for i in range(1, htf.GetNbinsX()+1):
                 print( "{0:.3e},".format(htf.GetBinLowEdge(i)), end='' )
             print( "" )
-        jsuf = '_ee2j' if '_ee2j' in phsuf and '2j' in sampsuf  else sampsuf
+        jsuf = '_ee2j' if ('_ee2j' in phsuf or '_all2j' in phsuf) and '2j' in sampsuf  else sampsuf
         print( "vector<float> {} = {{".format(hname.replace('boson_','sf_V')+jsuf+'_data'+year[2:]), end='' )
         for i in range(1, htf.GetNbinsX()+1):
-            # print( rat.GetBinLowEdge(i), rat.GetBinContent(i))
             ra = htf.GetBinContent(i)
             re = htf.GetBinError(i)
-            # print( "{0} {1:.3e}".format(rat.GetBinLowEdge(i), scale/ra if ra > 0 else 1.0) )
             if ra <= 0:
                 htf.SetBinContent(i, 1.0)
                 htf.SetBinError(i, 0.0)
-            if printweights:
-                print( "{0:.3e},".format(ra if ra > 0 else 1.0), end='')
-
+            print( "{0:.3e},".format(ra if ra > 0 else 1.0), end='')
         print( "};" )
 
+        # Print the error on transfer factors
+        print( "vector<float> {} = {{".format(hname.replace('boson_','sferr_V')+jsuf+'_data'+year[2:]), end='' )
+        for i in range(1, htf.GetNbinsX()+1):
+            print( "{0:.3e},".format(htf.GetBinError(i)), end='')
+        print( "};" )
 
     snsuf = "" if rebin==1 else "_rebin{}".format(rebin)
 
@@ -366,36 +490,47 @@ def plotDYComparePlots(hdir, hname='met', samp='', rebin=1, y2=None, newrange=No
 def makeDYtestPlots():
 
     args = {
-        'year'    : '2017',
-        'sdir'    : 'dyest_v4_03_Nov17',
-        'phsuf'   : '_ee2j_rwgtd',
-        'skimver' : 'v4_03',
+        'year'    : '2018',
+        'sdir'    : 'dyest_v4_06_Mar1',
+        'phsuf'   : '_all2jsel_rwgtd_raweta',
+        'llsuf'   : '_all2jsel',
+        'skimver' : 'v4_06',
+        'lsuf'    : 'mumu',
     }
 
     # for metsuf in ['_metlt80', '_met80to125', '_metlt125']:
-    for metsuf in [ '_metlt125']:
-        for jsuf in ['eq0j', 'eq1j', 'ge2j']:
-            plotDYComparePlots('OffShell', 'nvtxs'+metsuf, jsuf, **args)
-            plotDYComparePlots('OffShell', 'boson_pt'+metsuf, jsuf, rebin=2, **args)
-            plotDYComparePlots('OffShell', 'boson_eta'+metsuf, jsuf, rebin=1, **args)
-            plotDYComparePlots('OffShell', 'boson_aeta'+metsuf, jsuf, rebin=1, **args)
-            plotDYComparePlots('OffShell', 'boson_pt_b0'+metsuf, jsuf, **args)
-            plotDYComparePlots('OffShell', 'boson_pt_b1'+metsuf, jsuf, **args)
-            plotDYComparePlots('OffShell', 'boson_phi'+metsuf, jsuf, rebin=4, **args)
-            plotDYComparePlots('OffShell', 'boson_mass'+metsuf, jsuf, **args)
-            # plotDYComparePlots('OffShell', 'boson_phi_endcap'+metsuf, jsuf, rebin=4, **args)
-            plotDYComparePlots('OffShell', 'mtZZ'+metsuf, jsuf, newrange=[150,600], rebin=4, **args)
-            plotDYComparePlots('OffShell', 'mZZ'+metsuf,  jsuf, newrange=[150,600], rebin=4, **args)
-            plotDYComparePlots('OffShell', 'met'+metsuf, jsuf, newrange=[0,450], rebin=2, **args)
-            plotDYComparePlots('OffShell', 'dphi_boson_met'+metsuf, jsuf, **args)
-            plotDYComparePlots('OffShell', 'dphi_lljets_met'+metsuf, jsuf, **args)
+    for year in ['2016', '2017', '2018']:
+        args['year'] = year
+        for metsuf in [ '_metlt125']:
+            for jsuf in ['eq0j', 'eq1j', 'ge2j']:
+                plotDYComparePlots('OffShell', 'nvtxs'+metsuf, jsuf, **args)
+                plotDYComparePlots('OffShell', 'boson_pt'+metsuf, jsuf, rebin=2, **args)
+                plotDYComparePlots('OffShell', 'boson_eta'+metsuf, jsuf, rebin=1, **args)
+                plotDYComparePlots('OffShell', 'boson_aeta'+metsuf, jsuf, rebin=1, **args)
+                plotDYComparePlots('OffShell', 'boson_pt_b0'+metsuf, jsuf, **args)
+                plotDYComparePlots('OffShell', 'boson_pt_b1'+metsuf, jsuf, **args)
+                plotDYComparePlots('OffShell', 'boson_phi'+metsuf, jsuf, rebin=4, **args)
+                plotDYComparePlots('OffShell', 'boson_mass'+metsuf, jsuf, **args)
+                # plotDYComparePlots('OffShell', 'boson_phi_endcap'+metsuf, jsuf, rebin=4, **args)
+                plotDYComparePlots('OffShell', 'mtZZ'+metsuf, jsuf, newrange=[150,600], rebin=4, **args)
+                plotDYComparePlots('OffShell', 'mZZ'+metsuf,  jsuf, newrange=[150,600], rebin=4, **args)
+                plotDYComparePlots('OffShell', 'met'+metsuf, jsuf, newrange=[0,450], rebin=2, **args)
+                plotDYComparePlots('OffShell', 'dphi_boson_met'+metsuf, jsuf, **args)
+                plotDYComparePlots('OffShell', 'dphi_lljets_met'+metsuf, jsuf, **args)
 
-        for jsuf in ['ge2j']:
-            plotDYComparePlots('OffShell', 'DjjVBF'+metsuf, jsuf, rebin=4, **args)
+            # for jsuf in ['ge2j']:
+            #     plotDYComparePlots('OffShell', 'DjjVBF'+metsuf, jsuf, rebin=4, **args)
 
 
 if __name__ == '__main__':
 
-    makeDYtestPlots()
+    # makeDYtestPlots()
     # makeSubtraction()
+    # makeCombinedHists()
+    makeNjetSF('2016', 1)
+    makeNjetSF('2016', 2)
+    makeNjetSF('2017', 1)
+    makeNjetSF('2017', 2)
+    makeNjetSF('2018', 1)
+    makeNjetSF('2018', 2)
 
