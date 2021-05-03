@@ -38,15 +38,18 @@ int main(int argc, char** argv)
   TString specifier = "";
   if (argc > 5) specifier = TString(argv[5]);
 
+  TString filelist = "";
+  if (argc > 6) filelist = TString(argv[6]);
+
   TString extrargs;
-  if (argc > 6) extrargs = TString(argv[6]);
+  if (argc > 7) extrargs = TString(argv[7]);
 
   TString treename = parseArg(extrargs, "treename", "SkimTree");
   if (treename == "Events") treename = "cms3ntuple/Events";
   TChain *ch = new TChain(treename);
-  if (sample.Contains(".root")) {
+  if (filelist != "") {
     vector<TString> vecInFiles;
-    TString filestr(sample);
+    TString filestr(filelist);
     while (filestr.Contains(',')) {
       TString fn = filestr(0, filestr.Index(','));
       vecInFiles.push_back( fn );
@@ -54,18 +57,19 @@ int main(int argc, char** argv)
     }
     vecInFiles.push_back( filestr );
     for (TString file : vecInFiles) {
-      cout << "[runHZZlooper] >> Adding file " << file << " to be process." << endl;
-      ch->Add(file);
+      TString file_in = Form("%s/%s", indir.Data(), file.Data());
+      cout << ">> Adding file " << file_in << " to be process." << endl;
+      ch->Add(file_in);
     }
   } else {
     TString files_in = Form("%s/%s*.root", indir.Data(), sample.Data());
     cout << ">> Adding " << files_in << " into the chain." << endl;
     ch->Add(files_in);
+  }
 
-    if (ch->GetEntries() == 0) {
-      cout << "ERROR: no entries in chain for " << files_in << endl;
-      return 2;
-    }
+  if (ch->GetEntries() == 0) {
+    cout << "ERROR: No entries in chain!" << endl;
+    return 2;
   }
 
   ScanChain(ch, sample, tag, systype, specifier, extrargs);

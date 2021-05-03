@@ -10,10 +10,9 @@ import argparse
 verbose = 2
 poolsize = 8
 dryrun = False
-
 # File location
-
-osoutdir = "/hadoop/cms/store/user/usarica/Offshell_2L2Nu/Worker/output";
+# osoutdir = "/hadoop/cms/store/user/usarica/Offshell_2L2Nu/Worker/output";
+osoutdir = "root://cmsxrootd.fnal.gov//store/user/usarica/Offshell_2L2Nu/Worker/output";
 
 skimver  = "v4_08";
 skimdate = "/SkimTrees/210315/AK4Jets_WithPUJetId_NoTightLeptonJetId_ParticleCleaned";
@@ -88,11 +87,11 @@ if __name__ == '__main__':
     samp_flists_17 = {}
     samp_flists_18 = {}
     samp_flists_16.update(samplists['data_2016'])
-    samp_flists_17.update(samplists['data_2017'])
-    samp_flists_18.update(samplists['data_2018'])
-    samp_flists_16.update(samplists['bkg_3lskim_16'])
-    samp_flists_17.update(samplists['bkg_3lskim_17'])
-    samp_flists_18.update(samplists['bkg_3lskim_18'])
+    # samp_flists_17.update(samplists['data_2017'])
+    # samp_flists_18.update(samplists['data_2018'])
+    # samp_flists_16.update(samplists['bkg_3lskim_16'])
+    # samp_flists_17.update(samplists['bkg_3lskim_17'])
+    # samp_flists_18.update(samplists['bkg_3lskim_18'])
 
     yrsamp_flists = {
         "2016:3LEvents:3lCR" : samp_flists_16,
@@ -131,9 +130,12 @@ if __name__ == '__main__':
             os.system('mkdir -p {}'.format(logdir))
             os.system('cp ScanChain.cc {}'.format(logdir)) # back up the state of the looper
 
+            flist = ""
             if spec == None: spec = ""
+            elif type(spec) == list:
+                flist = ','.join(spec)
             for systype in systypes:
-                argstr = '{0} {1} {2} {3} {4}'.format(indir, dsname, tag, systype, spec)
+                argstr = '{0} {1} {2} {3} {4} {5}'.format(indir, dsname, tag, systype, spec, flist)
                 logname = '{}/log_{}_{}.txt'.format(logdir, dsname, systype)
                 if not args.nolog:
                     argstr += ' >& {}'.format(logname)
