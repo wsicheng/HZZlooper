@@ -85,7 +85,8 @@ def countXrange(h, xmin, xmax):
 #     return vlow, vhigh
 
 def makeNjetSF(year='2016', config=2):
-    indir = '../usskimLooper/output/v4_07_llgCR_{}'.format(year)
+    # indir = '../usskimLooper/output/v4_07_llgCR_{}'.format(year)
+    indir = '../usskimLooper/output/v5_00_llgCR_{}'.format(year)
 
     # fdat = r.TFile('{}/{}.root'.format(indir, 'data_{}_llgskim'.format(year)))
     fdat = r.TFile('{}/{}.root'.format(indir, 'data_llgskim'))
@@ -491,8 +492,9 @@ def makeDYtestPlots():
 
     args = {
         'year'    : '2018',
-        'sdir'    : 'dyest_v4_06_Mar1',
-        'phsuf'   : '_all2jsel_rwgtd_raweta',
+        'sdir'    : 'dyest_v5_00_May9',
+        # 'phsuf'   : '_all2jsel_rwgtd_raweta',
+        'phsuf'   : '_all2jsel',
         'llsuf'   : '_all2jsel',
         'skimver' : 'v4_06',
         'lsuf'    : 'mumu',
@@ -524,9 +526,10 @@ def makeDYtestPlots():
 
 if __name__ == '__main__':
 
-    # makeDYtestPlots()
+    makeDYtestPlots()
     # makeSubtraction()
     # makeCombinedHists()
+
     makeNjetSF('2016', 1)
     makeNjetSF('2016', 2)
     makeNjetSF('2017', 1)

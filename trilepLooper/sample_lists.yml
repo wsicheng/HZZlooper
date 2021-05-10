@@ -45,26 +45,26 @@ bkg_3lskim_16:
   # WplusG:
   WJetsToLNu: "amcatnloFXFX,ext2"
   WWTo2L2Nu: "powheg_Run"
-  WWTo1L1Nu2Q:
-  WWToLNuQQ:
   WWW:
   WWZ:
   WZG:
   WZZ:
   ZZZ:
-  WZTo1L1Nu2Q:
-  WZTo1L3Nu:
+  # WZTo1L1Nu2Q:
+  # WZTo1L3Nu:
   WZTo2L2Q:
   WZTo3LNu: "LNu_Tune,powheg"
-  WZTo3LNu_Tune: "amcatnloFXFX"
+  # WZTo3LNu_Tune: "amcatnloFXFX"
   WZTo3LNu_mllmin01: "ext1"
   ZGTo2LG_PtG-130:
   ZGTo2LG:
   ZH_HToWWToLNuQQ:
   ZZTo2L2Nu: "ext1"
   ZZTo2L2Q:
-  ZZTo2Q2Nu:
   tZq:
+  # WWTo1L1Nu2Q:
+  # WWToLNuQQ:
+  # ZZTo2Q2Nu:
 
 bkg_3lskim_17:
   DYJetsToLL_M-50: "ext1"
@@ -87,15 +87,15 @@ bkg_3lskim_17:
   ZZZ:
   WZTo2L2Q:
   WZTo3LNu: "LNu_13,powheg"
-  WZTo3LNu_Tune: "amcatnloFXFX"
+  ZZTo2L2Q:
   WZTo3LNu_mllmin01:
-  WZTo1L3Nu: "amcatnloFXFX"
-  ZGTo2LG_PtG-130:
   ZLLGJets:
   ZZTo2L2Nu: "mZMin-18"
-  ZZTo2L2Q:
-  ZZTo2Q2Nu:
   tZq:
+  # WZTo3LNu_Tune: "amcatnloFXFX"
+  # ZGTo2LG_PtG-130:
+  # WZTo1L3Nu: "amcatnloFXFX"
+  # ZZTo2Q2Nu:
 
 bkg_3lskim_18:
   DYJetsToLL_M-50: "ext2"
@@ -118,14 +118,14 @@ bkg_3lskim_18:
   ZZZ:
   WZTo2L2Q:
   WZTo3LNu: "LNu_Tune,powheg"
-  WZTo3LNu_Tune: "amcatnloFXFX"
+  # WZTo3LNu_Tune: "amcatnloFXFX"
   WZTo3LNu_mllmin01:
-  ZGTo2LG_PtG-130:
   ZLLGJets:
   ZZTo2L2Nu: "mZMin-18"
   ZZTo2L2Q:
-  ZZTo2Q2Nu:
   tZq:
+  # ZGTo2LG_PtG-130:
+  # ZZTo2Q2Nu:
 
 sig_3lskim_16:
   WminusHToWW_2LOSFilter_M1000:
