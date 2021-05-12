@@ -5,6 +5,7 @@ dir=$2
 if [ $skimtype == "llskim" ]; then
     cd $dir;
     rename _Nominal.root .root *
+    hadd -f data_llskim.root Run201??.root  &> /dev/null
     [ -f WGToLNuG_01J.root ] && mv WGToLNuG_01J.root WGToLNuG.root
     hadd -f triboson.root WWW.root WWZ.root ZZZ.root WZG.root WZZ.root &> /dev/null;
     # rm WWW.root WWZ.root ZZZ.root WZG.root WZZ.root;
@@ -28,6 +29,7 @@ if [ $skimtype == "phskim" ]; then
     hadd -f data_phskim.root Run201??.root  &> /dev/null
     [ -f QCD_HT.root ] && mv QCD_HT.root QCD.root
     [[ -f WGToLNuG_01J.root ]] && [[ -f WGToLNuG.root ]] && hadd -f qqWG.root WGToLNuG*.root &> /dev/null
+    [[ ! -f WGToLNuG_01J.root ]] && [[ -f WGToLNuG.root ]] && mv WGToLNuG.root qqWG.root &> /dev/null
     # [ -f WGToLNuG_01J.root ] && mv WGToLNuG_01J.root WGToLNuG.root
     hadd -f Others.root TGJets.root TTGJets.root TTJets.root WZG.root ZJetsToNuNu.root  &> /dev/null
     # hadd -f subtractor.root ZGTo2NuG.root WlnuFromCR.root WGToLNuG.root Others.root  &> /dev/null
@@ -135,25 +137,8 @@ fi
 
 if [ $skimtype == "llrun2" ]; then
     mkdir -p ${dir}_run2
-    declare -a Samples=( data GJets_HT ZGJets_nunu qqWG_lnu WJetsToLNu WZG TGJets TTGJets TTJets ZZTo2L2Nu DYJetsToLL )
+    declare -a Samples=( data_llskim )
     for sample in ${Samples[@]}; do
         hadd -f ${dir}_run2/$sample.root ${dir}_201?/$sample*.root &> /dev/null
     done
-    cd $dir;
-    rename _Nominal.root .root *
-    [ -f WGToLNuG_01J.root ] && mv WGToLNuG_01J.root WGToLNuG.root
-    hadd -f triboson.root WWW.root WWZ.root ZZZ.root WZG.root WZZ.root &> /dev/null;
-    # rm WWW.root WWZ.root ZZZ.root WZG.root WZZ.root;
-    # hadd -f ZZ.root ZZTo2L2Nu.root &> /dev/null
-    # hadd -f diboson.root WWToLNuQQ.root WZTo1L3Nu.root WZTo1L1Nu2Q.root WZTo3LNu.root WZTo2L2Q.root ZLLGJets.root ZZTo2L2Q.root ZZTo2Q2Nu.root ZZTo4L.root WGToLNuG.root &> /dev/null
-    # rm WWToLNuQQ.root WZTo1L3Nu.root WZTo1L1Nu2Q.root WZTo3LNu.root WZTo2L2Q.root ZLLGJets.root ZZTo2L2Q.root ZZTo2Q2Nu.root ZZTo4L.root WGToLNuG.root
-    # hadd -f Others.root TTGJets.root TGJets.root QCD*.root tZq_ll.root ST.root TTWJetsToLNu.root WJetsToLNu.root triboson.root &> /dev/null
-    # rm TTGJets.root TGJets.root QCD_HT.root tZq_ll.root ST.root TTWJetsToLNu.root WJetsToLNu.root
-    hadd -f nonres.root TTTo2L2Nu.root TTZToLLNuNu.root WWTo2L2Nu.root &> /dev/null
-    hadd -f DY.root DYJetsToLL_*.root &> /dev/null
-    hadd -f ZZ.root ZZTo2L2Nu.root ZZTo2L2Q.root ZZTo2Q2Nu.root ZZTo4L.root &> /dev/null
-    hadd -f WZ.root WZTo1L3Nu.root WZTo1L1Nu2Q.root WZTo3LNu.root WZTo2L2Q.root &> /dev/null
-    hadd -f Others.root WWToLNuQQ.root TTGJets.root TGJets.root QCD*.root tZq_ll.root ST.root TTWJetsToLNu.root WJetsToLNu.root WGToLNuG.root ZLLGJets.root triboson.root &> /dev/null
-    # hadd -f diboson.root WWToLNuQQ.root WZTo1L3Nu.root WZTo1L1Nu2Q.root WZTo3LNu.root WZTo2L2Q.root   &> /dev/null
-    cd -;
 fi

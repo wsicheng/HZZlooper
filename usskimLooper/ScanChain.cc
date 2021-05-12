@@ -352,6 +352,7 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
       continue;
     }
 
+    bool isWjets = (filename.Contains("WJetsToLNu"));
     bool isNLO = (filename.Contains("amcatnlo") || filename.Contains("powheg"));
     bool isWG_nlo = (filename.Contains("WGToLNuG") && filename.Contains("amcatnlo"));
     bool isZG_nlo_incl = (filename.Contains("ZGTo2NuG_Tune") || filename.Contains("ZGTo2LG_Tune"));
@@ -782,8 +783,7 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
       // btag veto, already applied on SinglePhotonEvents but not others
       if (!isgamma && event_n_ak4jets_pt30_btagged_loose() != 0) continue;
       if (isgamma && event_n_leptons_fakeableBase() > 0) continue;
-      if ((is1el || islg) && event_n_leptons_fakeableBase() > 1) continue;
-      if ((isllg || isdilep) && event_n_leptons_fakeableBase() > 2) continue;
+      if (event_n_leptons_fakeableBase() > 0) continue;
 
       // photon quality cuts
       bool veto = false;
@@ -838,9 +838,6 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
 
       // use while as an exitable if command
       while (isllg && doHllgTest) {
-        // if (dphilljmet < 2.5) continue;
-        // if (njet > 0 && dphijmet < 0.25) continue;
-        // for (float Vpt_thr = 20; Vpt_thr < 55; Vpt_thr += 5) {
         for (string s : {"_nocut", "_mllZwin", "_mllgZwin"}) {
           if (s == "_mllZwin" && (fabs(dilepton_mass() - 91.2) > 15)) continue;
           if (s == "_mllgZwin" && (fabs(event_mllg() - 91.2) > 15)) continue;
@@ -886,19 +883,11 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
       if (event_pTmiss() > 50) fillJetMassHists("_nodphi_metge50"+jetcat);
       if (event_pTmiss() > 125) fillJetMassHists("_nodphi_metge125"+jetcat);
 
-      // cout << __LINE__ << ": njet= " << njet << ", dphilljmet= " << dphilljmet << ", dphijmet= " << dphijmet << ", event_phimiss()= " << event_phimiss() << ", event_pTmiss()= " << event_pTmiss() << endl;
-
       if (dphiVmet < 1.0) continue;
       if (dphilljmet < 2.5) continue;
       if (njet > 0 && dphijmet < 0.25) continue;
       if (tightDphiIn2j && njet >= 2 && dphijmet < 0.5) continue;
 
-      // if (dphilljmet < 2.5 || (njet > 0 && dphijmet < 0.25)) {
-      //   fillJetMassHists("_lowDphijmet_fullMET"+jetcat);
-      //   if (event_pTmiss() > 50) fillJetMassHists("_lowDphijmet_metge50"+jetcat);
-      //   if (event_pTmiss() > 125) fillJetMassHists("_lowDphijmet_metge125"+jetcat);
-      //   continue;
-      // }
       fill_passedsteps("_dphis");
 
       fillJetMassHists("_fullMET"+jetcat);
@@ -916,7 +905,6 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
             }
           }
         }
-        // if (checkevt() && jetveto) cout << __LINE__ << ": dilepton_mass()= " << setprecision(14) << dilepton_mass() << ", dilepton_pt()= " << dilepton_pt() << endl;
       }
 
       if (!jetveto) {
@@ -1294,12 +1282,21 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
       }
 
       if (met < 125) metsuf = "_metlt125";
-      else if (tightMETin2j && njet >= 2 && met < 140) metsuf = "_metge125";
+      else if (tightMETin2j && njet >= 2 && met < 140) metsuf = "_met125to140";
+      else if (tightMETin2j && njet >= 2 && met < 200) metsuf = "_met140to200";
+      else if (tightMETin2j && njet >= 2 && met > 200) metsuf = "_metge200";
       else metsuf = "_final";
+
       fillhists(metsuf);
       fillhists(metsuf+jetcat);
       fillhists(metsuf+lepcat);
       fillhists(metsuf+jetcat+lepcat);
+
+      // For limited backward compatibility
+      if (tightMETin2j && njet >= 2 && met > 140) {
+        fillhists("_final"+lepcat);
+        fillhists("_final"+jetcat+lepcat);
+      }
 
       for (string isys : systematics) {
         weight = evtwgt_sys.at(isys);
@@ -1345,7 +1342,9 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
         fillhists(metsuf+jetcat+"_etogSFDn_gamma");
 
         if (met < 125) metsuf = "_metlt125";
-        else if (tightMETin2j && njet >= 2 && met < 140) metsuf = "_metge125";
+        else if (tightMETin2j && njet >= 2 && met < 140) metsuf = "_met125to140";
+        else if (tightMETin2j && njet >= 2 && met < 200) metsuf = "_met140to200";
+        else if (tightMETin2j && njet >= 2 && met > 200) metsuf = "_metge200";
         else metsuf = "_final";
         weight = origwgt * tf_etog;
         fillhists(metsuf+jetcat+"_gamma");
@@ -1353,6 +1352,9 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
         fillhists(metsuf+jetcat+"_etogSFUp_gamma");
         weight = origwgt * (tf_etog-tferr_etog);
         fillhists(metsuf+jetcat+"_etogSFDn_gamma");
+
+        if (tightMETin2j && njet >= 2 && met > 140) // For limited backward compatibility
+          fillhists("_final"+jetcat+"_gamma");
 
         if (doBosonPtReweight) {
           std::tie(tf_sgtoll, tferr_sgtoll) = getBosonPtScale(lepton_pt(), lepton_eta(), year, jetcat, ptbin0, ptbin1, (is_data || !DYclosureTest), extendEEphoton2j, doBosonEtaReweight);
@@ -1580,10 +1582,8 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
     TDirectory* dir = (TDirectory*) fout->Get(dirname.c_str());
     if (dir == nullptr) dir = fout->mkdir(dirname.c_str());
     dir->cd();
-    // h.seocnd->Write();
     if (h.first.find("Up_") != string::npos || h.first.find("Dn_") != string::npos) {
       TH2* hnew = (TH2F*) h.second->Clone(Form("%s_norm", h.second->GetName()));
-      // cout << __LINE__ << ": hnew= " << hnew << ", hnew->GetName()= " << hnew->GetName() << endl;
       conditionalizeHistInX(hnew);
       hnew->Write();
     }

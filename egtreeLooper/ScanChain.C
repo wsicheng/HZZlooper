@@ -17,7 +17,6 @@ using namespace std;
 using namespace tas;
 
 bool doBosonPtReweight = false;
-bool extendEEphoton2j = false;
 const bool blind = true;
 
 int ScanChain(TString indir, TString sample, TString tag){
@@ -26,14 +25,10 @@ int ScanChain(TString indir, TString sample, TString tag){
   TString files_in = Form("%s/%s/%s*.root", indir.Data(), tag.Data(), sample.Data());
   int a = ch->Add(files_in);
   cout << ">> Adding " << files_in << " into the chain." << endl;
-  
-  // TString samplever = tag(0, min(tag.Index("_",tag.Index("_")+1),5));
-  // double skimver = TString(samplever).ReplaceAll("v","").ReplaceAll("_",".").Atof();
-  // cout << ">> Runing from skimver " << samplever  << ", i.e. " << skimver << endl;
 
   TString outname = sample;
   TString fileout = Form("output/%s_%s.root", outname.Data(), tag.Data());
-  // gSystem->Exec(Form("mkdir -p output/", tag.Data()));
+
   TFile* fout = new TFile(fileout, "RECREATE");
   cout << ">> Outputting to " << fileout << endl;
 
@@ -41,10 +36,8 @@ int ScanChain(TString indir, TString sample, TString tag){
     doBosonPtReweight = true;
     cout << ">> doBosonPtReweight is set to true." << endl;
   }
-  extendEEphoton2j = tag.Contains("ee2j");
 
-  bool is_data = (sample.BeginsWith("201"));
-  bool is_gjets = sample.BeginsWith("GJets");
+  bool is_data = (sample.BeginsWith("SingleE") || sample.BeginsWith("DoubleE") || sample.BeginsWith("EGamma"));
 
   int year = (tag.Contains("2016"))? 2016 : (tag.Contains("2017"))? 2017 : 2018;
 
@@ -65,8 +58,8 @@ int ScanChain(TString indir, TString sample, TString tag){
   while ( (currentFile = (TFile*)fileIter.Next()) ) { 
 
     TString fname(currentFile->GetTitle());
-    if (fname.Contains("_mc2017_") && !fname.Contains("_ext1-") ) continue;
-    if (fname.Contains("Autumn18") && !fname.Contains("_ext2-") ) continue;
+    if (fname.Contains("_mc2017_") && !fname.Contains("_ext1-") ) continue;  // for only the high stat DY sample
+    if (fname.Contains("Autumn18") && !fname.Contains("_ext2-") ) continue;  // for only the high stat DY sample
 
     TFile *file = new TFile( currentFile->GetTitle() );
     TTree *tree = (TTree*)file->Get("EGTree");
@@ -78,48 +71,36 @@ int ScanChain(TString indir, TString sample, TString tag){
 
       st.GetEntry(event);
       nEventsTotal++;
-
       EGTree::progress(nEventsTotal, nEventsChain);
 
-      // double weight = fabs(event_wgt());
       double weight = 1;
       // double weight = event_wgt();
       if (is_data) weight = 1;
       if (weight > 0) nEventsPositive++;
       else nEventsNegative++;
 
-      plot1d("h_weights", weight, 1, hvec, ";p_{T}^{e} [GeV]" , 220,  -22, 22);
-      plot1d("h_negpair", mass_eg().size(), weight, hvec, ";N(e#gamma)" , 4,  0, 4);
+      plot1d("h_num_egpair", mass_eg().size(), weight, hvec, ";N(e#gamma)" , 4,  0, 4);
 
       if (mass_eg().size() < 1) continue;
-      if (event_pTmiss() > 125) continue;
+      if (event_pTmiss() > 125) continue;  // avoid signal region
 
       for (int idx = 0; idx < mass_eg().size(); ++idx) {
         // if (!isNominalTrigger()[idx]) continue;
         plot1d("h_mass_eg_raw", mass_eg()[idx], weight, hvec, ";M(e#gamma) [GeV]" , 90,  0, 180);
         if (fabs(mass_eg()[idx] - 91.2) > 15) continue;
-        // if (photon_full5x5_r9()[idx] < 0.9) continue;
+        if (photon_full5x5_r9()[idx] < 0.9) continue;       // R9 cut for denominator
         if (!photon_is_spikeSafe()[idx]) continue;
         if (!photon_is_inTime()[idx]) continue;
         if (!photon_is_beamHaloSafe()[idx]) continue;
-        if (!photon_is_PFID()[idx]) continue;
-        if (!photon_is_METSafe()[idx]) continue;
+
+        // if (!photon_is_PFID()[idx]) continue;            // PFID kills photon with tracks
+        // if (!photon_is_METSafe()[idx]) continue;
         // if (!photon_is_conversionSafe()[idx]) continue;
         if (photon_pt()[idx] < 55) continue;
         if (electron_pt()[idx] < 40) continue;
 
         const vector<float> ptbin1 = {55, 82.5, 100, 132, 181.5, 230, 450};
         const vector<float> ptbin2 = {55, 82.5, 100, 135, 200, 220, 450};
-
-        if (photon_pt()[idx] > 220) {
-          plot1d("h_den_Photon200_photon_pt", photon_pt()[idx], weight, hvec, "; p_{T}(#gamma) [GeV]", 160, 0.f, 400.f);
-          plot1d("h_Photon200_photon_weights", weight_HLT_Photon200()[idx], weight, hvec, "; p_{T}(#gamma) [GeV]", 150, 0.f, 1.5);
-          if (weight_HLT_Photon200()[idx] >= 1.0f) {
-            plot1d("h_num_Photon200_photon_pass_pt", photon_pt()[idx], weight, hvec, "; p_{T}(#gamma) [GeV]", 160, 0.f, 400.f);
-          } else {
-            plot1d("h_num_Photon200_photon_failed_pt", photon_pt()[idx], weight, hvec, "; p_{T}(#gamma) [GeV]", 160, 0.f, 400.f);
-          }
-        }
 
         auto fillhists = [&](int idx=0, string s="") {
           plot1d("h_pt_e"+s,  electron_pt()[idx], weight, hvec, ";p_{T}^{e} [GeV]" , 160,  0, 800);
@@ -279,16 +260,19 @@ int ScanChain(TString indir, TString sample, TString tag){
           // if (electron_pt()[idx] < 40) continue;
         }
       } else if (mass_eg().size() == 1) {
-        if (fabs(mass_eg()[0] - 91.2) < 15 && fabs(photon_etaSC()[0]) < 1.4442 ) {
-          plot1d("h_1eg_g_convveto", photon_is_conversionSafe()[0], weight, hvec, ";#gamma convveto" , 2,  0, 2);
-          plot1d("h_1eg_g_pt", photon_pt()[0], weight, hvec, ";pt_{T}(#gamma)" , 80,  0, 500);
-          plot1d("h_1eg_g_eta", photon_eta()[0], weight, hvec, ";#eta(#gamma)" , 48,  -2.4, 2.4);
-          plot1d("h_1eg_e_pt", photon_is_conversionSafe()[0], weight, hvec, ";pt_{T}(e)" , 80,  0, 500);
-          plot1d("h_1eg_mass_eg_allpairs", mass_eg()[0], weight, hvec, ";M(e#gamma) [GeV]" , 60,  60, 120);
-          plot1d("h_1eg_pt_eg_allpairs", pt_eg()[0], weight, hvec, ";pt(e#gamma)" , 80,  0, 800);
+        string possuf = ((photon_fid_mask()[idx] & 1) == 1)? "_barrel" : "_endcap";
+        bool passPhotonClean = (photon_is_spikeSafe()[0] && photon_is_inTime()[0] && photon_is_beamHaloSafe()[0]);
+
+        if (fabs(mass_eg()[0] - 91.2) < 15) {
+          plot1d("h_1eg_g_convveto"+possuf, photon_is_conversionSafe()[0], weight, hvec, ";#gamma convveto" , 2,  0, 2);
+          plot1d("h_1eg_g_pt"+possuf, photon_pt()[0], weight, hvec, ";pt_{T}(#gamma)" , 80,  0, 500);
+          plot1d("h_1eg_g_eta"+possuf, photon_eta()[0], weight, hvec, ";#eta(#gamma)" , 48,  -2.4, 2.4);
+          plot1d("h_1eg_e_pt"+possuf, photon_is_conversionSafe()[0], weight, hvec, ";pt_{T}(e)" , 80,  0, 500);
+          plot1d("h_1eg_mass_eg_allpairs"+possuf, mass_eg()[0], weight, hvec, ";M(e#gamma) [GeV]" , 60,  60, 120);
+          plot1d("h_1eg_pt_eg_allpairs"+possuf, pt_eg()[0], weight, hvec, ";pt(e#gamma)" , 80,  0, 800);
           if (photon_is_conversionSafe()[0]) {
-            plot1d("h_1eg_mass_eg_convveto", mass_eg()[0], weight, hvec, ";M(e#gamma) [GeV]" , 60,  60, 120);
-            plot1d("h_1eg_pt_eg_convveto", pt_eg()[0], weight, hvec, ";pt(e#gamma) [GeV]" , 80,  0, 800);
+            plot1d("h_1eg_mass_eg_convveto"+possuf, mass_eg()[0], weight, hvec, ";M(e#gamma) [GeV]" , 60,  60, 120);
+            plot1d("h_1eg_pt_eg_convveto"+possuf, pt_eg()[0], weight, hvec, ";pt(e#gamma) [GeV]" , 80,  0, 800);
           }        
         }
       }

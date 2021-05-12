@@ -17,9 +17,11 @@ osoutdir = "/hadoop/cms/store/user/usarica/Offshell_2L2Nu/Worker/output";
 skimver  = "v4_08";
 skimdate = "/SkimTrees/210315/AK4Jets_WithPUJetId_NoTightLeptonJetId_ParticleCleaned";
 
+skimver  = "v5_00";
+skimdate = "/SkimTrees/210504/AK4Jets_WithPUJetId_NoTightLeptonJetId_ParticleCleaned";
+
 datasuf  = "/PFMET_WithXY_WithPartMomCorr_P4Preserved/";
 mcsuf    = "/PFMET_WithXY_NoJER_WithPartMomCorr_P4Preserved_ResolutionCorrected/";
-
 
 def runOSlooper(args):
     if verbose >= 3:
@@ -115,6 +117,8 @@ if __name__ == '__main__':
     systypes = ["Nominal", ]
     if args.syst == 'all':
         systypes = ["Nominal", "JECUp", "JECDn", "METUp", "METDn", "JERUp", "JERDn"]
+    elif args.syst == 'nomonly':
+        systypes = ["NominalOnly", ]
 
     # The samples that can be separated
     for yrcfg, dslists in yrsamp_flists.items():
@@ -145,21 +149,23 @@ if __name__ == '__main__':
                 njobs_total += 1
                 if verbose >= 1:
                     print( '>>> Running over sample {} with log at {}'.format(dsname, logname) )
-                
-    for rs in pool.imap_unordered(runOSlooper, arglist):
-        if rs == 0: njobs_done += 1
-        else: print( '>>> The {}-th job return with {}!'.format(njobs_done, rs) )
 
+    ijob = 0
+    njobs_done = 0
+    for rs in pool.imap(runOSlooper, arglist):
+        if rs == 0:
+            njobs_done += 1
+        else:
+            print( '>>> The {}-th job return with {}! See {}'.format(ijob, rs, arglist[ijob].split()[-1]) )
         if verbose >= 1:
             print( '>>> Finish running {}/{} jobs!'.format(njobs_done, njobs_total) )
+        ijob += 1
 
-            
     if njobs_done >= njobs_total-1:
         print( 'All {} job done!'.format(njobs_done) )
         if args.merge:
             mergeOutputHists(outdir, samplists['merge_map'])
     else:
         print( '{} jobs finished out of {}!'.format(njobs_done, njobs_total) )
-        
+
     print( 'Finished!' )
-        

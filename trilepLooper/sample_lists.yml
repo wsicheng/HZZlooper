@@ -30,7 +30,6 @@ data_2018:
 bkg_3lskim_16:
   DYJetsToLL_M-10to50:
   DYJetsToLL_M-50:
-  QCD_HT:
   ST:
   TGJets:
   TTGJets:
@@ -38,7 +37,7 @@ bkg_3lskim_16:
   TTTo2L2Nu:
   TTWJetsToLNu:
   TTZToLLNuNu:
-  TTZToLL:
+  # TTZToLL: "M-1to10"
   TTZToQQ:
   WGToLNuG: "amcatnloFXFX"
   # WminusG:
@@ -65,6 +64,7 @@ bkg_3lskim_16:
   # WWTo1L1Nu2Q:
   # WWToLNuQQ:
   # ZZTo2Q2Nu:
+  # QCD_HT:
 
 bkg_3lskim_17:
   DYJetsToLL_M-50: "ext1"
@@ -74,8 +74,6 @@ bkg_3lskim_17:
   TTTo2L2Nu:
   TTWJetsToLNu:
   TTZToLLNuNu:
-  TTZToLL:
-  TTZToQQ:
   WGToLNuG_01J: "amcatnloFXFX,5f_PDFWeights"
   WGToLNuG: "amcatnloFXFX,5f_Tune"
   WJetsToLNu: "amcatnloFXFX"
@@ -92,6 +90,7 @@ bkg_3lskim_17:
   ZLLGJets:
   ZZTo2L2Nu: "mZMin-18"
   tZq:
+  # TTZToQQ:
   # WZTo3LNu_Tune: "amcatnloFXFX"
   # ZGTo2LG_PtG-130:
   # WZTo1L3Nu: "amcatnloFXFX"
@@ -105,8 +104,6 @@ bkg_3lskim_18:
   TTTo2L2Nu:
   TTWJetsToLNu:
   TTZToLLNuNu:
-  TTZToLL:
-  TTZToQQ:
   WGToLNuG_01J: "amcatnloFXFX,5f_PDFWeights"
   WGToLNuG: "amcatnloFXFX,5f_Tune"
   WJetsToLNu: "amcatnloFXFX"
@@ -124,6 +121,7 @@ bkg_3lskim_18:
   ZZTo2L2Nu: "mZMin-18"
   ZZTo2L2Q:
   tZq:
+  # TTZToQQ:
   # ZGTo2LG_PtG-130:
   # ZZTo2Q2Nu:
 

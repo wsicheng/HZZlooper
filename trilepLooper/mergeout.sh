@@ -30,3 +30,17 @@ if [ $skimtype == "3lrun2" ]; then
         hadd -f ${dir}_run2/$sample.root ${dir}_201?/$sample.root &> /dev/null
     done
 fi
+
+if [ $skimtype == "3ltree" ]; then
+    cd $dir;
+    hadd -f finaltree_data_Nominal.root finaltree_Run201??_Nominal.root &> /dev/null
+    # rm finaltree_Run201??_*.root
+    rename _Tune _ALT *WZTo3LNu_Tune*.root
+    rename ZLLGJets ZGJets_ll *ZLLGJets*.root
+    rename ZGTo2LG ZGJets_ll *ZGTo2LG*.root
+    rm trileptree_ZGTo2LG_PtG-130_*.root
+    # for s in *WGToLNuG_01J_*; do hadd -f finaltree_qqWG_lnu${s:23} ${s/_01J_/_} $s &> /dev/null && rm ${s/_01J_/_} $s; done
+    for s in *WGToLNuG_01J_*; do mv $s finaltree_qqWG_lnu${s:23} && rm ${s/_01J_/_}; done
+    rename WGToLNuG qqWG_lnu *.root
+    cd -;
+fi

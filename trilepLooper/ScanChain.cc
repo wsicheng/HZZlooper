@@ -35,7 +35,7 @@ bool produceResultPlots = true;
 bool produceInvtdMETtree = false;
 
 const bool makeStepPlots = false;
-const bool produceResultTree = false;
+const bool produceResultTree = true;
 const bool separateFileForTree = true;
 const bool blind = false;
 
@@ -50,7 +50,27 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
   int year = (tag.Contains("2016"))? 2016 : (tag.Contains("2017"))? 2017 : (tag.Contains("2018"))? 2018 : -1;
   if (year < 0) cout << ">> WARNING: not able to determine year from tag: " << tag << endl;
 
+  vector<string> systnames = {"PDFScale", "QCDScale", "AsMZ", "PDFReplica", "PU", "BtagSF", "L1Prefiring", "PUJetIdEff", "PythiaScale",
+    "ElectronEff_AltMC", "ElectronEff_Syst", "ElectronEff_Stat", "MuonEff_AltMC", "MuonEff_Syst", "MuonEff_Stat"};
+
   vector<string> systematics = {"Nominal"};
+  if (!is_data) {
+    for (string isys : systnames) {
+      systematics.push_back(isys+"Up");
+      systematics.push_back(isys+"Dn");
+    }
+  }
+
+  if (systype.BeginsWith("NominalOnly")) {
+    systematics = vector<string>{"Nominal"};
+    systype = "Nominal";
+  }
+  // Make systype to the outtree name
+  if (!systype.BeginsWith("Nominal")) {
+    produceResultPlots = false;
+    systematics = vector<string>{systype.Data()};
+    if (is_data) return 1;
+  }
 
   TFile* fout = nullptr;
   TString outname = sample;
@@ -74,19 +94,84 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
   map<string, TTree*> touts;
   float dphijmet, dphiVmet, dphilljmet, dphi3ljmet, dphil3met;
   float trigwgt(1.);
-  // float DjjVBF(-1.), DjjVBFL1(-1.), DjjVBFa2(-1.), DjjVBFa3(-1.), DjjVBFL1ZGs(-1.);
+
+  // Variable only store for the output tree
+  float evt_weight;
+  // float ll_pt, ll_eta, ll_phi, ll_mass;
+  float met(0.), metphi(-99.), rlmet(0.), rlmetphi(-99.);
+  float mtl3(0.), m3l(0.), mllmin(9999.), mll13(0.), mll23(0.), mllclose(0.), mllsfx3(0.);
+  float mZZ(0.), mWZ(0.), mtZZ(0.), mtWZ(0.), rlmtZZ(0.);
+  float Vpt(0.), Veta(-99.), Vphi(-99.), Vmass(0.);
+  float lep3pt(0.), lep3eta(-99.), lep3phi(-99.), lep3mass(0.);
+  int llid(0), lep3id(0);
+
+  float jet_pt[8], jet_eta[8], jet_phi[8], jet_mass[8];
 
   unsigned njet(0);
 
-  // float dijet_mass(0.), dijet_pt(0.), dijet_dEta(-99.), dijet_dPhi(-99.);
-
-  bool is_vbf(false);
+  bool is_vbf(false), isSF13(false), isSF23(false);
 
   map<string,float> evtwgt_sys;
 
   map<string,TH2D*> hmap_trigSF_dilep;
   map<string,TH2D*> hmap_trigEff_sel;
   map<string,TH1*> hmap_externwgt;
+
+  if (produceResultTree) {
+    for (string isys : systematics) {
+      if (separateFileForTree) {
+        gSystem->Exec(Form("mkdir -p outtree/%s", tag.Data()));
+        TString otname = Form("outtree/%s/trileptree_%s_%s.root", tag.Data(), outname.Data(), isys.c_str());
+        cout << ">> Outputting result tree to " << otname << endl;
+        fouts[isys] = new TFile(otname, "RECREATE");
+        fouts[isys]->cd();
+      }
+      bool extraBranches = (isys == "Nominal");
+
+      TTree* tout = new TTree("FinalTree", "");
+
+      tout->Branch("weight", &evt_weight);
+      tout->Branch("mTZZ", &mtZZ);
+      tout->Branch("mTWZ", &mtWZ);
+      tout->Branch("mWZ", &mWZ);
+      tout->Branch("mTl", &mtl3);
+
+      tout->Branch("dilepton_id", &llid);
+      tout->Branch("dilepton_pt", &Vpt);
+      tout->Branch("dilepton_eta", &Veta);
+      tout->Branch("dilepton_mass", &Vmass);
+
+      tout->Branch("lepW_id", &lep3id);
+      tout->Branch("lepW_pt", &lep3pt);
+      tout->Branch("lepW_eta", &lep3eta);
+      tout->Branch("lepW_phi", &lep3phi);
+      tout->Branch("lepW_mass", &lep3mass);
+
+      tout->Branch("pTmiss", &met);
+      tout->Branch("phimiss", &metphi);
+      tout->Branch("pTmiss_addl3", &rlmet);
+      tout->Branch("phimiss_addl3", &rlmetphi);
+
+      tout->Branch("n_ak4jets_pt30", &njet);
+
+      tout->Branch("ak4jet_leading_pt", jet_pt);
+      tout->Branch("ak4jet_leading_eta", jet_eta);
+      tout->Branch("ak4jet_leading_phi", jet_phi);
+      tout->Branch("ak4jet_leading_mass", jet_mass);
+
+      tout->Branch("ak4jet_subleading_pt", jet_pt+1);
+      tout->Branch("ak4jet_subleading_eta", jet_eta+1);
+      tout->Branch("ak4jet_subleading_phi", jet_phi+1);
+      tout->Branch("ak4jet_subleading_mass", jet_mass+1);
+
+      if (extraBranches) {
+        tout->Branch("m3l", &m3l);
+        tout->Branch("mllmin", &mllmin);
+      }
+
+      touts[isys] = tout;
+    }
+  }
 
   // Make photon-pt bins for reweight
   vector<float> ptbin0, ptbin1;
@@ -213,7 +298,9 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
         }
       }
 
-      //  Chekc the sample names
+      // Check sample names
+      // Fix the cross section for the mllmin01 samples
+      if (isWZ3l_mllmin01) weight *= 0.6;
 
       int istep = 0;
       auto fill_passedsteps = [&](string s="") {
@@ -226,75 +313,51 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
       };
       fill_passedsteps("_nocut");
 
-
-      // Fix the cross section for the mllmin01 samples
-      if (isWZ3l_mllmin01) weight *= 0.6;
-
       // btag veto, already applied on SinglePhotonEvents but not others
-      if (!isgamma && event_n_ak4jets_pt30_btagged_loose() != 0) continue;
+      if (event_n_ak4jets_pt30_btagged_loose() > 0) continue;
+
+      // extra lepton veto
       if (isgamma && event_n_leptons_fakeableBase() > 0) continue;
       if ((is1el || islg) && event_n_leptons_fakeableBase() > 1) continue;
       if ((isllg || isdilep) && event_n_leptons_fakeableBase() > 2) continue;
       if (is3l && event_n_leptons_fakeableBase() > 0) continue;
 
-      float met = event_pTmiss();
-      float metphi = event_phimiss();
-      float mZZ = -999;
-      float mWZ = -999;
-      float mtZZ = -999;
-      float mtWZ = -999;
-      float rlmet = -999;
-      float rlmetphi = -999;
-      float rlmtZZ = -999;
-      float Vpt   = dilepton_pt();
-      float Veta  = dilepton_eta();
-      float Vphi  = dilepton_phi();
-      float Vmass = dilepton_mass();
+      fill_passedsteps("_ljveto");
 
-      float mllmin = 9999.;
+      met = event_pTmiss();
+      metphi = event_phimiss();
+      mZZ = -999;
+      mWZ = -999;
+      mtZZ = -999;
+      mtWZ = -999;
+      rlmet = -999;
+      rlmetphi = -999;
+      rlmtZZ = -999;
+      Vpt   = dilepton_pt();
+      Veta  = dilepton_eta();
+      Vphi  = dilepton_phi();
+      Vmass = dilepton_mass();
 
-      int ilep1 = -1;
-      int ilep2 = -1;
-      int ilep3 = -1;
+      mtl3 = event_mTl();
+      m3l = event_m3l();
+      mllmin = 9999.;
+
+      int ilep1(-1), ilep2(-1), ilep3(-1);
       int lep3id = -1;
+      int itrig = -1;
+
       if (is3l) {
         if (leptons_id().size() != 3) continue;
 
         LorentzVector p4dilep(dilepton_pt(), dilepton_eta(), dilepton_phi(), dilepton_mass());
 
-        // Find the Z by ossf
-        int nOSSFpair = 0;
-        float mdilep = -999.;
-        LorentzVector p4lep1, p4lep2;
-        const vector<int> ilep1s = {1, 0, 0};
-        const vector<int> ilep2s = {2, 2, 1};
-        vector<int> idprod2 = {leptons_id()[1]*leptons_id()[2], leptons_id()[0]*leptons_id()[2], leptons_id()[0]*leptons_id()[1]};
-        for (int i = 0; i < 3; ++i) {
-          auto p4lep1_tmp = LorentzVector(leptons_pt().at(ilep1s[i]), leptons_eta().at(ilep1s[i]), leptons_phi().at(ilep1s[i]), leptons_mass().at(ilep1s[i]));
-          auto p4lep2_tmp = LorentzVector(leptons_pt().at(ilep2s[i]), leptons_eta().at(ilep2s[i]), leptons_phi().at(ilep2s[i]), leptons_mass().at(ilep2s[i]));
-          auto p4dilep_tmp = p4lep1_tmp + p4lep2_tmp;
-          auto mdilep_tmp = p4dilep_tmp.M();
-
-          if (mdilep_tmp < mllmin)
-            mllmin = mdilep_tmp;
-
-          if (idprod2[i] == -121 || idprod2[i] == -169) {
-            if (fabs(mdilep_tmp - 91.2) < fabs(mdilep - 91.2)) {
-              std::swap(p4lep1, p4lep1_tmp);
-              std::swap(p4lep2, p4lep2_tmp);
-              std::swap(p4dilep, p4dilep_tmp);
-              std::swap(mdilep, mdilep_tmp);
-              ilep3 = i;
-            }
-            nOSSFpair++;
-          }
-        }
-
         if (dilepton_id() == -121 || dilepton_id() == -169) {
           // case that the dilepton branch get it right?
           ilep1 = dilepton_daughter_indices().at(0);
           ilep2 = dilepton_daughter_indices().at(1);
+          if (leptons_pt().at(ilep1) < leptons_pt().at(ilep2)) std::swap(ilep1, ilep2);
           ilep3 = 3 - ilep1 - ilep2;
+          itrig = ilep1 + ilep2 - 1;
 
           string s = "_cat0";
           plot1d("h_mdilep"+s, dilepton_mass(), weight, hvec, ";M(ll) [GeV]" , 160, 0, 800);
@@ -325,19 +388,54 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
           }
 
         } else {
+          // Find the Z by ossf
+          int nOSSFpair = 0;
+          float mdilep = -999.;
+          LorentzVector p4lep1, p4lep2;
+          const vector<int> ilep1s = {1, 0, 0};
+          const vector<int> ilep2s = {2, 2, 1};
+          vector<int> idprod2 = {leptons_id()[1]*leptons_id()[2], leptons_id()[0]*leptons_id()[2], leptons_id()[0]*leptons_id()[1]};
+          for (int i = 0; i < 3; ++i) {
+            auto p4lep1_tmp = LorentzVector(leptons_pt().at(ilep1s[i]), leptons_eta().at(ilep1s[i]), leptons_phi().at(ilep1s[i]), leptons_mass().at(ilep1s[i]));
+            auto p4lep2_tmp = LorentzVector(leptons_pt().at(ilep2s[i]), leptons_eta().at(ilep2s[i]), leptons_phi().at(ilep2s[i]), leptons_mass().at(ilep2s[i]));
+            auto p4dilep_tmp = p4lep1_tmp + p4lep2_tmp;
+            auto mdilep_tmp = p4dilep_tmp.M();
+
+            if (mdilep_tmp < mllmin)
+              mllmin = mdilep_tmp;
+
+            if (idprod2[i] == -121 || idprod2[i] == -169) {
+              if (fabs(mdilep_tmp - 91.2) < fabs(mdilep - 91.2)) {
+                std::swap(p4lep1, p4lep1_tmp);
+                std::swap(p4lep2, p4lep2_tmp);
+                std::swap(p4dilep, p4dilep_tmp);
+                std::swap(mdilep, mdilep_tmp);
+                ilep3 = i;
+              }
+              nOSSFpair++;
+            }
+          }
           if (nOSSFpair == 0) {
             plot1d("h_trilep_cat", 7, weight, hvec, "; trilep category" , 8, 0, 8);
             continue;
           }
-
           plot1d("h_mll_cat6", mdilep, weight, hvec, ";M(ll) [GeV]" , 160, 0, 800);
           plot1d("h_trilep_cat", 6, weight, hvec, "; trilep category" , 8, 0, 8);
-
           continue;
         }
 
-        float mtlep3 = calculateMT(leptons_pt().at(ilep3), leptons_phi().at(ilep3), event_pTmiss(), event_phimiss());
+        lep3pt = leptons_pt().at(ilep3);
+        // float mtlep3 = calculateMT(lep3pt, leptons_phi().at(ilep3), event_pTmiss(), event_phimiss());
+        LorentzVector p4lep1(leptons_pt().at(ilep1), leptons_eta().at(ilep1), leptons_phi().at(ilep1), leptons_mass().at(ilep1));
+        LorentzVector p4lep2(leptons_pt().at(ilep2), leptons_eta().at(ilep2), leptons_phi().at(ilep2), leptons_mass().at(ilep2));
         LorentzVector p4lep3(leptons_pt().at(ilep3), leptons_eta().at(ilep3), leptons_phi().at(ilep3), leptons_mass().at(ilep3));
+        mll13 = (p4lep1 + p4lep3).M();
+        mll23 = (p4lep2 + p4lep3).M();
+        mllmin = std::min(dilepton_mass(), std::min(mll13, mll23));
+        mllclose = (fabs(mll13 - 91.2) < fabs(mll23 - 91.2))? mll13 : mll23;
+        isSF13 = abs(leptons_id().at(ilep1)) == abs(leptons_id().at(ilep3));
+        isSF23 = abs(leptons_id().at(ilep2)) == abs(leptons_id().at(ilep3));
+        mllsfx3 = (isSF13 && isSF23)? mllclose : (isSF13)? mll13 : (isSF23)? mll23 : -1;
 
         // Calculate variables with 3rd lepton added to MET
         LorentzVector met_p4(event_pTmiss(), 0, event_phimiss(), 0);
@@ -365,21 +463,60 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
         dphilljmet = deltaPhi(p4lljets.phi(), metphi);;
         dphi3ljmet = deltaPhi((p4lljets+p4lep3).phi(), metphi);;
       }
+      bool passDilepTrig_Zll = event_wgt_triggers_Dilepton_SF().at(itrig);
+      bool passSinglepTrig_lep3 = event_wgt_triggers_SingleLepton().at(ilep3);
+      bool passDilepTrig_any = false;
+      bool passSinglepTrig_any = false;
+      for (bool triggered : event_wgt_triggers_Dilepton_SF()) {
+        passDilepTrig_any |= triggered;
+      }
+      for (bool triggered : event_wgt_triggers_SingleLepton()) {
+        passSinglepTrig_any |= triggered;
+      }
+      bool passAnyTrig = passDilepTrig_any || passSinglepTrig_any;
 
       auto fillmasshists = [&](string s = "") {
         plot1d("h_met"+s, event_pTmiss(), weight, hvec, ";E_{T}^{miss} [GeV]"  , 160,  0, 800);
         plot1d("h_rlmet"+s, met, weight, hvec, ";E_{T}^{miss} (rl) [GeV]"  , 160,  0, 800);
         plot1d("h_mll"+s, Vmass, weight, hvec, ";M_{ll} [GeV]" , 160, 0, 800);
-        plot1d("h_m3l"+s, event_m3l(), weight, hvec, ";M_{lll} [GeV]" , 160, 0, 800);
-        plot1d("h_mtl3"+s, event_mTl(), weight, hvec, ";M_{T} (lep3) [GeV]" , 50, 0, 250);
+        plot1d("h_m3l"+s, m3l, weight, hvec, ";M_{lll} [GeV]" , 160, 0, 800);
+        plot1d("h_mtl3"+s, mtl3, weight, hvec, ";M_{T} (lep3) [GeV]" , 50, 0, 250);
         plot1d("h_mllmin"+s, mllmin, weight, hvec, ";min M_{ll} [GeV]" , 100, 0, 250);
       };
       fillmasshists("_nocut");
 
-      // Leading lepton pT cuts
-      // if (leptons_pt().at(0) < 50) continue;
-      if (leptons_pt().at(ilep3) < 20) continue;
-      fillmasshists("_l3pt");
+      // Lepton pT cuts
+      float lep1pt(leptons_pt().at(ilep1)), lep2pt(leptons_pt().at(ilep2));
+      if (is3l && (lep1pt < 30 || lep2pt < 20 || lep3pt < 20)) continue;
+
+      fillmasshists("_leppt");
+
+      // if (mtl3 < 40) continue;
+      if ((1.4*mtl3 + met) < 120) continue;
+
+      fillmasshists("_mtmet");
+
+      auto fillTrigEffPlots = [&](string s, string name, bool passTrig, bool passDen=true) {
+        if (!passDen) return;
+        plot1d("hden_"+name+"_lepZ1pt"+s, ((lep1pt > lep2pt)? lep1pt : lep2pt)  , weight, hvec, ";p_{T}(lepZ1) [GeV]"  , 25,  0, 500);
+        plot1d("hden_"+name+"_lepZ2pt"+s, ((lep1pt > lep2pt)? lep2pt : lep1pt)  , weight, hvec, ";p_{T}(lepZ2) [GeV]"  , 20,  0, 400);
+        plot1d("hden_"+name+"_lepWpt"+s,   lep3pt  , weight, hvec, ";p_{T}(lepW) [GeV]"  , 20,  0, 400);
+        plot1d("hden_"+name+"_ptll"+s, dilepton_pt(), weight, hvec, ";p_{T}^{ll} [GeV]"  , 160,  0, 800);
+        if (passTrig) {
+          plot1d("hnum_"+name+"_lepZ1pt"+s, ((lep1pt > lep2pt)? lep1pt : lep2pt)  , weight, hvec, ";p_{T}(lepZ1) [GeV]"  , 25,  0, 500);
+          plot1d("hnum_"+name+"_lepZ2pt"+s, ((lep1pt > lep2pt)? lep2pt : lep1pt)  , weight, hvec, ";p_{T}(lepZ2) [GeV]"  , 20,  0, 400);
+          plot1d("hnum_"+name+"_lepWpt"+s,   lep3pt  , weight, hvec, ";p_{T}(lepW) [GeV]"  , 20,  0, 400);
+          plot1d("hnum_"+name+"_ptll"+s, dilepton_pt(), weight, hvec, ";p_{T}^{ll} [GeV]"  , 160,  0, 800);
+        }
+      };
+      // fillTrigEffPlots(metsuf, "trigeff_any", passAnyTrig);
+      // fillTrigEffPlots(metsuf, "trigeff_dilepZll", passDilepTrig_Zll, passAnyTrig);
+      // fillTrigEffPlots(metsuf, "trigeff_dilepAny", passDilepTrig_any, passAnyTrig);
+      // fillTrigEffPlots(metsuf, "trigeff_singlep3", passSinglepTrig_lep3, passAnyTrig);
+      // fillTrigEffPlots(metsuf, "trigeff_dilepZll_singlep3", (passDilepTrig_Zll || passSinglepTrig_lep3), passAnyTrig);
+
+      if (!passDilepTrig_Zll) continue;
+      fillmasshists("_trig");
 
       njet = event_n_ak4jets_pt30();
       float dphiVjet = 4.0;
@@ -406,7 +543,7 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
       else if (njet >= 2) jetcat = "_ge2j";
 
       // Analysis selections
-      // if (Vpt < 55.0) continue;
+      // if (Vpt < 55.0) continue;  // no boson pt requirement
       if (fabs(Vmass - 91.2) > 15) continue;  // only for dilepton events
 
       fill_passedsteps("_VptVmass");
@@ -443,10 +580,6 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
       // End of scale factors
       // --------------------------
       // Begin of final plots
-
-      if (met > 100) {
-        fill_passedsteps("_final");
-      }
 
       const vector<double> mtbins = {0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 600, 700, 800, 1000, 1200};
 
@@ -490,17 +623,17 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
           plot1d("h_jet1pt"+s, ak4jets_pt()[0], weight, hvec, ";p_{T}^{jet1} [GeV]" , 160,  0, 800);
           plot1d("h_jet1eta"+s, ak4jets_eta()[0], weight, hvec, ";#eta(jet1)"  , 96,  -4.8f, 4.8f);
         }
-        // if (njet >= 2) {
-        //   plot1d("h_jet2pt"+s, ak4jets_pt()[1], weight, hvec, ";p_{T}^{jet2} [GeV]" , 160,  0, 800);
-        //   plot1d("h_jet2eta"+s, ak4jets_eta()[1], weight, hvec, ";#eta(jet2)"  , 96,  -4.8f, 4.8f);
-        //   // VBF categories
-        //   plot1d("h_DjjVBF_finebin"+s, DjjVBF, weight, hvec, ";D_{jj}(VBF) ", 52,  -0.02f, 1.02f);
-        //   plot1d("h_DjjVBF"+s, DjjVBF, weight, hvec, ";D_{2jet}^{VBF} ", 20,  0.0f, 1.0f);
-        //   plot1d("h_DjjVBFL1"+s, DjjVBFL1, weight, hvec, ";D_{2jet}^{VBF,#Lambda1} ", 20,  0.0f, 1.0f);
-        //   plot1d("h_DjjVBFa2"+s, DjjVBFa2, weight, hvec, ";D_{2jet}^{VBF,a2} ", 20,  0.0f, 1.0f);
-        //   plot1d("h_DjjVBFa3"+s, DjjVBFa3, weight, hvec, ";D_{2jet}^{VBF,a3} ", 20,  0.0f, 1.0f);
-        //   plot1d("h_DjjVBFL1ZGs"+s, DjjVBFL1ZGs, weight, hvec, ";D_{2jet}^{VBF,L1ZGs} ", 20,  0.0f, 1.0f);
-        // }
+        if (njet >= 2) {
+          plot1d("h_jet2pt"+s, ak4jets_pt()[1], weight, hvec, ";p_{T}^{jet2} [GeV]" , 160,  0, 800);
+          plot1d("h_jet2eta"+s, ak4jets_eta()[1], weight, hvec, ";#eta(jet2)"  , 96,  -4.8f, 4.8f);
+          // // VBF categories
+          // plot1d("h_DjjVBF_finebin"+s, DjjVBF, weight, hvec, ";D_{jj}(VBF) ", 52,  -0.02f, 1.02f);
+          // plot1d("h_DjjVBF"+s, DjjVBF, weight, hvec, ";D_{2jet}^{VBF} ", 20,  0.0f, 1.0f);
+          // plot1d("h_DjjVBFL1"+s, DjjVBFL1, weight, hvec, ";D_{2jet}^{VBF,#Lambda1} ", 20,  0.0f, 1.0f);
+          // plot1d("h_DjjVBFa2"+s, DjjVBFa2, weight, hvec, ";D_{2jet}^{VBF,a2} ", 20,  0.0f, 1.0f);
+          // plot1d("h_DjjVBFa3"+s, DjjVBFa3, weight, hvec, ";D_{2jet}^{VBF,a3} ", 20,  0.0f, 1.0f);
+          // plot1d("h_DjjVBFL1ZGs"+s, DjjVBFL1ZGs, weight, hvec, ";D_{2jet}^{VBF,L1ZGs} ", 20,  0.0f, 1.0f);
+        }
 
         // Additional binnings used to derive gamma to ll boson pT reweighting
         plot1d("h_boson_pt_b0"+s, Vpt, weight, hvec, ";p_{T}(boson) [GeV]" , ptbin0.size()-1, ptbin0.data());
@@ -523,7 +656,13 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
           plot1d("h_etall"+s, dilepton_eta(), weight, hvec, ";#eta(ll)"  , 64,  -3.2f, 3.2f);
           plot1d("h_mll"+s, dilepton_mass() , weight, hvec, ";M_{ll} [GeV]" , 125,  0, 500);
 
-          float lep1pt(leptons_pt().at(ilep1)), lep2pt(leptons_pt().at(ilep2)), lep3pt(leptons_pt().at(ilep3));
+          plot1d("h_mll13"+s, mll13 , weight, hvec, ";M_{l1l3} [GeV]" , 125,  0, 500);
+          plot1d("h_mll23"+s, mll23 , weight, hvec, ";M_{l2l3} [GeV]" , 125,  0, 500);
+          plot1d("h_mllx3"+s, mll13 , weight, hvec, ";M_{lxl3} [GeV]" , 125,  0, 500);
+          plot1d("h_mllx3"+s, mll23 , weight, hvec, ";M_{lxl3} [GeV]" , 125,  0, 500);
+          plot1d("h_mllclose"+s, mllclose , weight, hvec, ";M_{ll} (close) [GeV]" , 125,  0, 500);
+          plot1d("h_mllsfx3"+s, mllsfx3 , (mllsfx3 > 0) * weight, hvec, ";M_{ll} (SF, close) [GeV]" , 125,  0, 500);
+
           plot1d("h_lepZ1pt"+s, ((lep1pt > lep2pt)? lep1pt : lep2pt)  , weight, hvec, ";p_{T}(lepZ1) [GeV]"  , 25,  0, 500);
           plot1d("h_lepZ2pt"+s, ((lep1pt > lep2pt)? lep2pt : lep1pt)  , weight, hvec, ";p_{T}(lepZ2) [GeV]"  , 20,  0, 400);
           plot1d("h_lepWpt"+s,   lep3pt  , weight, hvec, ";p_{T}(lepW) [GeV]"  , 20,  0, 400);
@@ -543,6 +682,60 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
 
       };
 
+      // Assign weights
+      double weight_unadjust = weight;
+      weight *= capVal(event_wgt_adjust);
+      evtwgt_sys[systype.Data()] = weight;
+      if (!is_data && systype == "Nominal") {
+        evtwgt_sys["PDFScaleUp"] = weight_unadjust * capVal(event_wgt_adjust * event_wgt_adjustment_PDFScaleUp());
+        evtwgt_sys["PDFScaleDn"] = weight_unadjust * capVal(event_wgt_adjust * event_wgt_adjustment_PDFScaleDn());
+        evtwgt_sys["QCDScaleUp"] = weight_unadjust * capVal(event_wgt_adjust * event_wgt_adjustment_QCDScaleUp());
+        evtwgt_sys["QCDScaleDn"] = weight_unadjust * capVal(event_wgt_adjust * event_wgt_adjustment_QCDScaleDn());
+        evtwgt_sys["PDFReplicaUp"] = weight_unadjust * capVal(event_wgt_adjust * (useNNPDF30? event_wgt_adjustment_NNPDF30_PDFReplicaUp() : event_wgt_adjustment_PDFReplicaUp()));
+        evtwgt_sys["PDFReplicaDn"] = weight_unadjust * capVal(event_wgt_adjust * (useNNPDF30? event_wgt_adjustment_NNPDF30_PDFReplicaDn() : event_wgt_adjustment_PDFReplicaDn()));
+        evtwgt_sys["PUJetIdEffUp"] = weight * event_wgt_SFs_PUJetId_EffUp() / event_wgt_SFs_PUJetId();
+        evtwgt_sys["PUJetIdEffDn"] = weight * event_wgt_SFs_PUJetId_EffDn() / event_wgt_SFs_PUJetId();
+        evtwgt_sys["BtagSFUp"] = weight * event_wgt_SFs_btagging_EffUp() / event_wgt_SFs_btagging();
+        evtwgt_sys["BtagSFDn"] = weight * event_wgt_SFs_btagging_EffDn() / event_wgt_SFs_btagging();
+        evtwgt_sys["ElectronEff_AltMCUp"] = weight * event_wgt_SFs_electrons_AltMCUp() / event_wgt_SFs_electrons();
+        evtwgt_sys["ElectronEff_AltMCDn"] = weight * event_wgt_SFs_electrons_AltMCDn() / event_wgt_SFs_electrons();
+        evtwgt_sys["ElectronEff_SystUp"] = weight * event_wgt_SFs_electrons_SystUp() / event_wgt_SFs_electrons();
+        evtwgt_sys["ElectronEff_SystDn"] = weight * event_wgt_SFs_electrons_SystDn() / event_wgt_SFs_electrons();
+        evtwgt_sys["ElectronEff_StatUp"] = weight * event_wgt_SFs_electrons_StatUp() / event_wgt_SFs_electrons();
+        evtwgt_sys["ElectronEff_StatDn"] = weight * event_wgt_SFs_electrons_StatDn() / event_wgt_SFs_electrons();
+        evtwgt_sys["MuonEff_AltMCUp"] = weight * event_wgt_SFs_muons_AltMCUp() / event_wgt_SFs_muons();
+        evtwgt_sys["MuonEff_AltMCDn"] = weight * event_wgt_SFs_muons_AltMCDn() / event_wgt_SFs_muons();
+        evtwgt_sys["MuonEff_SystUp"] = weight * event_wgt_SFs_muons_SystUp() / event_wgt_SFs_muons();
+        evtwgt_sys["MuonEff_SystDn"] = weight * event_wgt_SFs_muons_SystDn() / event_wgt_SFs_muons();
+        evtwgt_sys["MuonEff_StatUp"] = weight * event_wgt_SFs_muons_StatUp() / event_wgt_SFs_muons();
+        evtwgt_sys["MuonEff_StatDn"] = weight * event_wgt_SFs_muons_StatDn() / event_wgt_SFs_muons();
+        evtwgt_sys["PUUp"] = weight * event_wgt_PUUp() / event_wgt();
+        evtwgt_sys["PUDn"] = weight * event_wgt_PUDn() / event_wgt();
+        evtwgt_sys["L1PrefiringUp"] = weight * event_wgt_L1PrefiringUp() / event_wgt();
+        evtwgt_sys["L1PrefiringDn"] = weight * event_wgt_L1PrefiringDn() / event_wgt();
+
+        if (applyExternalAsMZ) {
+          evtwgt_sys["AsMZUp"] = weight_unadjust * capVal(event_wgt_adjust * getValFromHist1D(hmap_externwgt["AsMZUp"], genpromptparticles_sump4_pt()));
+          evtwgt_sys["AsMZDn"] = weight_unadjust * capVal(event_wgt_adjust * getValFromHist1D(hmap_externwgt["AsMZDn"], genpromptparticles_sump4_pt()));
+        } else {
+          evtwgt_sys["AsMZUp"] = weight_unadjust * capVal(event_wgt_adjust * (useNNPDF30? event_wgt_adjustment_NNPDF30_AsMZUp() : event_wgt_adjustment_AsMZUp()));
+          evtwgt_sys["AsMZDn"] = weight_unadjust * capVal(event_wgt_adjust * (useNNPDF30? event_wgt_adjustment_NNPDF30_AsMZDn() : event_wgt_adjustment_AsMZDn()));
+        }
+        if (applyExternalPythiaScale) {
+          evtwgt_sys["PythiaScaleUp"] = weight_unadjust * capVal(event_wgt_adjust * getValFromHist1D(hmap_externwgt["PythiaScaleUp"], genpromptparticles_sump4_pt()));
+          evtwgt_sys["PythiaScaleDn"] = weight_unadjust * capVal(event_wgt_adjust * getValFromHist1D(hmap_externwgt["PythiaScaleDn"], genpromptparticles_sump4_pt()));
+        } else {
+          evtwgt_sys["PythiaScaleUp"] = weight_unadjust * capVal(event_wgt_adjust * event_wgt_adjustment_PythiaScaleUp());
+          evtwgt_sys["PythiaScaleDn"] = weight_unadjust * capVal(event_wgt_adjust * event_wgt_adjustment_PythiaScaleDn());
+        }
+      }
+      for (auto wgt : evtwgt_sys) {
+        if (isnan(wgt.second)) {
+          cout << "[WARNING] >> Systematic " << wgt.first << " is seen to have NaN value!!" << endl;
+          wgt.second = 0;
+        }
+      }
+
       string metsuf = "_fullMET";
 
       // Simplified category -- version 1
@@ -550,40 +743,80 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
       if (lepcat == "_eemu" || lepcat == "_mumumu") lepcat = "_llmu";
 
       double origwgt = weight;
-      fillhists(metsuf);
-      fillhists(metsuf+jetcat);
-      fillhists(metsuf+lepcat);
-      fillhists(metsuf+jetcat+lepcat);
 
-      weight = origwgt * wgt_EWup;
-      fillhists("_EWUp"+metsuf);
-      fillhists("_EWUp"+metsuf+jetcat+lepcat);
-      weight = origwgt * wgt_EWdn;
-      fillhists("_EWDn"+metsuf);
-      fillhists("_EWDn"+metsuf+jetcat+lepcat);
-      weight = origwgt;
+      const bool fillFullMETplots = false;
+      if (fillFullMETplots) {
 
-      if (met > 100) {
-        fillhists("_metge50"+jetcat+lepcat);
+        fillhists(metsuf);
+        fillhists(metsuf+jetcat);
+        fillhists(metsuf+lepcat);
+        fillhists(metsuf+jetcat+lepcat);
+
+        for (string isys : systematics) {
+          fillhists("_"+isys+metsuf, true);
+          fillhists("_"+isys+metsuf+lepcat, true);
+          fillhists("_"+isys+metsuf+jetcat+lepcat, true);
+        }
+
+        // Fill EW uncertainties for the Nominal only study
+        if (!is_data && systematics.size() == 1 && systematics[0] == "Nominal") {
+          weight = origwgt * wgt_EWup;
+          fillhists("_EWUp"+metsuf);
+          fillhists("_EWUp"+metsuf+jetcat+lepcat);
+          weight = origwgt * wgt_EWdn;
+          fillhists("_EWDn"+metsuf);
+          fillhists("_EWDn"+metsuf+jetcat+lepcat);
+          weight = origwgt;
+        }
       }
 
-      if ((lepcat.back() == 'e' && met > 80) || (lepcat.back() == 'u' && met > 50))
-        metsuf = "_final";
-      else
-        continue;  // do not fill hist otherwise
+      metsuf = "_final";
 
       fillhists(metsuf);
       fillhists(metsuf+jetcat);
       fillhists(metsuf+lepcat);
       fillhists(metsuf+jetcat+lepcat);
 
-      weight = origwgt * wgt_EWup;
-      fillhists("_EWUp"+metsuf);
-      fillhists("_EWUp"+metsuf+jetcat+lepcat);
-      weight = origwgt * wgt_EWdn;
-      fillhists("_EWDn"+metsuf);
-      fillhists("_EWDn"+metsuf+jetcat+lepcat);
-      weight = origwgt;
+      if (!is_data && systematics.size() == 1 && systematics[0] == "Nominal") {
+        weight = origwgt * wgt_EWup;
+        fillhists("_EWUp"+metsuf);
+        fillhists("_EWUp"+metsuf+jetcat+lepcat);
+        weight = origwgt * wgt_EWdn;
+        fillhists("_EWDn"+metsuf);
+        fillhists("_EWDn"+metsuf+jetcat+lepcat);
+        weight = origwgt;
+      }
+
+      if (produceResultTree) {
+        // Common branches
+        evt_weight = weight;
+
+        llid = dilepton_id();
+        lep3eta = leptons_eta().at(ilep3);
+        lep3phi = leptons_phi().at(ilep3);
+        lep3mass = leptons_mass().at(ilep3);
+
+        int j = 0;
+        for (; j < std::min(njet, 2U); ++j) {
+          jet_pt[j]= ak4jets_pt().at(j);
+          jet_eta[j]= ak4jets_eta().at(j);
+          jet_phi[j]= ak4jets_phi().at(j);
+          jet_mass[j]= ak4jets_mass().at(j);
+        }
+        for (; j < 2; ++j) {
+          jet_pt[j] = -999.;
+          jet_eta[j] = -999.;
+          jet_phi[j] = -999.;
+          jet_mass[j] = -999.;
+        }
+
+        // Weight branches
+        for (string isys : systematics) {
+          fouts[isys]->cd();
+          evt_weight = evtwgt_sys.at(isys);
+          touts[isys]->Fill();
+        }
+      }
 
     } //event loop
 
@@ -667,6 +900,19 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
     if (dir == nullptr) dir = fout->mkdir(dirname.c_str());
     dir->cd();
     h.second->Write();
+  }
+
+  if (produceResultTree) {
+    if (separateFileForTree) {
+      for (string isys : systematics) {
+        fouts[isys]->cd();
+        touts[isys]->Write();
+        fouts[isys]->Close();
+      }
+    } else {
+      fout->cd();
+      touts[0]->Write();
+    }
   }
 
   if (produceResultPlots && fout) fout->Close();

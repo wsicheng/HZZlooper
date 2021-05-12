@@ -760,11 +760,72 @@ vector<float> sferr_Vpt_b0_v9_mumu_data18_metlt125_eq0j = {1.523e-04,2.281e-04,3
 vector<float> sferr_Vpt_b1_v9_mumu_data18_metlt125_eq1j = {1.307e-04,1.669e-04,2.261e-04,2.809e-04,3.629e-04,4.460e-04,5.480e-04,4.143e-04,4.849e-04,4.994e-04,5.631e-04,6.600e-04,7.642e-04,6.634e-04,7.066e-04,8.103e-04,8.707e-04,1.101e-03,1.214e-03,1.403e-03,1.420e-03,2.093e-03,};
 vector<float> sferr_Vpt_b1_v9_mumu_data18_metlt125_ee2j = {1.305e-04,1.662e-04,1.950e-04,2.625e-04,3.389e-04,3.673e-04,4.578e-04,3.375e-04,3.975e-04,4.086e-04,4.607e-04,5.478e-04,6.076e-04,5.066e-04,5.583e-04,6.212e-04,6.527e-04,8.272e-04,8.859e-04,1.005e-03,1.036e-03,1.538e-03,};
 
-// vector<float> sf_Vaeta_flatpt_v9_data16_metlt125_ee2j{sf_Vaeta_flatpt_v8_data16_metlt125_ee2j}, sf_Vaeta_flatpt_v9_ee_data16_metlt125_ee2j{sf_Vaeta_flatpt_v8_ee_data16_metlt125_ee2j}, sf_Vaeta_flatpt_v9_mumu_data16_metlt125_ee2j{sf_Vaeta_flatpt_v8_mumu_data16_metlt125_ee2j};
-// vector<float> sf_Vaeta_flatpt_v9_data17_metlt125_ee2j{sf_Vaeta_flatpt_v8_data17_metlt125_ee2j}, sf_Vaeta_flatpt_v9_ee_data17_metlt125_ee2j{sf_Vaeta_flatpt_v8_ee_data17_metlt125_ee2j}, sf_Vaeta_flatpt_v9_mumu_data17_metlt125_ee2j{sf_Vaeta_flatpt_v8_mumu_data17_metlt125_ee2j};
-// vector<float> sf_Vaeta_flatpt_v9_data18_metlt125_ee2j{sf_Vaeta_flatpt_v8_data18_metlt125_ee2j}, sf_Vaeta_flatpt_v9_ee_data18_metlt125_ee2j{sf_Vaeta_flatpt_v8_ee_data18_metlt125_ee2j}, sf_Vaeta_flatpt_v9_mumu_data18_metlt125_ee2j{sf_Vaeta_flatpt_v8_mumu_data18_metlt125_ee2j};
+vector<float> sf_Vaeta_flatpt_v10_data16_metlt125_ee2j = {7.806e-01,8.104e-01,8.068e-01,7.990e-01,8.664e-01,8.667e-01,8.757e-01,9.503e-01,9.675e-01,9.469e-01,1.078e+00,1.245e+00,1.373e+00,1.467e+00,1.821e+00,1.886e+00,1.264e+00,1.071e+00,9.335e-01,8.316e-01,8.553e-01,7.865e-01,7.692e-01,6.796e-01,4.789e-01,1.000e+00,};
+vector<float> sf_Vaeta_flatpt_v10_data17_metlt125_ee2j = {7.484e-01,7.584e-01,7.340e-01,7.670e-01,7.874e-01,8.006e-01,8.014e-01,8.994e-01,8.873e-01,9.242e-01,1.061e+00,1.262e+00,1.251e+00,1.298e+00,1.828e+00,1.703e+00,1.147e+00,1.038e+00,9.510e-01,8.672e-01,9.962e-01,9.589e-01,1.045e+00,1.096e+00,7.711e-01,1.000e+00,};
+vector<float> sf_Vaeta_flatpt_v10_data18_metlt125_ee2j = {7.525e-01,7.557e-01,7.450e-01,7.903e-01,8.328e-01,7.644e-01,8.137e-01,8.693e-01,9.076e-01,9.448e-01,1.020e+00,1.217e+00,1.313e+00,1.354e+00,1.670e+00,1.747e+00,1.143e+00,1.119e+00,9.954e-01,9.349e-01,9.424e-01,9.833e-01,1.036e+00,8.235e-01,5.809e-01,1.000e+00,};
+vector<float> sf_Vaeta_flatpt_v10_ee_data16_metlt125_ee2j = {8.325e-01,8.424e-01,8.512e-01,8.202e-01,8.699e-01,8.744e-01,9.044e-01,9.837e-01,9.664e-01,9.244e-01,1.114e+00,1.217e+00,1.353e+00,1.381e+00,1.764e+00,1.790e+00,1.211e+00,1.044e+00,9.263e-01,7.930e-01,8.028e-01,7.949e-01,7.953e-01,6.817e-01,4.955e-01,1.000e+00,};
+vector<float> sf_Vaeta_flatpt_v10_ee_data17_metlt125_ee2j = {7.523e-01,7.792e-01,7.392e-01,8.193e-01,8.069e-01,8.203e-01,8.023e-01,9.288e-01,8.528e-01,9.608e-01,1.055e+00,1.261e+00,1.210e+00,1.284e+00,1.736e+00,1.705e+00,1.077e+00,1.009e+00,9.382e-01,8.490e-01,9.697e-01,9.408e-01,1.026e+00,1.081e+00,8.034e-01,1.000e+00,};
+vector<float> sf_Vaeta_flatpt_v10_ee_data18_metlt125_ee2j = {7.463e-01,7.388e-01,7.216e-01,8.055e-01,8.299e-01,7.612e-01,8.153e-01,8.358e-01,8.692e-01,9.185e-01,9.738e-01,1.156e+00,1.229e+00,1.277e+00,1.570e+00,1.679e+00,1.132e+00,1.088e+00,9.977e-01,9.553e-01,9.729e-01,1.007e+00,1.163e+00,8.898e-01,6.768e-01,1.000e+00,};
+vector<float> sf_Vaeta_flatpt_v10_mumu_data16_metlt125_ee2j = {7.471e-01,7.897e-01,7.781e-01,7.854e-01,8.641e-01,8.618e-01,8.572e-01,9.288e-01,9.683e-01,9.615e-01,1.055e+00,1.264e+00,1.386e+00,1.523e+00,1.858e+00,1.948e+00,1.299e+00,1.089e+00,9.381e-01,8.566e-01,8.892e-01,7.811e-01,7.524e-01,6.783e-01,4.682e-01,1.000e+00,};
+vector<float> sf_Vaeta_flatpt_v10_mumu_data17_metlt125_ee2j = {7.458e-01,7.445e-01,7.304e-01,7.321e-01,7.743e-01,7.875e-01,8.008e-01,8.798e-01,9.102e-01,8.997e-01,1.065e+00,1.263e+00,1.279e+00,1.307e+00,1.889e+00,1.702e+00,1.193e+00,1.057e+00,9.595e-01,8.794e-01,1.014e+00,9.708e-01,1.058e+00,1.106e+00,7.496e-01,1.000e+00,};
+vector<float> sf_Vaeta_flatpt_v10_mumu_data18_metlt125_ee2j = {7.567e-01,7.674e-01,7.614e-01,7.797e-01,8.348e-01,7.666e-01,8.125e-01,8.926e-01,9.343e-01,9.632e-01,1.052e+00,1.259e+00,1.372e+00,1.407e+00,1.740e+00,1.795e+00,1.152e+00,1.140e+00,9.937e-01,9.207e-01,9.212e-01,9.665e-01,9.483e-01,7.773e-01,5.141e-01,1.000e+00,};
 
-// vector<float> boson_aeta_metlt125_eq2j_18 = {1.567e-02,1.526e-02,1.662e-02,1.749e-02,1.858e-02,1.633e-02,1.713e-02,2.057e-02,1.916e-02,2.136e-02,2.209e-02,2.648e-02,2.876e-02,2.723e-02,3.645e-02,3.295e-02,2.063e-02,2.127e-02,1.813e-02,1.594e-02,1.591e-02,1.733e-02,1.970e-02,1.436e-02,1.004e-02,1.000e+00,};
+vector<float> sf_Vpt_b0_v10_data16_metlt125_eq0j = {1.679e-02,1.837e-02,2.080e-02,2.222e-02,2.471e-02,2.680e-02,3.339e-02,3.592e-02,3.417e-02,3.134e-02,};
+vector<float> sf_Vpt_b1_v10_data16_metlt125_eq1j = {1.874e-02,2.155e-02,2.342e-02,2.722e-02,2.931e-02,3.299e-02,3.628e-02,3.966e-02,4.298e-02,4.802e-02,4.882e-02,5.262e-02,5.463e-02,5.930e-02,6.326e-02,7.011e-02,7.410e-02,7.888e-02,8.645e-02,8.811e-02,9.554e-02,1.170e-01,};
+vector<float> sf_Vpt_b1_v10_data16_metlt125_ee2j = {9.933e-03,1.160e-02,1.286e-02,1.496e-02,1.732e-02,1.800e-02,2.129e-02,2.181e-02,2.413e-02,2.790e-02,2.886e-02,3.195e-02,3.290e-02,3.612e-02,3.902e-02,4.476e-02,4.773e-02,5.288e-02,5.359e-02,6.174e-02,6.719e-02,7.970e-02,};
+vector<float> sf_Vpt_b0_v10_data17_metlt125_eq0j = {1.776e-02,1.936e-02,2.176e-02,2.627e-02,2.578e-02,3.559e-02,4.570e-02,6.933e-02,1.004e-01,1.370e-01,};
+vector<float> sf_Vpt_b1_v10_data17_metlt125_eq1j = {1.996e-02,2.334e-02,2.618e-02,2.982e-02,3.251e-02,3.583e-02,4.005e-02,4.220e-02,4.510e-02,4.911e-02,5.139e-02,5.461e-02,5.881e-02,6.239e-02,6.660e-02,7.300e-02,8.067e-02,8.777e-02,9.005e-02,9.357e-02,1.043e-01,1.106e-01,};
+vector<float> sf_Vpt_b1_v10_data17_metlt125_ee2j = {1.195e-02,1.350e-02,1.528e-02,1.788e-02,2.012e-02,2.206e-02,2.397e-02,2.579e-02,2.904e-02,3.067e-02,3.456e-02,3.458e-02,3.650e-02,4.175e-02,4.518e-02,4.850e-02,5.350e-02,5.474e-02,6.227e-02,7.028e-02,7.386e-02,8.873e-02,};
+vector<float> sf_Vpt_b0_v10_data18_metlt125_eq0j = {1.839e-02,2.061e-02,2.274e-02,2.642e-02,2.920e-02,3.369e-02,4.597e-02,7.519e-02,9.903e-02,1.412e-01,};
+vector<float> sf_Vpt_b1_v10_data18_metlt125_eq1j = {2.075e-02,2.323e-02,2.676e-02,2.927e-02,3.279e-02,3.566e-02,3.850e-02,4.307e-02,4.656e-02,5.134e-02,5.247e-02,5.569e-02,5.818e-02,6.278e-02,6.826e-02,7.196e-02,7.929e-02,8.164e-02,8.967e-02,9.408e-02,9.832e-02,9.757e-02,};
+vector<float> sf_Vpt_b1_v10_data18_metlt125_ee2j = {1.156e-02,1.329e-02,1.434e-02,1.744e-02,2.034e-02,2.105e-02,2.311e-02,2.502e-02,2.781e-02,3.017e-02,3.253e-02,3.608e-02,3.694e-02,3.924e-02,4.383e-02,4.576e-02,5.225e-02,5.643e-02,6.039e-02,6.558e-02,7.161e-02,7.666e-02,};
+vector<float> sferr_Vpt_b0_v10_data16_metlt125_eq0j = {1.813e-04,2.586e-04,3.819e-04,5.274e-04,7.434e-04,6.349e-04,8.028e-04,1.694e-03,2.472e-03,4.931e-03,};
+vector<float> sferr_Vpt_b1_v10_data16_metlt125_eq1j = {1.614e-04,2.134e-04,2.642e-04,3.509e-04,4.266e-04,4.676e-04,4.223e-04,5.130e-04,6.119e-04,6.766e-04,7.591e-04,8.994e-04,1.027e-03,8.925e-04,1.075e-03,1.265e-03,1.319e-03,1.742e-03,2.049e-03,2.153e-03,2.476e-03,4.589e-03,};
+vector<float> sferr_Vpt_b1_v10_data16_metlt125_ee2j = {1.723e-04,2.173e-04,2.615e-04,3.278e-04,4.121e-04,4.096e-04,4.070e-04,4.537e-04,5.246e-04,5.918e-04,6.579e-04,7.643e-04,8.409e-04,7.169e-04,8.491e-04,1.019e-03,1.017e-03,1.340e-03,1.447e-03,1.601e-03,1.757e-03,2.990e-03,};
+vector<float> sferr_Vpt_b0_v10_data17_metlt125_eq0j = {2.445e-04,3.537e-04,5.277e-04,8.707e-04,1.058e-03,1.175e-03,1.569e-03,4.930e-03,9.512e-03,2.110e-02,};
+vector<float> sferr_Vpt_b1_v10_data17_metlt125_eq1j = {2.001e-04,2.735e-04,3.549e-04,4.687e-04,5.828e-04,6.164e-04,5.498e-04,6.492e-04,7.553e-04,7.802e-04,9.070e-04,1.060e-03,1.261e-03,1.083e-03,1.167e-03,1.403e-03,1.525e-03,2.031e-03,1.999e-03,2.269e-03,2.531e-03,4.128e-03,};
+vector<float> sferr_Vpt_b1_v10_data17_metlt125_ee2j = {2.011e-04,2.536e-04,3.159e-04,4.093e-04,5.075e-04,5.198e-04,4.555e-04,5.312e-04,6.318e-04,6.293e-04,7.541e-04,8.169e-04,9.275e-04,8.217e-04,9.002e-04,1.042e-03,1.074e-03,1.338e-03,1.421e-03,1.641e-03,1.695e-03,2.804e-03,};
+vector<float> sferr_Vpt_b0_v10_data18_metlt125_eq0j = {2.402e-04,3.609e-04,5.278e-04,8.093e-04,1.189e-03,1.392e-03,1.402e-03,4.493e-03,7.344e-03,1.661e-02,};
+vector<float> sferr_Vpt_b1_v10_data18_metlt125_eq1j = {2.067e-04,2.673e-04,3.614e-04,4.538e-04,5.887e-04,7.269e-04,8.942e-04,6.398e-04,7.517e-04,7.603e-04,8.623e-04,1.008e-03,1.169e-03,1.032e-03,1.037e-03,1.161e-03,1.256e-03,1.601e-03,1.702e-03,1.947e-03,1.919e-03,2.928e-03,};
+vector<float> sferr_Vpt_b1_v10_data18_metlt125_ee2j = {2.009e-04,2.598e-04,3.042e-04,4.163e-04,5.442e-04,5.999e-04,7.304e-04,5.111e-04,5.972e-04,5.956e-04,6.859e-04,8.209e-04,8.960e-04,7.509e-04,7.906e-04,8.680e-04,9.184e-04,1.184e-03,1.220e-03,1.383e-03,1.395e-03,2.125e-03,};
+
+vector<float> sf_Vpt_b0_v10_ee_data16_metlt125_eq0j = {6.328e-03,7.035e-03,8.091e-03,8.664e-03,9.456e-03,1.046e-02,1.332e-02,1.483e-02,1.539e-02,1.531e-02,};
+vector<float> sf_Vpt_b1_v10_ee_data16_metlt125_eq1j = {7.136e-03,8.279e-03,8.940e-03,1.044e-02,1.113e-02,1.271e-02,1.406e-02,1.551e-02,1.733e-02,1.861e-02,1.970e-02,2.083e-02,2.193e-02,2.377e-02,2.462e-02,2.833e-02,2.910e-02,3.194e-02,3.524e-02,3.550e-02,3.819e-02,4.480e-02,};
+vector<float> sf_Vpt_b1_v10_ee_data16_metlt125_ee2j = {3.855e-03,4.476e-03,4.869e-03,5.773e-03,6.622e-03,6.964e-03,8.601e-03,8.520e-03,9.386e-03,1.113e-02,1.149e-02,1.212e-02,1.321e-02,1.423e-02,1.562e-02,1.762e-02,1.994e-02,2.114e-02,2.135e-02,2.514e-02,2.877e-02,3.128e-02,};
+vector<float> sf_Vpt_b0_v10_ee_data17_metlt125_eq0j = {6.956e-03,7.562e-03,8.478e-03,1.022e-02,9.873e-03,1.431e-02,1.744e-02,2.574e-02,3.298e-02,4.567e-02,};
+vector<float> sf_Vpt_b1_v10_ee_data17_metlt125_eq1j = {7.829e-03,9.160e-03,1.038e-02,1.178e-02,1.295e-02,1.411e-02,1.633e-02,1.706e-02,1.843e-02,1.964e-02,2.093e-02,2.227e-02,2.414e-02,2.566e-02,2.757e-02,3.082e-02,3.184e-02,3.749e-02,3.638e-02,3.974e-02,4.286e-02,4.895e-02,};
+vector<float> sf_Vpt_b1_v10_ee_data17_metlt125_ee2j = {4.709e-03,5.260e-03,5.981e-03,7.079e-03,7.986e-03,8.732e-03,9.469e-03,1.005e-02,1.184e-02,1.209e-02,1.373e-02,1.451e-02,1.483e-02,1.679e-02,1.840e-02,2.021e-02,2.279e-02,2.190e-02,2.527e-02,2.965e-02,3.185e-02,3.704e-02,};
+vector<float> sf_Vpt_b0_v10_ee_data18_metlt125_eq0j = {7.298e-03,8.222e-03,8.934e-03,1.076e-02,1.170e-02,1.328e-02,1.902e-02,2.881e-02,4.368e-02,6.275e-02,};
+vector<float> sf_Vpt_b1_v10_ee_data18_metlt125_eq1j = {8.257e-03,9.370e-03,1.068e-02,1.180e-02,1.324e-02,1.446e-02,1.561e-02,1.737e-02,1.896e-02,2.138e-02,2.205e-02,2.319e-02,2.413e-02,2.658e-02,2.853e-02,3.035e-02,3.359e-02,3.505e-02,3.810e-02,3.956e-02,4.220e-02,4.546e-02,};
+vector<float> sf_Vpt_b1_v10_ee_data18_metlt125_ee2j = {4.602e-03,5.365e-03,5.730e-03,7.026e-03,8.317e-03,8.846e-03,9.313e-03,1.038e-02,1.131e-02,1.234e-02,1.381e-02,1.529e-02,1.508e-02,1.606e-02,1.802e-02,1.926e-02,2.199e-02,2.440e-02,2.558e-02,2.793e-02,3.080e-02,3.502e-02,};
+vector<float> sferr_Vpt_b0_v10_ee_data16_metlt125_eq0j = {8.751e-05,1.248e-04,1.835e-04,2.519e-04,3.457e-04,3.234e-04,4.503e-04,1.002e-03,1.594e-03,3.392e-03,};
+vector<float> sferr_Vpt_b1_v10_ee_data16_metlt125_eq1j = {7.780e-05,1.017e-04,1.240e-04,1.629e-04,1.946e-04,2.242e-04,2.284e-04,2.768e-04,3.367e-04,3.804e-04,4.355e-04,5.074e-04,5.826e-04,5.020e-04,6.090e-04,7.610e-04,7.784e-04,1.042e-03,1.224e-03,1.333e-03,1.524e-03,2.747e-03,};
+vector<float> sferr_Vpt_b1_v10_ee_data16_metlt125_ee2j = {9.057e-05,1.119e-04,1.314e-04,1.639e-04,2.015e-04,2.111e-04,2.367e-04,2.581e-04,2.978e-04,3.508e-04,3.886e-04,4.371e-04,4.951e-04,4.156e-04,5.054e-04,6.162e-04,6.330e-04,8.120e-04,8.748e-04,1.004e-03,1.129e-03,1.831e-03,};
+vector<float> sferr_Vpt_b0_v10_ee_data17_metlt125_eq0j = {1.128e-04,1.616e-04,2.374e-04,3.839e-04,4.625e-04,5.580e-04,7.646e-04,2.391e-03,4.528e-03,1.108e-02,};
+vector<float> sferr_Vpt_b1_v10_ee_data17_metlt125_eq1j = {9.168e-05,1.234e-04,1.598e-04,2.079e-04,2.587e-04,2.792e-04,2.814e-04,3.283e-04,3.857e-04,4.153e-04,4.864e-04,5.652e-04,6.699e-04,5.726e-04,6.596e-04,8.231e-04,8.529e-04,1.182e-03,1.205e-03,1.417e-03,1.576e-03,2.668e-03,};
+vector<float> sferr_Vpt_b1_v10_ee_data17_metlt125_ee2j = {9.756e-05,1.204e-04,1.481e-04,1.910e-04,2.344e-04,2.493e-04,2.416e-04,2.768e-04,3.387e-04,3.480e-04,4.145e-04,4.641e-04,5.138e-04,4.464e-04,5.205e-04,6.245e-04,6.478e-04,7.770e-04,8.718e-04,1.031e-03,1.091e-03,1.768e-03,};
+vector<float> sferr_Vpt_b0_v10_ee_data18_metlt125_eq0j = {1.073e-04,1.604e-04,2.297e-04,3.594e-04,5.169e-04,5.912e-04,6.892e-04,2.090e-03,4.069e-03,1.000e-02,};
+vector<float> sferr_Vpt_b1_v10_ee_data18_metlt125_eq1j = {9.162e-05,1.188e-04,1.575e-04,1.983e-04,2.559e-04,3.155e-04,3.865e-04,3.049e-04,3.616e-04,3.921e-04,4.465e-04,5.154e-04,5.928e-04,5.271e-04,5.683e-04,6.690e-04,7.198e-04,9.224e-04,1.022e-03,1.168e-03,1.225e-03,1.950e-03,};
+vector<float> sferr_Vpt_b1_v10_ee_data18_metlt125_ee2j = {9.406e-05,1.213e-04,1.399e-04,1.892e-04,2.472e-04,2.781e-04,3.245e-04,2.636e-04,3.034e-04,3.213e-04,3.760e-04,4.447e-04,4.724e-04,3.940e-04,4.481e-04,5.172e-04,5.421e-04,7.057e-04,7.485e-04,8.526e-04,8.971e-04,1.408e-03,};
+
+vector<float> sf_Vpt_b0_v10_mumu_data16_metlt125_eq0j = {1.046e-02,1.133e-02,1.271e-02,1.355e-02,1.526e-02,1.634e-02,2.008e-02,2.109e-02,1.878e-02,1.603e-02,};
+vector<float> sf_Vpt_b1_v10_mumu_data16_metlt125_eq1j = {1.160e-02,1.327e-02,1.448e-02,1.677e-02,1.818e-02,2.028e-02,2.222e-02,2.416e-02,2.565e-02,2.942e-02,2.912e-02,3.179e-02,3.269e-02,3.553e-02,3.864e-02,4.178e-02,4.500e-02,4.694e-02,5.121e-02,5.262e-02,5.735e-02,7.220e-02,};
+vector<float> sf_Vpt_b1_v10_mumu_data16_metlt125_ee2j = {6.079e-03,7.119e-03,7.993e-03,9.185e-03,1.069e-02,1.103e-02,1.269e-02,1.329e-02,1.474e-02,1.677e-02,1.738e-02,1.983e-02,1.969e-02,2.189e-02,2.340e-02,2.714e-02,2.779e-02,3.174e-02,3.224e-02,3.660e-02,3.842e-02,4.843e-02,};
+vector<float> sf_Vpt_b0_v10_mumu_data17_metlt125_eq0j = {1.080e-02,1.180e-02,1.328e-02,1.605e-02,1.591e-02,2.128e-02,2.826e-02,4.359e-02,6.741e-02,9.135e-02,};
+vector<float> sf_Vpt_b1_v10_mumu_data17_metlt125_eq1j = {1.213e-02,1.418e-02,1.580e-02,1.805e-02,1.955e-02,2.173e-02,2.372e-02,2.513e-02,2.667e-02,2.947e-02,3.046e-02,3.234e-02,3.467e-02,3.673e-02,3.902e-02,4.218e-02,4.882e-02,5.028e-02,5.367e-02,5.383e-02,6.149e-02,6.170e-02,};
+vector<float> sf_Vpt_b1_v10_mumu_data17_metlt125_ee2j = {7.246e-03,8.244e-03,9.303e-03,1.080e-02,1.213e-02,1.333e-02,1.450e-02,1.574e-02,1.720e-02,1.858e-02,2.082e-02,2.007e-02,2.167e-02,2.497e-02,2.678e-02,2.829e-02,3.071e-02,3.284e-02,3.700e-02,4.063e-02,4.200e-02,5.169e-02,};
+vector<float> sf_Vpt_b0_v10_mumu_data18_metlt125_eq0j = {1.110e-02,1.238e-02,1.381e-02,1.566e-02,1.750e-02,2.041e-02,2.695e-02,4.638e-02,5.535e-02,7.843e-02,};
+vector<float> sf_Vpt_b1_v10_mumu_data18_metlt125_eq1j = {1.250e-02,1.386e-02,1.608e-02,1.747e-02,1.955e-02,2.120e-02,2.288e-02,2.571e-02,2.760e-02,2.996e-02,3.042e-02,3.249e-02,3.406e-02,3.620e-02,3.973e-02,4.160e-02,4.570e-02,4.659e-02,5.157e-02,5.453e-02,5.612e-02,5.211e-02,};
+vector<float> sf_Vpt_b1_v10_mumu_data18_metlt125_ee2j = {6.958e-03,7.929e-03,8.607e-03,1.042e-02,1.203e-02,1.221e-02,1.380e-02,1.464e-02,1.650e-02,1.783e-02,1.872e-02,2.079e-02,2.186e-02,2.317e-02,2.582e-02,2.650e-02,3.026e-02,3.203e-02,3.481e-02,3.764e-02,4.081e-02,4.164e-02,};
+vector<float> sferr_Vpt_b0_v10_mumu_data16_metlt125_eq0j = {1.255e-04,1.767e-04,2.571e-04,3.531e-04,4.992e-04,4.395e-04,5.773e-04,1.226e-03,1.774e-03,3.474e-03,};
+vector<float> sferr_Vpt_b1_v10_mumu_data16_metlt125_eq1j = {1.107e-04,1.445e-04,1.786e-04,2.349e-04,2.857e-04,3.169e-04,3.037e-04,3.661e-04,4.312e-04,4.978e-04,5.485e-04,6.527e-04,7.398e-04,6.403e-04,7.920e-04,9.415e-04,9.895e-04,1.290e-03,1.508e-03,1.637e-03,1.885e-03,3.532e-03,};
+vector<float> sferr_Vpt_b1_v10_mumu_data16_metlt125_ee2j = {1.218e-04,1.526e-04,1.840e-04,2.266e-04,2.838e-04,2.872e-04,2.964e-04,3.341e-04,3.870e-04,4.403e-04,4.893e-04,5.763e-04,6.201e-04,5.307e-04,6.318e-04,7.751e-04,7.555e-04,1.009e-03,1.091e-03,1.218e-03,1.311e-03,2.297e-03,};
+vector<float> sferr_Vpt_b0_v10_mumu_data17_metlt125_eq0j = {1.602e-04,2.313e-04,3.432e-04,5.619e-04,6.897e-04,7.627e-04,1.080e-03,3.460e-03,7.179e-03,1.646e-02,};
+vector<float> sferr_Vpt_b1_v10_mumu_data17_metlt125_eq1j = {1.305e-04,1.769e-04,2.271e-04,2.990e-04,3.687e-04,3.985e-04,3.674e-04,4.340e-04,5.029e-04,5.425e-04,6.238e-04,7.257e-04,8.566e-04,7.321e-04,8.181e-04,9.920e-04,1.103e-03,1.414e-03,1.490e-03,1.668e-03,1.905e-03,3.014e-03,};
+vector<float> sferr_Vpt_b1_v10_mumu_data17_metlt125_ee2j = {1.345e-04,1.694e-04,2.089e-04,2.671e-04,3.287e-04,3.442e-04,3.192e-04,3.726e-04,4.340e-04,4.527e-04,5.371e-04,5.681e-04,6.521e-04,5.758e-04,6.490e-04,7.555e-04,7.684e-04,9.804e-04,1.068e-03,1.218e-03,1.259e-03,2.104e-03,};
+vector<float> sferr_Vpt_b0_v10_mumu_data18_metlt125_eq0j = {1.531e-04,2.281e-04,3.354e-04,5.006e-04,7.402e-04,8.714e-04,9.022e-04,3.014e-03,4.786e-03,1.143e-02,};
+vector<float> sferr_Vpt_b1_v10_mumu_data18_metlt125_eq1j = {1.309e-04,1.671e-04,2.262e-04,2.815e-04,3.634e-04,4.465e-04,5.481e-04,4.150e-04,4.853e-04,5.004e-04,5.638e-04,6.598e-04,7.646e-04,6.641e-04,7.068e-04,8.113e-04,8.712e-04,1.101e-03,1.217e-03,1.402e-03,1.422e-03,2.095e-03,};
+vector<float> sferr_Vpt_b1_v10_mumu_data18_metlt125_ee2j = {1.306e-04,1.665e-04,1.953e-04,2.636e-04,3.392e-04,3.671e-04,4.570e-04,3.376e-04,3.982e-04,4.095e-04,4.608e-04,5.482e-04,6.087e-04,5.073e-04,5.586e-04,6.219e-04,6.538e-04,8.292e-04,8.875e-04,1.005e-03,1.038e-03,1.541e-03,};
 
 const vector<float> sf_pt_phvsel_llg = {0.774,1.09,1.222,1.437,1.201,1.002,0.853,0.717,0.788,1.225,0.834,0.724,0.873,0.853,0.842,0.468,0.491,0.476,0.499,};
 
@@ -779,20 +840,20 @@ std::pair<float,float> getBosonPtScale(float Vpt, float Veta, int year, string j
   if (year == 2018) {
     if (is_data) {
       if (extendEEphoton2j && jetcat == "_ge2j") {
-        scale = sf_Vpt_b1_v9_data18_metlt125_ee2j.at(icat1);
-        sferr = sferr_Vpt_b1_v9_data18_metlt125_ee2j.at(icat1);
+        scale = sf_Vpt_b1_v10_data18_metlt125_ee2j.at(icat1);
+        sferr = sferr_Vpt_b1_v10_data18_metlt125_ee2j.at(icat1);
         if (doBosonEtaReweight) {
           int ibin = (fabs(Veta) >= 2.5)? 24 : int(fabs(Veta) / 0.1);
-          scale *= sf_Vaeta_flatpt_v9_data18_metlt125_ee2j.at(ibin);
+          scale *= sf_Vaeta_flatpt_v10_data18_metlt125_ee2j.at(ibin);
         }
       }
       else if (jetcat == "_eq0j") {
-        scale = sf_Vpt_b0_v9_data18_metlt125_eq0j.at(icat0);
-        sferr = sferr_Vpt_b0_v9_data18_metlt125_eq0j.at(icat0);
+        scale = sf_Vpt_b0_v10_data18_metlt125_eq0j.at(icat0);
+        sferr = sferr_Vpt_b0_v10_data18_metlt125_eq0j.at(icat0);
       }
       else if (jetcat == "_eq1j") {
-        scale = sf_Vpt_b1_v9_data18_metlt125_eq1j.at(icat1);
-        sferr = sferr_Vpt_b1_v9_data18_metlt125_eq1j.at(icat1);
+        scale = sf_Vpt_b1_v10_data18_metlt125_eq1j.at(icat1);
+        sferr = sferr_Vpt_b1_v10_data18_metlt125_eq1j.at(icat1);
       }
       else if (jetcat == "_eq2j") scale = sf_Vpt_b1_v4_data18_metlt125_eq2j.at(icat1);
     } else {
@@ -810,20 +871,20 @@ std::pair<float,float> getBosonPtScale(float Vpt, float Veta, int year, string j
   } else if (year == 2017) {
     if (is_data) {
       if (extendEEphoton2j && jetcat == "_ge2j") {
-        scale = sf_Vpt_b1_v9_data17_metlt125_ee2j.at(icat1);
-        sferr = sferr_Vpt_b1_v9_data17_metlt125_ee2j.at(icat1);
+        scale = sf_Vpt_b1_v10_data17_metlt125_ee2j.at(icat1);
+        sferr = sferr_Vpt_b1_v10_data17_metlt125_ee2j.at(icat1);
         if (doBosonEtaReweight) {
           int ibin = (fabs(Veta) >= 2.5)? 24 : int(fabs(Veta) / 0.1);
-          scale *= sf_Vaeta_flatpt_v9_data17_metlt125_ee2j.at(ibin);
+          scale *= sf_Vaeta_flatpt_v10_data17_metlt125_ee2j.at(ibin);
         }
       }
       else if (jetcat == "_eq0j") {
-        scale = sf_Vpt_b0_v9_data17_metlt125_eq0j.at(icat0);
-        sferr = sferr_Vpt_b0_v9_data17_metlt125_eq0j.at(icat0);
+        scale = sf_Vpt_b0_v10_data17_metlt125_eq0j.at(icat0);
+        sferr = sferr_Vpt_b0_v10_data17_metlt125_eq0j.at(icat0);
       }
       else if (jetcat == "_eq1j") {
-        scale = sf_Vpt_b1_v9_data17_metlt125_eq1j.at(icat1);
-        sferr = sferr_Vpt_b1_v9_data17_metlt125_eq1j.at(icat1);
+        scale = sf_Vpt_b1_v10_data17_metlt125_eq1j.at(icat1);
+        sferr = sferr_Vpt_b1_v10_data17_metlt125_eq1j.at(icat1);
       }
       else if (jetcat == "_eq2j") scale = sf_Vpt_b1_v4_data17_metlt125_eq2j.at(icat1);
     } else {
@@ -841,20 +902,20 @@ std::pair<float,float> getBosonPtScale(float Vpt, float Veta, int year, string j
   } else if (year == 2016) {
     if (is_data) {
       if (extendEEphoton2j && jetcat == "_ge2j") {
-        scale = sf_Vpt_b1_v9_data16_metlt125_ee2j.at(icat1);
-        sferr = sferr_Vpt_b1_v9_data16_metlt125_ee2j.at(icat1);
+        scale = sf_Vpt_b1_v10_data16_metlt125_ee2j.at(icat1);
+        sferr = sferr_Vpt_b1_v10_data16_metlt125_ee2j.at(icat1);
         if (doBosonEtaReweight) {
           int ibin = (fabs(Veta) >= 2.5)? 24 : int(fabs(Veta) / 0.1);
-          scale *= sf_Vaeta_flatpt_v9_data16_metlt125_ee2j.at(ibin);
+          scale *= sf_Vaeta_flatpt_v10_data16_metlt125_ee2j.at(ibin);
         }
       }
       else if (jetcat == "_eq0j") {
-        scale = sf_Vpt_b0_v9_data16_metlt125_eq0j.at(icat0);
-        sferr = sferr_Vpt_b0_v9_data16_metlt125_eq0j.at(icat0);
+        scale = sf_Vpt_b0_v10_data16_metlt125_eq0j.at(icat0);
+        sferr = sferr_Vpt_b0_v10_data16_metlt125_eq0j.at(icat0);
       }
       else if (jetcat == "_eq1j") {
-        scale = sf_Vpt_b1_v9_data16_metlt125_eq1j.at(icat1);
-        sferr = sferr_Vpt_b1_v9_data16_metlt125_eq1j.at(icat1);
+        scale = sf_Vpt_b1_v10_data16_metlt125_eq1j.at(icat1);
+        sferr = sferr_Vpt_b1_v10_data16_metlt125_eq1j.at(icat1);
       }
       else if (jetcat == "_eq2j") scale = sf_Vpt_b1_v4_data16_metlt125_eq2j.at(icat1);
     } else {
@@ -887,75 +948,75 @@ std::tuple<float,float,float,float> getBosonPtScale2(float Vpt, float Veta, int 
 
   if (year == 2018) {
     if (njet >= 2) {
-      sfval_ee = sf_Vpt_b1_v9_ee_data18_metlt125_ee2j.at(icat1);
-      sferr_ee = sferr_Vpt_b1_v9_ee_data18_metlt125_ee2j.at(icat1);
-      sfval_mumu = sf_Vpt_b1_v9_mumu_data18_metlt125_ee2j.at(icat1);
-      sferr_mumu = sferr_Vpt_b1_v9_mumu_data18_metlt125_ee2j.at(icat1);
+      sfval_ee = sf_Vpt_b1_v10_ee_data18_metlt125_ee2j.at(icat1);
+      sferr_ee = sferr_Vpt_b1_v10_ee_data18_metlt125_ee2j.at(icat1);
+      sfval_mumu = sf_Vpt_b1_v10_mumu_data18_metlt125_ee2j.at(icat1);
+      sferr_mumu = sferr_Vpt_b1_v10_mumu_data18_metlt125_ee2j.at(icat1);
       if (doBosonEtaReweight) {
         int ibin = (fabs(Veta) >= 2.5)? 24 : int(fabs(Veta) / 0.1);
-        sfval_ee *= sf_Vaeta_flatpt_v9_ee_data18_metlt125_ee2j.at(ibin);
-        sfval_mumu *= sf_Vaeta_flatpt_v9_mumu_data18_metlt125_ee2j.at(ibin);
+        sfval_ee *= sf_Vaeta_flatpt_v10_ee_data18_metlt125_ee2j.at(ibin);
+        sfval_mumu *= sf_Vaeta_flatpt_v10_mumu_data18_metlt125_ee2j.at(ibin);
       }
     }
     else if (njet == 0) {
-      sfval_ee = sf_Vpt_b0_v9_ee_data18_metlt125_eq0j.at(icat0);
-      sferr_ee = sferr_Vpt_b0_v9_ee_data18_metlt125_eq0j.at(icat0);
-      sfval_mumu = sf_Vpt_b0_v9_mumu_data18_metlt125_eq0j.at(icat0);
-      sferr_mumu = sferr_Vpt_b0_v9_mumu_data18_metlt125_eq0j.at(icat0);
+      sfval_ee = sf_Vpt_b0_v10_ee_data18_metlt125_eq0j.at(icat0);
+      sferr_ee = sferr_Vpt_b0_v10_ee_data18_metlt125_eq0j.at(icat0);
+      sfval_mumu = sf_Vpt_b0_v10_mumu_data18_metlt125_eq0j.at(icat0);
+      sferr_mumu = sferr_Vpt_b0_v10_mumu_data18_metlt125_eq0j.at(icat0);
     }
     else if (njet == 1) {
-      sfval_ee = sf_Vpt_b1_v9_ee_data18_metlt125_eq1j.at(icat1);
-      sferr_ee = sferr_Vpt_b1_v9_ee_data18_metlt125_eq1j.at(icat1);
-      sfval_mumu = sf_Vpt_b1_v9_mumu_data18_metlt125_eq1j.at(icat1);
-      sferr_mumu = sferr_Vpt_b1_v9_mumu_data18_metlt125_eq1j.at(icat1);
+      sfval_ee = sf_Vpt_b1_v10_ee_data18_metlt125_eq1j.at(icat1);
+      sferr_ee = sferr_Vpt_b1_v10_ee_data18_metlt125_eq1j.at(icat1);
+      sfval_mumu = sf_Vpt_b1_v10_mumu_data18_metlt125_eq1j.at(icat1);
+      sferr_mumu = sferr_Vpt_b1_v10_mumu_data18_metlt125_eq1j.at(icat1);
     }
   } else if (year == 2017) {
     if (njet >= 2) {
-      sfval_ee = sf_Vpt_b1_v9_ee_data17_metlt125_ee2j.at(icat1);
-      sferr_ee = sferr_Vpt_b1_v9_ee_data17_metlt125_ee2j.at(icat1);
-      sfval_mumu = sf_Vpt_b1_v9_mumu_data17_metlt125_ee2j.at(icat1);
-      sferr_mumu = sferr_Vpt_b1_v9_mumu_data17_metlt125_ee2j.at(icat1);
+      sfval_ee = sf_Vpt_b1_v10_ee_data17_metlt125_ee2j.at(icat1);
+      sferr_ee = sferr_Vpt_b1_v10_ee_data17_metlt125_ee2j.at(icat1);
+      sfval_mumu = sf_Vpt_b1_v10_mumu_data17_metlt125_ee2j.at(icat1);
+      sferr_mumu = sferr_Vpt_b1_v10_mumu_data17_metlt125_ee2j.at(icat1);
       if (doBosonEtaReweight) {
         int ibin = (fabs(Veta) >= 2.5)? 24 : int(fabs(Veta) / 0.1);
-        sfval_ee *= sf_Vaeta_flatpt_v9_ee_data17_metlt125_ee2j.at(ibin);
-        sfval_mumu *= sf_Vaeta_flatpt_v9_mumu_data17_metlt125_ee2j.at(ibin);
+        sfval_ee *= sf_Vaeta_flatpt_v10_ee_data17_metlt125_ee2j.at(ibin);
+        sfval_mumu *= sf_Vaeta_flatpt_v10_mumu_data17_metlt125_ee2j.at(ibin);
       }
     }
     else if (njet == 0) {
-      sfval_ee = sf_Vpt_b0_v9_ee_data17_metlt125_eq0j.at(icat0);
-      sferr_ee = sferr_Vpt_b0_v9_ee_data17_metlt125_eq0j.at(icat0);
-      sfval_mumu = sf_Vpt_b0_v9_mumu_data17_metlt125_eq0j.at(icat0);
-      sferr_mumu = sferr_Vpt_b0_v9_mumu_data17_metlt125_eq0j.at(icat0);
+      sfval_ee = sf_Vpt_b0_v10_ee_data17_metlt125_eq0j.at(icat0);
+      sferr_ee = sferr_Vpt_b0_v10_ee_data17_metlt125_eq0j.at(icat0);
+      sfval_mumu = sf_Vpt_b0_v10_mumu_data17_metlt125_eq0j.at(icat0);
+      sferr_mumu = sferr_Vpt_b0_v10_mumu_data17_metlt125_eq0j.at(icat0);
     }
     else if (njet == 1) {
-      sfval_ee = sf_Vpt_b1_v9_ee_data17_metlt125_eq1j.at(icat1);
-      sferr_ee = sferr_Vpt_b1_v9_ee_data17_metlt125_eq1j.at(icat1);
-      sfval_mumu = sf_Vpt_b1_v9_mumu_data17_metlt125_eq1j.at(icat1);
-      sferr_mumu = sferr_Vpt_b1_v9_mumu_data17_metlt125_eq1j.at(icat1);
+      sfval_ee = sf_Vpt_b1_v10_ee_data17_metlt125_eq1j.at(icat1);
+      sferr_ee = sferr_Vpt_b1_v10_ee_data17_metlt125_eq1j.at(icat1);
+      sfval_mumu = sf_Vpt_b1_v10_mumu_data17_metlt125_eq1j.at(icat1);
+      sferr_mumu = sferr_Vpt_b1_v10_mumu_data17_metlt125_eq1j.at(icat1);
     }
   } else if (year == 2016) {
     if (njet >= 2) {
-      sfval_ee = sf_Vpt_b1_v9_ee_data16_metlt125_ee2j.at(icat1);
-      sferr_ee = sferr_Vpt_b1_v9_ee_data16_metlt125_ee2j.at(icat1);
-      sfval_mumu = sf_Vpt_b1_v9_mumu_data16_metlt125_ee2j.at(icat1);
-      sferr_mumu = sferr_Vpt_b1_v9_mumu_data16_metlt125_ee2j.at(icat1);
+      sfval_ee = sf_Vpt_b1_v10_ee_data16_metlt125_ee2j.at(icat1);
+      sferr_ee = sferr_Vpt_b1_v10_ee_data16_metlt125_ee2j.at(icat1);
+      sfval_mumu = sf_Vpt_b1_v10_mumu_data16_metlt125_ee2j.at(icat1);
+      sferr_mumu = sferr_Vpt_b1_v10_mumu_data16_metlt125_ee2j.at(icat1);
       if (doBosonEtaReweight) {
         int ibin = (fabs(Veta) >= 2.5)? 24 : int(fabs(Veta) / 0.1);
-        sfval_ee *= sf_Vaeta_flatpt_v9_ee_data16_metlt125_ee2j.at(ibin);
-        sfval_mumu *= sf_Vaeta_flatpt_v9_mumu_data16_metlt125_ee2j.at(ibin);
+        sfval_ee *= sf_Vaeta_flatpt_v10_ee_data16_metlt125_ee2j.at(ibin);
+        sfval_mumu *= sf_Vaeta_flatpt_v10_mumu_data16_metlt125_ee2j.at(ibin);
       }
     }
     else if (njet == 0) {
-      sfval_ee = sf_Vpt_b0_v9_ee_data16_metlt125_eq0j.at(icat0);
-      sferr_ee = sferr_Vpt_b0_v9_ee_data16_metlt125_eq0j.at(icat0);
-      sfval_mumu = sf_Vpt_b0_v9_mumu_data16_metlt125_eq0j.at(icat0);
-      sferr_mumu = sferr_Vpt_b0_v9_mumu_data16_metlt125_eq0j.at(icat0);
+      sfval_ee = sf_Vpt_b0_v10_ee_data16_metlt125_eq0j.at(icat0);
+      sferr_ee = sferr_Vpt_b0_v10_ee_data16_metlt125_eq0j.at(icat0);
+      sfval_mumu = sf_Vpt_b0_v10_mumu_data16_metlt125_eq0j.at(icat0);
+      sferr_mumu = sferr_Vpt_b0_v10_mumu_data16_metlt125_eq0j.at(icat0);
     }
     else if (njet == 1) {
-      sfval_ee = sf_Vpt_b1_v9_ee_data16_metlt125_eq1j.at(icat1);
-      sferr_ee = sferr_Vpt_b1_v9_ee_data16_metlt125_eq1j.at(icat1);
-      sfval_mumu = sf_Vpt_b1_v9_mumu_data16_metlt125_eq1j.at(icat1);
-      sferr_mumu = sferr_Vpt_b1_v9_mumu_data16_metlt125_eq1j.at(icat1);
+      sfval_ee = sf_Vpt_b1_v10_ee_data16_metlt125_eq1j.at(icat1);
+      sferr_ee = sferr_Vpt_b1_v10_ee_data16_metlt125_eq1j.at(icat1);
+      sfval_mumu = sf_Vpt_b1_v10_mumu_data16_metlt125_eq1j.at(icat1);
+      sferr_mumu = sferr_Vpt_b1_v10_mumu_data16_metlt125_eq1j.at(icat1);
     }
   }
   return std::make_tuple(sfval_ee,sfval_mumu,sferr_ee,sferr_mumu);

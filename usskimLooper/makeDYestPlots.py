@@ -241,12 +241,12 @@ def plotDYComparePlots(hdir, hname='met', samp='', rebin=1, y2=None, newrange=No
     phsuf = kwargs.get('phsuf', '_ee2j_rwgtd')
     llsuf = kwargs.get('llsuf', phsuf)
     # phsuf = '_ee2j_flateta_rwgtd'
-    sdir = '{}/data{}_{}'.format(kwargs.get('sdir', 'dyest_v4_01_nosub'), phsuf, year)
+    sdir = '{}/data{}_{}'.format(kwargs.get('sdir', 'dyest_{}_nosub'.format(kwargs.get('skimver', 'v5_00'))), phsuf, year)
 
     # y2 = True
-    ffast = r.TFile('{0}{2}_phCR{3}_{1}/data_{1}_phskim.root'.format(indir, year, kwargs.get('skimver', 'v4_02'), phsuf))
-    ffull = r.TFile('{0}{2}_2lSR{3}_{1}/data_{1}_llskim.root'.format(indir, year, kwargs.get('skimver', 'v4_02'), llsuf))
-    if y2: fy2 = r.TFile('{0}{2}_phCR{2}_{1}/subtractor.root'.format(indir, year, kwargs.get('skimver', 'v4_02'), phsuf))
+    ffast = r.TFile('{0}{2}_phCR{3}_{1}/data_phskim.root'.format(indir, year, kwargs.get('skimver', 'v5_00'), phsuf))
+    ffull = r.TFile('{0}{2}_2lSR{3}_{1}/data_llskim.root'.format(indir, year, kwargs.get('skimver', 'v5_00'), llsuf))
+    if y2: fy2 = r.TFile('{0}{2}_phCR{2}_{1}/subtractor.root'.format(indir, year, kwargs.get('skimver', 'v5_00'), phsuf))
     nfast = 'data single-#gamma'
     nfull = 'data ee/#mu#mu'
 
@@ -493,11 +493,11 @@ def makeDYtestPlots():
     args = {
         'year'    : '2018',
         'sdir'    : 'dyest_v5_00_May9',
-        # 'phsuf'   : '_all2jsel_rwgtd_raweta',
-        'phsuf'   : '_all2jsel',
+        # 'phsuf'   : '_all2jsel',
+        'phsuf'   : '_all2jsel_rwgtd_raweta',
         'llsuf'   : '_all2jsel',
-        'skimver' : 'v4_06',
-        'lsuf'    : 'mumu',
+        'skimver' : 'v5_00',
+        'lsuf'    : 'll',
     }
 
     # for metsuf in ['_metlt80', '_met80to125', '_metlt125']:

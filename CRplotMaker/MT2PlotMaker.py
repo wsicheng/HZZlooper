@@ -183,7 +183,12 @@ def MT2PlotMaker(rootdir, samples, data, dirname, plots, output_dir=".", exts=["
             for idir in range(1, len(dirnames)):
                 vni = vn+multisuf[idir] if type(multisuf)==list else vn
                 h_data[-1].Add(fid.Get("{0}/h_{1}".format(dirnames[idir],vni)))
+
+            if len(plots[i]) >= 5:
+                h_data[-1].Rebin(plots[i][4])
+
         fid.Close()
+
 
     ## get signal histograms
     h_sig_vec = [[] for i in plots]
@@ -224,8 +229,6 @@ def MT2PlotMaker(rootdir, samples, data, dirname, plots, output_dir=".", exts=["
         if plots[i][3]!=None:
             userMin = plots[i][3][0]
             userMax = plots[i][3][1]
-        if len(plots[i]) >= 5:
-            h_data[i].Rebin(plots[i][4])
         doOverflow = True
         if len(plots[i]) >= 6:
             doOverflow = plots[i][5]

@@ -5,7 +5,7 @@ ROOT.gROOT.SetBatch(1)
 
 from MT2PlotMaker import *
 
-def makePlots3lCR():
+def makePlots3lCR(year='run2'):
 
     bkgnames = [ 'ZGJets', 'DY', 'other_llg' ]
     srNames = ['OffShell', ]
@@ -23,17 +23,21 @@ def makePlots3lCR():
         ("mtWZbins",True,None,None),
 
         ("ptll",True,None,None,4),
-        ("mll",True,None,None,2),
+        ("mll",True,(50, 150),None,2),
         ("boson_pt",True,(55,855),None,4),
         ("boson_mass",True,None,None,3),
 
+        ("mllclose",True,None,None,4),
+        ("mllx3",True,None,None,4),
+        ("mllsfx3",True,None,None,4),
+
         # ("llid",True,None,None,1),
-        ("lepZ1pt_finebin",True,None,None),
-        ("lepZ2pt_finebin",True,None,None),
-        ("lepWpt_finebin",True,None,None),
-        ("lep1pt_finebin",True,None,None),
-        ("lep2pt_finebin",True,None,None),
-        ("lep3pt_finebin",True,None,None),
+        ("lepZ1pt",True,None,None),
+        ("lepZ2pt",True,None,None),
+        ("lepWpt",True,None,None),
+        ("lep1pt",True,None,None),
+        ("lep2pt",True,None,None),
+        ("lep3pt",True,None,None),
 
         ("dphi_boson_met",True,(1.0,3.2),None),
         ("dphi_lepW_met",True,None,None),
@@ -46,18 +50,15 @@ def makePlots3lCR():
         ("dphi_lljets_met",True,(2.0,3.2),None),
     ]
 
-    # year = '2018'
-    year = 'run2'
-    input_dir = '../trilepLooper/output/v4_08_3lCR_{}'.format(year)
-    output_dir = 'plots{}_3lCR_Apr26'.format(year[2:])
+    input_dir = '../trilepLooper/output/v5_00_3lCR_{}'.format(year)
+    output_dir = 'plots{}_3lCR_May10'.format(year[2:])
     bkg_set = [ 'WZ', 'DY', 'ZG', 'ttZ', 'triboson', 'Others' ]
     dataname = 'data_3lskim'.format(year)
     
     systset = ['EW',]
-    metsufs = ['_fullMET', '_final' ]
+    metsufs = ['_final', ]
     ljsuffs = []
-    # for jsuf in ['_eq0j', '_eq1j', '_ge2j']:
-    for jsuf in ['',]:
+    for jsuf in ['_eq0j', '_eq1j', '_ge2j', '']:
         for lsuf in ['_lle', '_llmu']:
             ljsuffs.append(jsuf+lsuf)
 
@@ -70,8 +71,13 @@ def makePlots3lCR():
             suf, tag = ('', ljsuf) if multsuf else (ljsuf, '')
             for msuf in metsufs:
                 plot_set = list(base_plots) if '0j' in suf else base_plots+jet_plots
-                MT2PlotMaker(input_dir, bkg_set, dataname, sr, plot_set, output_dir, exts, suffix=msuf+suf, tag=tag, systset=systset, scaleMC=False)
+                MT2PlotMaker(input_dir, bkg_set, dataname, sr, plot_set, output_dir, exts, suffix=msuf+suf, tag=tag, scaleMC=False)
+                # MT2PlotMaker(input_dir, bkg_set, dataname, sr, plot_set, output_dir, exts, suffix=msuf+suf, tag=tag, systset=systset, scaleMC=False)
 
 if __name__ == '__main__':
 
-    makePlots3lCR()
+    # makePlots3lCR('2016')
+    # makePlots3lCR('2017')
+    # makePlots3lCR('2018')
+
+    makePlots3lCR('run2')

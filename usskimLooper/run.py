@@ -131,21 +131,21 @@ if __name__ == '__main__':
     indir = skimbase
 
     yrsamp_flists = {
-        # "2016:SinglePhotonEvents:phCR_all2jsel" : samp_flists_16,
-        # "2017:SinglePhotonEvents:phCR_all2jsel" : samp_flists_17,
-        # "2018:SinglePhotonEvents:phCR_all2jsel" : samp_flists_18,
         "2016:SinglePhotonEvents:phCR_all2jsel_rwgtd" : samp_flists_16,
         "2017:SinglePhotonEvents:phCR_all2jsel_rwgtd" : samp_flists_17,
         "2018:SinglePhotonEvents:phCR_all2jsel_rwgtd" : samp_flists_18,
-        "2016:SingleLeptonEvents:slCR_all2jsel_rwgtd" : samplists['egamma_2016'],
-        "2017:SingleLeptonEvents:slCR_all2jsel_rwgtd" : samplists['egamma_2017'],
-        "2018:SingleLeptonEvents:slCR_all2jsel_rwgtd" : samplists['egamma_2018'],
+        # "2016:SingleLeptonEvents:slCR_all2jsel_rwgtd" : samplists['egamma_2016'],
+        # "2017:SingleLeptonEvents:slCR_all2jsel_rwgtd" : samplists['egamma_2017'],
+        # "2018:SingleLeptonEvents:slCR_all2jsel_rwgtd" : samplists['egamma_2018'],
         # "2016:LLGEvents:llgCR" : samp_flists_16,
         # "2017:LLGEvents:llgCR" : samp_flists_17,
         # "2018:LLGEvents:llgCR" : samp_flists_18,
         # "2016:DileptonEvents:2lSR_all2jsel" : samplists['data_2016'],
         # "2017:DileptonEvents:2lSR_all2jsel" : samplists['data_2017'],
         # "2018:DileptonEvents:2lSR_all2jsel" : samplists['data_2018'],
+        # "2016:SinglePhotonEvents:phCR_all2jsel_rwgtd_raweta" : samplists['data_2016'],
+        # "2017:SinglePhotonEvents:phCR_all2jsel_rwgtd_raweta" : samplists['data_2017'],
+        # "2018:SinglePhotonEvents:phCR_all2jsel_rwgtd_raweta" : samplists['data_2018'],
         # "2016:LLGEvents:temp" : samplists['mc_tester'],
         # "2016:SinglePhotonEvents:temp" : samplists['data_tester'],
         # "2018:SinglePhotonEvents:phCR_all2jsel_rwgtd_wgtsbkup" : samp_flists_18,
@@ -201,10 +201,6 @@ if __name__ == '__main__':
                         print( '>>> Running over sample {} with log at {}'.format(dsname, logname) )
             else:
                 flist = glob.glob('{}/{}*.root'.format(indir, dsname)) 
-                # flist = glob.glob(idir+flist+'/*.root') 
-                # if type(flist) != list:
-                #     print( '>>> Warning! The input file list for '+dsname+' is not a list! type(flist) =', type(flist))
-                #     continue
 
                 nfile_per_job = 10
                 # if sumwgt < 0: nfile_per_job = 1000
@@ -222,11 +218,12 @@ if __name__ == '__main__':
                 
     ijob = 0
     njobs_done = 0
-    for rs in pool.imap(runOSlooper, arglist):
+    for rs in pool.imap_unordered(runOSlooper, arglist):
         if rs == 0:
             njobs_done += 1
         else:
-            print( '>>> The {}-th job return with {}! See {}'.format(ijob, rs, arglist[ijob].split()[-1]) )
+            # print( '>>> The {}-th job return with {}! See {}'.format(ijob, rs, arglist[ijob].split()[-1]) )
+            print( '>>> The {}-th job return with {}! '.format(ijob, rs) ) # unordered
         if verbose >= 1:
             print( '>>> Finish running {}/{} jobs!'.format(njobs_done, njobs_total) )
         ijob += 1

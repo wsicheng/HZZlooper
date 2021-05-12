@@ -153,18 +153,22 @@ def GetCRName(cr, outn=None):
         "_lle"   : " #font[12]{ll}+e",
         "_llmu"  : " #font[12]{ll}+#mu",
         "_mumug" : " #mu#mu+#gamma",
-        "_gamma" : " single-#gamma",
-        "_eq0j" : "0j",
-        "_eq1j" : "1j",
-        "_eq2j" : "2j",
-        "_ge2j" : "#geq2j",
+        "_gamma" : " Single-#gamma",
+        "_eq0j" : "N_{j}=0",
+        "_eq1j" : "N_{j}=1",
+        "_eq2j" : "N_{j}=2",
+        "_ge2j" : "N_{j}#geq2",
     }
+
+    cr = cr.split('_')
+    cr = '_'+', _'.join(reversed(cr))
 
     # use the above name if defined, otherwise use cr itself
     for k, v in names.items():
         if k in cr:
             cr = cr.replace(k, v)
 
+    cr = cr.replace(', _', '')
     if 'metcrtd' in outn: cr += ", p_{T}^{miss} smeared"
     # elif 'nometres' not in outn: cr += ", p_{T}^{miss} smeared"
 
@@ -172,15 +176,15 @@ def GetCRName(cr, outn=None):
 
 def GetSubtitles(dirname, vn):
 
-    subtitle = ["p_{T}^{#font[12]{ll}}> 55GeV, METSEL", "76 < m_{#font[12]{ll}} < 106 GeV", ""]
+    subtitle = ["p_{T}^{#font[12]{ll}}#geq 55GeV, METSEL", "76 < m_{#font[12]{ll}} < 106 GeV", ""]
     if "_gamma" in vn:
-        subtitle = ["p_{T}^{#gamma}> 55GeV, METSEL", "#Delta#phi(#gamma,p_{T}^{miss})>1.0", ""]
+        subtitle = ["p_{T}^{#gamma}#geq 55GeV, METSEL", "#Delta#phi(#gamma,p_{T}^{miss})>1.0", ""]
     elif "_llg" in vn:
-        subtitle = ["p_{T}^{#gamma}> 55GeV, METSEL", "Analyssis #Delta#phi(#gamma,p_{T}^{miss}+p_{T}^{#font[12]{ll}}) sel.", "76<M_{#font[12]{ll}}<106 GeV" ]
+        subtitle = ["p_{T}^{#gamma}#geq 55GeV, METSEL", "Analyssis #Delta#phi(#gamma,p_{T}^{miss}+p_{T}^{#font[12]{ll}}) sel.", "76<M_{#font[12]{ll}}<106 GeV" ]
     elif "_mumug" in vn:
-        subtitle = ["p_{T}^{#gamma}> 55GeV, METSEL", "Analyssis #Delta#phi(#gamma,p_{T}^{miss}+p_{T}^{#mu#mu}) sel.", "76<M_{#mu#mu}<106 GeV" ]
+        subtitle = ["p_{T}^{#gamma}#geq 55GeV, METSEL", "Analyssis #Delta#phi(#gamma,p_{T}^{miss}+p_{T}^{#mu#mu}) sel.", "76<M_{#mu#mu}<106 GeV" ]
     elif "_eeg" in vn:
-        subtitle = ["p_{T}^{#gamma}> 55GeV, METSEL", "Analyssis #Delta#phi(#gamma,p_{T}^{miss}+p_{T}^{ee}) sel.", "76<M_{ee}<106 GeV" ]
+        subtitle = ["p_{T}^{#gamma}#geq 55GeV, METSEL", "Analyssis #Delta#phi(#gamma,p_{T}^{miss}+p_{T}^{ee}) sel.", "76<M_{ee}<106 GeV" ]
 
     if "_eq0j" in vn:
         subtitle[1] = "Analysis #Delta#phi sel."
@@ -202,16 +206,20 @@ def GetSubtitles(dirname, vn):
         subtitle[0] = subtitle[0].replace("METSEL", "0 < p_{T}^{miss} < 80 GeV")
     elif "_met80to125" in vn:
         subtitle[0] = subtitle[0].replace("METSEL", "80 < p_{T}^{miss} < 125 GeV")
+    elif "_met140to200" in vn:
+        subtitle[0] = subtitle[0].replace("METSEL", "p_{T}^{miss}: [140, 200) GeV")
     elif "_metge125" in vn:
-        subtitle[0] = subtitle[0].replace("METSEL", "p_{T}^{miss} > 125 GeV")
+        subtitle[0] = subtitle[0].replace("METSEL", "p_{T}^{miss} #geq 125 GeV")
+    elif "_metge200" in vn:
+        subtitle[0] = subtitle[0].replace("METSEL", "p_{T}^{miss} #geq 200 GeV")
     elif "_metlt50" in vn:
         subtitle[0] = subtitle[0].replace("METSEL", "0 < p_{T}^{miss} < 50 GeV")
     elif "_metge50" in vn:
         subtitle[0] = subtitle[0].replace("METSEL", "p_{T}^{miss} > 50 GeV")
     elif "_final" in vn and '_ge2j' in vn:
-        subtitle[0] = subtitle[0].replace("METSEL", "p_{T}^{miss} > 140 GeV")
+        subtitle[0] = subtitle[0].replace("METSEL", "p_{T}^{miss} #geq140 GeV")
     elif "_final" in vn:
-        subtitle[0] = subtitle[0].replace("METSEL", "p_{T}^{miss} > 125 GeV")
+        subtitle[0] = subtitle[0].replace("METSEL", "p_{T}^{miss} #geq125 GeV")
     else:
         subtitle[0] = subtitle[0].replace("METSEL", "")
        
