@@ -177,13 +177,6 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
   vector<float> ptbin0, ptbin1;
   std::tie(ptbin0, ptbin1) = getPtBins();
 
-  // // For the DjjVBF calculation
-  // TSpline3* h_vbfcval = fetchHistCopy<TSpline3>("data/SmoothKDConstant_m4l_DjjVBF_13TeV.root", "sp_gr_varReco_Constant_Smooth");
-  // TSpline3* h_vbfgval_L1 = fetchHistCopy<TSpline3>("data/gConstant_VBF_L1.root", "sp_tgfinal_VBF_SM_over_tgfinal_VBF_L1");
-  // TSpline3* h_vbfgval_a2 = fetchHistCopy<TSpline3>("data/gConstant_VBF_g2.root", "sp_tgfinal_VBF_SM_over_tgfinal_VBF_g2");
-  // TSpline3* h_vbfgval_a3 = fetchHistCopy<TSpline3>("data/gConstant_VBF_g4.root", "sp_tgfinal_VBF_SM_over_tgfinal_VBF_g4");
-  // TSpline3* h_vbfgval_L1ZGs = fetchHistCopy<TSpline3>("data/gConstant_VBF_L1Zgs.root", "sp_tgfinal_VBF_SM_photoncut_over_tgfinal_VBF_L1Zgs");
-
   cout << ">> To run over nEventsChain = " << nEventsChain << endl;
 
   TFile *currentFile = 0;
@@ -341,9 +334,9 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
       mtl3 = event_mTl();
       m3l = event_m3l();
       mllmin = 9999.;
+      lep3id = -1;
 
       int ilep1(-1), ilep2(-1), ilep3(-1);
-      int lep3id = -1;
       int itrig = -1;
 
       if (is3l) {
@@ -464,6 +457,7 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
         dphi3ljmet = deltaPhi((p4lljets+p4lep3).phi(), metphi);;
       }
       bool passDilepTrig_Zll = event_wgt_triggers_Dilepton_SF().at(itrig);
+      bool passSinglepTrig_Zll = event_wgt_triggers_SingleLepton().at(ilep1) || event_wgt_triggers_SingleLepton().at(ilep2);
       bool passSinglepTrig_lep3 = event_wgt_triggers_SingleLepton().at(ilep3);
       bool passDilepTrig_any = false;
       bool passSinglepTrig_any = false;
@@ -491,8 +485,12 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
 
       fillmasshists("_leppt");
 
-      // if (mtl3 < 40) continue;
-      if ((1.4*mtl3 + met) < 120) continue;
+      if (met < 20) continue;  // explicit one to be orthogonal to 4l 
+      // if ((1.4*mtl3 + met) < 120) continue;
+      if ((fabs(lep3id) == 13) && mtl3 < 20) continue;
+      if ((fabs(lep3id) == 11) && mtl3 < 10) continue;
+      if ((fabs(lep3id) == 13) && (1.6*mtl3 + met) < 120) continue;
+      if ((fabs(lep3id) == 11) && (4/3*mtl3 + met) < 120) continue;
 
       fillmasshists("_mtmet");
 
@@ -509,33 +507,14 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
           plot1d("hnum_"+name+"_ptll"+s, dilepton_pt(), weight, hvec, ";p_{T}^{ll} [GeV]"  , 160,  0, 800);
         }
       };
-      // fillTrigEffPlots(metsuf, "trigeff_any", passAnyTrig);
-      // fillTrigEffPlots(metsuf, "trigeff_dilepZll", passDilepTrig_Zll, passAnyTrig);
-      // fillTrigEffPlots(metsuf, "trigeff_dilepAny", passDilepTrig_any, passAnyTrig);
-      // fillTrigEffPlots(metsuf, "trigeff_singlep3", passSinglepTrig_lep3, passAnyTrig);
-      // fillTrigEffPlots(metsuf, "trigeff_dilepZll_singlep3", (passDilepTrig_Zll || passSinglepTrig_lep3), passAnyTrig);
+      fillTrigEffPlots("final", "trigeff_dilepZll", passDilepTrig_Zll, passAnyTrig);
+      fillTrigEffPlots("final", "trigeff_combZll", (passDilepTrig_Zll || passSinglepTrig_Zll), passAnyTrig);
 
-      if (!passDilepTrig_Zll) continue;
+      if (!passDilepTrig_Zll && !passSinglepTrig_Zll) continue;
       fillmasshists("_trig");
 
       njet = event_n_ak4jets_pt30();
       float dphiVjet = 4.0;
-
-      // use while as an exitable if command
-
-      // Calculate DjjVBFs can be computed
-      // double cval = (njet >= 2)? h_vbfcval->Eval(mZZ) : -1;
-      // auto getDjjVBF = [&](float num, TSpline3* hgval=nullptr, float gscale=1.) -> float {
-      //   if (njet < 2) return -1.;
-      //   float gsq = (hgval)? 1./(gscale * hgval->Eval(mZZ)) : 1;
-      //   float res = num / (num +  (cval * gsq * gsq) * p_JJQCD_SIG_ghg2_1_JHUGen());
-      //   return res;
-      // };
-      // DjjVBF = getDjjVBF(p_JJVBF_SIG_ghv1_1_JHUGen());
-      // DjjVBFL1 = getDjjVBF(p_JJVBF_SIG_ghv1prime2_1E4_JHUGen(), h_vbfgval_L1, 1e-4);
-      // DjjVBFa2 = getDjjVBF(p_JJVBF_SIG_ghv2_1_JHUGen(), h_vbfgval_a2);
-      // DjjVBFa3 = getDjjVBF(p_JJVBF_SIG_ghv4_1_JHUGen(), h_vbfgval_a3);
-      // DjjVBFL1ZGs = getDjjVBF(p_JJVBF_SIG_ghza1prime2_1E4_JHUGen(), h_vbfgval_L1ZGs, 1e-4);
 
       string jetcat = "jetcat";
       if (njet == 0) jetcat = "_eq0j";

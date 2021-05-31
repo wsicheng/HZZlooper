@@ -32,7 +32,6 @@ def GetColor(sample):
     if "qqwz"    in sample.lower(): return 876  # kViolet-4
     if "wlnu"    in sample.lower(): return 798  # kOrange-2
 
-
     if 'data'    in sample: return 14   # Gray
     if 'lostlep' in sample: return 866  # kAzure+6
     if 'FromW'   in sample: return 796  # kOrange-4
@@ -43,15 +42,17 @@ def GetColor(sample):
     if "1lepW"   in sample: return 796  # kOrange-4
     if "1lepTop" in sample: return 625  # kRed-7
     if "Znunu"   in sample: return 872  # kViolet-8
-    if 'others'  in sample: return 625  # kRed-7
     if 'Others'  in sample: return 625  # kRed-7
 
     if 'ZG'       == sample: return 796  # kOrange-4
-    if 'ZZ'       == sample: return 861  # kAzure+1
+    if 'ZZ'       == sample: return 17   # kGray+3
     if 'WZ'       == sample: return 425  # kCyan-7
-    if 'nonres'   == sample: return 872  # kViolet-8
-    if 'diboson'  == sample: return 796  # kOrange-4
-    if 'triboson' == sample: return 872  # kViolet-8
+    if 'Nonres'   == sample: return 872  # kViolet-8
+    if 'Diboson'  == sample: return 796  # kOrange-4
+    if 'Triboson' == sample: return 872  # kViolet-8
+    if 'tVX'      == sample: return 625  # kRed-7
+    # if 'TTbar'    == sample: return 17  # kGray+3
+    if 'TTbar'    == sample: return 861  # kAzure+1
 
     if "bevt"  in sample: return 842  # kTeal+2
     if "cevt"  in sample: return 798  # kOrange-2
@@ -67,6 +68,7 @@ def GetSampleName(sample):
         "tt2l" : "t#bar{t}#rightarrow2 #font[12]{l}" ,
         "tt1l" : "t#bar{t}#rightarrow1 #font[12]{l}" ,
         "ttbar" : "t#bar{t}+Jets" ,
+        "TTbar" : "t#bar{t}" ,
         "Vjets": "V+Jets",
         "singleT": "single top",
         "rare": "t#bar{t}V+VV",
@@ -75,6 +77,7 @@ def GetSampleName(sample):
         "WW2L2Nu" : "WW#rightarrow2#font[12]{l}2#font[12]{#nu}" ,
         "ZZ2L2Nu" : "ZZ#rightarrow2#font[12]{l}2#font[12]{#nu}" ,
         "DY_" : "DY ",
+        "ZG" : "Z#gamma ",
         "HTbinned" : " ",
         "ST_tW" : "tW#rightarrow2#font[12]{l}2#font[12]{#nu}",
         "_16" : " 16" ,
@@ -82,6 +85,8 @@ def GetSampleName(sample):
         "_18" : " 18" ,
         "_run2" : "" ,
         "TTTo2L2Nu": "t#bar{t}#rightarrow2#font[12]{l}2#font[12]{#nu}",
+        "tVX": "tV+X",
+        "Triboson": "VVV",
         "ggHZZ_all" : "gg#rightarrowZZ total (#Gamma_{H}=#Gamma_{H}^{SM})",
         "ggHZZ_sigonly" : "gg#rightarrowZZ sig. (#Gamma_{H}=#Gamma_{H}^{SM})",
         # "allData" : "allData" ,
@@ -154,10 +159,10 @@ def GetCRName(cr, outn=None):
         "_llmu"  : " #font[12]{ll}+#mu",
         "_mumug" : " #mu#mu+#gamma",
         "_gamma" : " Single-#gamma",
-        "_eq0j" : "N_{j}=0",
-        "_eq1j" : "N_{j}=1",
-        "_eq2j" : "N_{j}=2",
-        "_ge2j" : "N_{j}#geq2",
+        "_eq0j"  : "N_{j}=0",
+        "_eq1j"  : "N_{j}=1",
+        "_eq2j"  : "N_{j}=2",
+        "_ge2j"  : "N_{j}#geq2",
     }
 
     cr = cr.split('_')
@@ -180,12 +185,15 @@ def GetSubtitles(dirname, vn):
     if "_gamma" in vn:
         subtitle = ["p_{T}^{#gamma}#geq 55GeV, METSEL", "#Delta#phi(#gamma,p_{T}^{miss})>1.0", ""]
     elif "_llg" in vn:
-        subtitle = ["p_{T}^{#gamma}#geq 55GeV, METSEL", "Analyssis #Delta#phi(#gamma,p_{T}^{miss}+p_{T}^{#font[12]{ll}}) sel.", "76<M_{#font[12]{ll}}<106 GeV" ]
+        subtitle = ["p_{T}^{#gamma}#geq 55GeV, METSEL", "Analysis #Delta#phi(#gamma,p_{T}^{miss}+p_{T}^{#font[12]{ll}}) sel.", "76<M_{#font[12]{ll}}<106 GeV" ]
     elif "_mumug" in vn:
-        subtitle = ["p_{T}^{#gamma}#geq 55GeV, METSEL", "Analyssis #Delta#phi(#gamma,p_{T}^{miss}+p_{T}^{#mu#mu}) sel.", "76<M_{#mu#mu}<106 GeV" ]
+        subtitle = ["p_{T}^{#gamma}#geq 55GeV, METSEL", "Analysis #Delta#phi(#gamma,p_{T}^{miss}+p_{T}^{#mu#mu}) sel.", "76<M_{#mu#mu}<106 GeV" ]
     elif "_eeg" in vn:
-        subtitle = ["p_{T}^{#gamma}#geq 55GeV, METSEL", "Analyssis #Delta#phi(#gamma,p_{T}^{miss}+p_{T}^{ee}) sel.", "76<M_{ee}<106 GeV" ]
-
+        subtitle = ["p_{T}^{#gamma}#geq 55GeV, METSEL", "Analysis #Delta#phi(#gamma,p_{T}^{miss}+p_{T}^{ee}) sel.", "76<M_{ee}<106 GeV" ]
+    elif '_llmu' in vn:
+        subtitle = ["1.6m_{T}^{lepW}+ p_{T}^{miss} > 120 GeV", "Analysis #Delta#phi sel., 0b", "76<M_{ll}<106 GeV" ]
+    elif '_lle' in vn:
+        subtitle = ["4m_{T}^{lepW}/3+ p_{T}^{miss} > 120 GeV", "Analysis #Delta#phi sel., 0b", "76<M_{ll}<106 GeV" ]
     if "_eq0j" in vn:
         subtitle[1] = "Analysis #Delta#phi sel."
     elif "_eq1j" in vn:

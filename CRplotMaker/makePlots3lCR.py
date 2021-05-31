@@ -7,7 +7,6 @@ from MT2PlotMaker import *
 
 def makePlots3lCR(year='run2'):
 
-    bkgnames = [ 'ZGJets', 'DY', 'other_llg' ]
     srNames = ['OffShell', ]
     exts = ['pdf', 'png']
 
@@ -50,9 +49,9 @@ def makePlots3lCR(year='run2'):
         ("dphi_lljets_met",True,(2.0,3.2),None),
     ]
 
-    input_dir = '../trilepLooper/output/v5_00_3lCR_{}'.format(year)
-    output_dir = 'plots{}_3lCR_May10'.format(year[2:])
-    bkg_set = [ 'WZ', 'DY', 'ZG', 'ttZ', 'triboson', 'Others' ]
+    input_dir = '../trilepLooper/output/v5_01_3lCR_{}'.format(year)
+    output_dir = 'plots{}_3lCR_May29'.format(year[2:])
+    bkg_set = [ 'WZ', 'DY', 'ZZ', 'TTbar', 'tVX', 'ZG', 'Triboson' ]
     dataname = 'data_3lskim'.format(year)
     
     systset = ['EW',]
