@@ -4,23 +4,23 @@ dir=$2
 
 if [ $skimtype == "3lskim" ]; then
     cd $dir;
-    # rename _Nominal.root .root *
-    # hadd -f data_3lskim.root Run201??.root  &> /dev/null
-    # hadd -f DY.root DYJetsToLL_M-50.root &> /dev/null
-    # hadd -f WZ.root WZTo3LNu_mllmin01.root WZTo2*.root &> /dev/null
-    # hadd -f WW.root WWTo2L2Nu.root &> /dev/null
-    # hadd -f Triboson.root W??.root Z??.root  &> /dev/null
-    # hadd -f ZZ.root ZZTo*.root &> /dev/null
-    # hadd -f ZH.root ZH_*.root &> /dev/null
-    # [[ -f ZGTo2LG.root ]] && hadd -f ZG.root ZGTo2LG.root &> /dev/null
-    # [[ -f ZLLGJets.root ]] && hadd -f ZG.root ZLLGJets.root &> /dev/null
-    # # hadd -f ttZ.root TTZTo*.root &> /dev/null
-    # # hadd -f top.root TTZTo*.root TTTo2L2Nu.root TTGJets.root &> /dev/null
+    rename _Nominal.root .root *
+    hadd -f data_3lskim.root Run201??.root  &> /dev/null
+    hadd -f DY.root DYJetsToLL_M-50.root &> /dev/null
+    hadd -f WZ.root WZTo3LNu_mllmin01.root WZTo2*.root &> /dev/null
+    hadd -f WW.root WWTo2L2Nu.root &> /dev/null
+    hadd -f Triboson.root W??.root Z??.root  &> /dev/null
+    hadd -f ZZ.root ZZTo*.root &> /dev/null
+    hadd -f ZH.root ZH_*.root &> /dev/null
+    [[ -f ZGTo2LG.root ]] && hadd -f ZG.root ZGTo2LG.root &> /dev/null
+    [[ -f ZLLGJets.root ]] && hadd -f ZG.root ZLLGJets.root &> /dev/null
+    # hadd -f ttZ.root TTZTo*.root &> /dev/null
+    # hadd -f top.root TTZTo*.root TTTo2L2Nu.root TTGJets.root &> /dev/null
     rename TTTo2L2Nu TTbar *
     hadd -f tVX.root TTZTo*.root TTGJets.root TTWJetsToLNu.root tZq.root &> /dev/null
     # hadd -f Others.root WW.root TTGJets.root WGToLNuG.root ZZ.root ZH.root ttZ.root tZq.root  &> /dev/null
     # hadd -f Others.root WW.root TTGJets.root WGToLNuG.root ZZ.root ttZ.root Triboson.root tZq.root  &> /dev/null
-    # hadd -f Others.root WW.root WGToLNuG.root Triboson.root  &> /dev/null
+    hadd -f Others.root WW.root WGToLNuG.root Triboson.root  &> /dev/null
     # hadd -f allBkgs_3l.root ZG.root DY.root Others.root &> /dev/null
     cd -;
 fi

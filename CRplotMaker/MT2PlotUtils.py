@@ -45,14 +45,15 @@ def GetColor(sample):
     if 'Others'  in sample: return 625  # kRed-7
 
     if 'ZG'       == sample: return 796  # kOrange-4
-    if 'ZZ'       == sample: return 17   # kGray+3
-    if 'WZ'       == sample: return 425  # kCyan-7
+    if 'ZZ'       == sample: return 425  # kCyan-7
+    if 'WZ'       == sample: return 861  # kAzure+1
     if 'Nonres'   == sample: return 872  # kViolet-8
     if 'Diboson'  == sample: return 796  # kOrange-4
     if 'Triboson' == sample: return 872  # kViolet-8
-    if 'tVX'      == sample: return 625  # kRed-7
-    # if 'TTbar'    == sample: return 17  # kGray+3
-    if 'TTbar'    == sample: return 861  # kAzure+1
+    if 'tVX'      == sample: return 792  # kOrange-8
+    if 'TTbar'    == sample: return 17   # kGray+3
+    # if 'tVX'      == sample: return 625  # kRed-7
+    # if 'TTbar'    == sample: return 861  # kAzure+1
 
     if "bevt"  in sample: return 842  # kTeal+2
     if "cevt"  in sample: return 798  # kOrange-2

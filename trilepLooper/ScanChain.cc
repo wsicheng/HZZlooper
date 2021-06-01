@@ -34,7 +34,7 @@ bool fillAdjustWeightHists = false;
 bool produceResultPlots = true;
 bool produceInvtdMETtree = false;
 
-const bool makeStepPlots = false;
+const bool makeStepPlots = true;
 const bool produceResultTree = true;
 const bool separateFileForTree = true;
 const bool blind = false;
@@ -314,7 +314,6 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
       if ((is1el || islg) && event_n_leptons_fakeableBase() > 1) continue;
       if ((isllg || isdilep) && event_n_leptons_fakeableBase() > 2) continue;
       if (is3l && event_n_leptons_fakeableBase() > 0) continue;
-
       fill_passedsteps("_ljveto");
 
       met = event_pTmiss();
@@ -482,6 +481,7 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
       // Lepton pT cuts
       float lep1pt(leptons_pt().at(ilep1)), lep2pt(leptons_pt().at(ilep2));
       if (is3l && (lep1pt < 30 || lep2pt < 20 || lep3pt < 20)) continue;
+      fill_passedsteps("_leppt");
 
       fillmasshists("_leppt");
 
@@ -490,7 +490,8 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
       if ((fabs(lep3id) == 13) && mtl3 < 20) continue;
       if ((fabs(lep3id) == 11) && mtl3 < 10) continue;
       if ((fabs(lep3id) == 13) && (1.6*mtl3 + met) < 120) continue;
-      if ((fabs(lep3id) == 11) && (4/3*mtl3 + met) < 120) continue;
+      if ((fabs(lep3id) == 11) && (4*mtl3/3 + met) < 120) continue;
+      fill_passedsteps("_mtmet");
 
       fillmasshists("_mtmet");
 
@@ -511,6 +512,7 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
       fillTrigEffPlots("final", "trigeff_combZll", (passDilepTrig_Zll || passSinglepTrig_Zll), passAnyTrig);
 
       if (!passDilepTrig_Zll && !passSinglepTrig_Zll) continue;
+      fill_passedsteps("_trig");
       fillmasshists("_trig");
 
       njet = event_n_ak4jets_pt30();
@@ -521,17 +523,13 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
       else if (njet == 1) jetcat = "_eq1j";
       else if (njet >= 2) jetcat = "_ge2j";
 
-      // Analysis selections
       // if (Vpt < 55.0) continue;  // no boson pt requirement
       if (fabs(Vmass - 91.2) > 15) continue;  // only for dilepton events
-
       fill_passedsteps("_VptVmass");
 
       if (dphiVmet < 1.0) continue;
-      if (dphilljmet < 2.5) continue;
-      if (njet > 0 && dphijmet < 0.25) continue;
-      if (tightDphiIn2j && njet >= 2 && dphijmet < 0.5) continue;
-
+      if (fabs(dPhi_pTleptonsjets_pTmiss()) < 2.5) continue;
+      if (njet > 0 && min_abs_dPhi_pTj_pTmiss() < 0.25) continue;
       fill_passedsteps("_dphis");
 
       // Record jet veto at horn regions
@@ -553,8 +551,6 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
 
       if (njet > 0) dphiVjet = deltaPhi(ak4jets_phi()[0], Vphi);
       if (njet > 1) dphiVjet = min(dphiVjet, deltaPhi(ak4jets_phi()[1], Vphi));
-
-      if (njet == 0 && dphiVmet < 2.5) jetcat = "_eq0j_lowdphi";  // shouldn't happen now
 
       // End of scale factors
       // --------------------------
@@ -605,13 +601,6 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
         if (njet >= 2) {
           plot1d("h_jet2pt"+s, ak4jets_pt()[1], weight, hvec, ";p_{T}^{jet2} [GeV]" , 160,  0, 800);
           plot1d("h_jet2eta"+s, ak4jets_eta()[1], weight, hvec, ";#eta(jet2)"  , 96,  -4.8f, 4.8f);
-          // // VBF categories
-          // plot1d("h_DjjVBF_finebin"+s, DjjVBF, weight, hvec, ";D_{jj}(VBF) ", 52,  -0.02f, 1.02f);
-          // plot1d("h_DjjVBF"+s, DjjVBF, weight, hvec, ";D_{2jet}^{VBF} ", 20,  0.0f, 1.0f);
-          // plot1d("h_DjjVBFL1"+s, DjjVBFL1, weight, hvec, ";D_{2jet}^{VBF,#Lambda1} ", 20,  0.0f, 1.0f);
-          // plot1d("h_DjjVBFa2"+s, DjjVBFa2, weight, hvec, ";D_{2jet}^{VBF,a2} ", 20,  0.0f, 1.0f);
-          // plot1d("h_DjjVBFa3"+s, DjjVBFa3, weight, hvec, ";D_{2jet}^{VBF,a3} ", 20,  0.0f, 1.0f);
-          // plot1d("h_DjjVBFL1ZGs"+s, DjjVBFL1ZGs, weight, hvec, ";D_{2jet}^{VBF,L1ZGs} ", 20,  0.0f, 1.0f);
         }
 
         // Additional binnings used to derive gamma to ll boson pT reweighting
