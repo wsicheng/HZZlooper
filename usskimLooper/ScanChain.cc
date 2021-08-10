@@ -12,6 +12,7 @@
 #include "TChain.h"
 #include "TSystem.h"
 #include "TSpline.h"
+#include "TRandom3.h"
 
 #include "SkimTree.h"
 #include "Utilities.h"
@@ -33,6 +34,7 @@ bool applyExternalPythiaScale = false;
 bool fillAdjustWeightHists = false;
 bool produceResultPlots = true;
 bool produceInvtdMETtree = false;
+bool makePhotonRegionCut = false;
 
 const bool makeStepPlots = false;
 const bool produceFilterList = false;
@@ -41,6 +43,8 @@ const bool separateFileForTree = true;
 const bool usStyleTree = true;
 const bool fastRun = false;
 const bool blind = false;
+
+const float PI = TMath::Pi();
 
 vector<float> nvtxscale(100, 0);
 
@@ -113,7 +117,7 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
   if (produceInvtdMETtree) systematics = vector<string>{"Nominal"};
 
   if (tag.Contains("all2jsel")) {
-    extendEEphoton2j = doBosonEtaReweight = tightMETin2j = tightDphiIn2j = true;
+    extendEEphoton2j = doBosonEtaReweight = tightMETin2j = tightDphiIn2j = makePhotonRegionCut = true;
   }
   if (tag.Contains("raweta")) {
     doBosonEtaReweight = false;
@@ -121,6 +125,7 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
   }
 
   TFile* f_trigSF = new TFile(Form("data/TriggerSF/%d/trigger_efficiencies_leptons.root", year));
+  TRandom3* gRandom = new TRandom3(0);
 
   map<string,TH1*> hvec;
 
@@ -149,7 +154,7 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
 
   bool ph_convveto;
   bool ph_passPFid;
-  bool ph_isEB;
+  bool ph_isEB, ph_isEE, ph_isBEGap;
   bool is_vbf(false);
 
   float tf_sgtoll(1.), tf_sgtoee, tf_sgtomumu, tf_etog(1.);
@@ -183,6 +188,7 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
         tout->Branch("dilepton_id", &ll_id);
         tout->Branch("dilepton_pt", &ll_pt);
         tout->Branch("dilepton_eta", &ll_eta);
+        tout->Branch("dilepton_phi", &ll_phi);
         tout->Branch("dilepton_mass", &ll_mass);
 
         tout->Branch("pTmiss", &ptmiss);
@@ -195,6 +201,10 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
         tout->Branch("dijet_pt", &dijet_pt);
         tout->Branch("dijet_dEta", &dijet_dEta);
         tout->Branch("dijet_dPhi", &dijet_dPhi);
+
+        tout->Branch("photon_isEB", &ph_isEB);
+        tout->Branch("photon_isEE", &ph_isEE);
+        tout->Branch("photon_isBEGap", &ph_isBEGap);
 
         tout->Branch("ak4jet_leading_pt", jet_pt);
         tout->Branch("ak4jet_leading_eta", jet_eta);
@@ -227,6 +237,7 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
 
         // Extra branches for studies
         if (extraBranches) {
+          tout->Branch("trig_weight", &trigwgt);
           tout->Branch("tf_gamma_to_ll", &tf_sgtoll);
           tout->Branch("mindphi_jet_met", &dphijmet);
           tout->Branch("dphi_boson_met", &dphiVmet);
@@ -313,6 +324,13 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
   TSpline3* h_vbfgval_a3 = fetchHistCopy<TSpline3>("data/gConstant_VBF_g4.root", "sp_tgfinal_VBF_SM_over_tgfinal_VBF_g4");
   TSpline3* h_vbfgval_L1ZGs = fetchHistCopy<TSpline3>("data/gConstant_VBF_L1Zgs.root", "sp_tgfinal_VBF_SM_photoncut_over_tgfinal_VBF_L1Zgs");
 
+  // For assigning to photon mass
+  TFile* f_2lsr = new TFile("output/v5_00_2lSR_all2jsel/data_llskim.root");
+  vector<TH1F*> h_mll_2lSR_nj;
+  h_mll_2lSR_nj.push_back((TH1F*) f_2lsr->Get("OffShell_eq0j_ll/h_mll_metlt125_eq0j_ll"));
+  h_mll_2lSR_nj.push_back((TH1F*) f_2lsr->Get("OffShell_eq1j_ll/h_mll_metlt125_eq1j_ll"));
+  h_mll_2lSR_nj.push_back((TH1F*) f_2lsr->Get("OffShell_ge2j_ll/h_mll_metlt125_ge2j_ll"));
+
   // Setup pileup re-weighting for comparing data of different years
   if (doNvtxReweight) {
     TFile f_purw("../offshellLooper/input/nvtx_reweighting_outhist_to16.root");
@@ -382,6 +400,7 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
 
       double weight = event_wgt();
       if (is_data) weight = 1;
+      else if (year == 2016) weight *= 36.33/35.9;  // correct for 2016 luminosity
       if (weight == 0.) continue;
 
       if (!fnloaded) {
@@ -765,6 +784,7 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
         if (!makeStepPlots) return;
         plot1d("h_metphi_step"+to_string(istep)+s, event_phimiss(), weight, hvec, ";#phi(E_{T}^{miss})"  , 64, -3.2, 3.2);
         plot1d("h_met_step"+to_string(istep)+s, event_pTmiss(), weight, hvec, ";E_{T}^{miss} [GeV]"  , 160, 0, 800);
+        plot1d("h_njet_step"+to_string(istep)+s, event_n_ak4jets_pt30(), weight, hvec, ";N(jet)"  , 6, 0, 6);
         plot1d("h_passed_steps"+lepcat, istep , weight, hvec, ";step" , 20,  0, 20);
         plot1d("h_passed_steps", istep , weight, hvec, ";step" , 20,  0, 20);
         istep++;
@@ -831,6 +851,13 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
       float Vmass = (isdilep)? dilepton_mass() : 91.2;
 
       njet = event_n_ak4jets_pt30();
+
+      if (isgamma) Vmass = h_mll_2lSR_nj.at(std::min(njet, 2U))->GetRandom();
+      LorentzVector met_p4(event_pTmiss(), 0, event_phimiss(), 0);
+      LorentzVector Vp4(Vpt, Veta, Vphi, Vmass);
+      LorentzVector Vp4_pole(Vpt, Veta, Vphi, 91.2);
+      float mtZZ_v1 = getDileptonMT(Vp4, met_p4);
+
       dphijmet = min_abs_dPhi_pTj_pTmiss();
       dphiVmet = fabs(dPhi_pTboson_pTmiss());
       dphilljmet = fabs(dPhi_pTbosonjets_pTmiss());
@@ -926,7 +953,19 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
         met = met_p4.pt();
         metphi = met_p4.phi();
       }
-      // End of cuts
+
+      if (makePhotonRegionCut && (isgamma || isllg)) {
+        if (is_data && photon_isEBEEGap() && 1.48 <= photon_eta() && photon_eta() <= 1.58) {
+          if (-0.78 <= photon_phi() && photon_phi() <= -0.55) continue;
+          else weight *= PI/ (PI-0.46);
+        }
+        if (is_data && !photon_isEB()) {
+          if (fabs(phiFolding(photon_phi())) <= PI/12) continue;
+          else weight *= 1.2;
+        }
+      }
+
+      // End of cuts (except for the MET cut)
       // --------------------------
       // Begin of scale factors
 
@@ -972,7 +1011,7 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
       }
       if (!is_data && (isgamma || isllg)) {
         std::tie(idsfval, idsferr) = getPhotonExtraIDSFs(Vpt, year);
-        weight *= trigsf;
+        weight *= idsfval;
       }
       fill_passedsteps("_VptSF");
 
@@ -994,7 +1033,7 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
       wgt = weight;
 
       // fillPhotonHitMap("_fullMET");
-      if ((njet < 2 && met > 125) || met > 140) {
+      if ((njet < 2 && met > 125) || met > (tightMETin2j? 140 : 125)) {
         // fillPhotonHitMap("_final");
         fill_passedsteps("_final");
       }
@@ -1005,8 +1044,12 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
         plot1d("h_met"+s, met, weight, hvec, ";E_{T}^{miss} [GeV]"  , 160,  0, 800);
         plot1d("h_boson_pt"+s, Vpt, weight, hvec, ";p_{T}(boson) [GeV]" , 160, 0, 800);
         plot1d("h_njets"+s, njet, weight, hvec, ";N(jets)"  , 6,  0, 6);
+        plot1d("h_jetcat"+s, min(njet, 2U), weight, hvec, ";Jet category"  , 3,  0, 3);
         plot1d("h_mtZZ"+s, mtZZ, weight, hvec, ";m_{T}(ZZ) [GeV]"  , 160,  0, 800);
         if (coreonly) return;
+
+        plot1d("h_mtZZ_v1"+s, mtZZ_v1, weight, hvec, ";m_{T}(ZZ) [GeV]"  , 160,  0, 800);
+        plot1d("h_diff_mtZZ_v0v1"+s, fabs(mtZZ_v1-mtZZ)/mtZZ, weight, hvec, ";diff m_{T}(ZZ) [GeV]"  , 100,  0, 1);
 
         plot1d("h_metphi"+s, metphi, weight, hvec, ";#phi(E_{T}^{miss})"  , 68, -3.4, 3.4);
         plot1d("h_mZZ"+s, mZZ, weight, hvec, ";m(ZZ) [GeV]"  , 160,  0, 800);
@@ -1050,8 +1093,29 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
           plot1d("h_usmetrat"+s, usmetrat, weight, hvec, "; p_{T}^{miss} sin(#Delta#phi(lljets, p_{T}^{miss}))/ p_{T}^{lljets} ", 52,  0.f, 5.2f);
           if (mtZZ > 350)
             plot1d("h_usmetrat_mtge350"+s, usmetrat, weight, hvec, "; p_{T}^{miss} sin(#Delta#phi(lljets, p_{T}^{miss}))/ p_{T}^{lljets} ", 52,  0.f, 5.2f);
+
+          // For hot photon
+          if (isgamma || isllg) {
+            plot2d("h2d_photon_hitmap_raw"+s, photon_eta(), photon_phi(), 1, hvec, "; #eta(#gamma); #phi(#gamma)", 100,  -5.f, 5.f, 128, -3.2, 3.2);
+            plot2d("h2d_photon_hitmap_wgtd"+s, photon_eta(), photon_phi(), weight, hvec, "; #eta(#gamma); #phi(#gamma)", 100,  -5.f, 5.f, 128, -3.2, 3.2);
+            if (photon_isEBEEGap()) {
+              plot2d("h2d_photon_hitmap_BEGap"+s, photon_eta(), photon_phi(), 1, hvec, "; #eta(#gamma); #phi(#gamma)", 100,  -5.f, 5.f, 128, -3.2, 3.2);
+              plot1d("h_photon_eta_BEGap"+s, photon_eta(), weight, hvec, ";#eta(#gamma)" , 64,  -3.2f, 3.2f);
+            }
+            if (1.48 < photon_eta() && photon_eta() < 1.58) {
+              plot1d("h_photon_phi_etaslice"+s, Vphi, weight, hvec, ";#phi(#gamma)" , 64,  -3.2f, 3.2f);
+              if (photon_isEBEEGap())
+                plot1d("h_photon_phi_BEGapslice"+s, Vphi, weight, hvec, ";#phi(#gamma)" , 64,  -3.2f, 3.2f);
+            }
+          } else if (is1el) {
+            plot2d("h2d_electron_hitmap_raw"+s, Veta, Vphi, 1, hvec, "; #eta(el); #phi(el)", 100,  -5.f, 5.f, 128, -3.2, 3.2);
+            plot2d("h2d_electron_hitmap_wgtd"+s, Veta, Vphi, weight, hvec, "; #eta(el); #phi(el)", 100,  -5.f, 5.f, 128, -3.2, 3.2);
+            if (1.48 < Veta && Veta < 1.58) {
+              plot1d("h_electron_phi_etaslice"+s, Vphi, weight, hvec, ";#phi(#gamma)" , 64,  -3.2f, 3.2f);
+            }
+          }
         }
-        plot1d("h_jetcat"+s, jet_cat, weight, hvec, ";jet cat.", 3,  0, 3.f);
+        plot1d("h_jet_cat"+s, jet_cat, weight, hvec, ";jet cat.", 3,  0, 3.f);
 
         // Additional binnings used to derive gamma to ll boson pT reweighting
         plot1d("h_boson_pt_b0"+s, Vpt, weight, hvec, ";p_{T}(boson) [GeV]" , ptbin0.size()-1, ptbin0.data());
@@ -1236,9 +1300,6 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
           evtwgt_sys[isys] *= zgsfval;
         }
         weight = evtwgt_sys[systype.Data()];
-        if (static int pct=0; pct++<20) {
-          cout << __LINE__ << ": evtwgt_sys[\"ZGScaleFactorUp\"]= " << evtwgt_sys["ZGScaleFactorUp"] << ", evtwgt_sys[\"ZGScaleFactorDn\"]= " << evtwgt_sys["ZGScaleFactorDn"] << ", weight= " << weight << ", evtwgt_sys[\"Nominal\"]= " << evtwgt_sys["Nominal"] << endl;
-        }
       }
 
       // Count ak8jets for ploting
@@ -1260,6 +1321,9 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
       fillhists(metsuf+jetcat);
       fillhists(metsuf+lepcat);
       fillhists(metsuf+jetcat+lepcat);
+
+      if (isgamma && njet >= 2 && photon_isEB()) 
+        fillhists(metsuf+"_barrelonly"+jetcat+lepcat);
 
       for (string isys : systematics) {
         fillhists(metsuf+"_"+isys, true);
@@ -1298,6 +1362,14 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
         fillhists("_final"+jetcat+lepcat);
       }
 
+      if (Vpt > 100) {
+        fillhists(metsuf+"_ptZ100");
+      }
+
+      if (mtZZ > 300) {
+        fillhists(metsuf+"_mtZZ300"+jetcat+lepcat);
+      }
+
       for (string isys : systematics) {
         weight = evtwgt_sys.at(isys);
         fillhists(metsuf+"_"+isys, true);
@@ -1323,10 +1395,8 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
         }
         if (jet_cat == 2) fillhists(metsuf+"_vbf"+"_ll");
         if (jet_cat == 1) fillhists(metsuf+"_geq1j"+"_ll");
-        if (mtZZ > 350) {
-          fillhists(metsuf+"_mtZZge350"+jetcat+"_ll");
-        } else {
-          fillhists(metsuf+"_mtZZlt350"+jetcat+"_ll");
+        if (mtZZ > 300) {
+          fillhists(metsuf+"_mtZZ300"+jetcat+"_ll");
         }
       }
       // Single electron to gamma transfer factors
@@ -1369,7 +1439,9 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
           fillhists(metsuf+jetcat+"_etogSFDn_ll");
 
           if (met < 125) metsuf = "_metlt125";
-          else if (tightMETin2j && njet >= 2 && met < 140) metsuf = "_metge125";
+          else if (tightMETin2j && njet >= 2 && met < 140) metsuf = "_met125to140";
+          else if (tightMETin2j && njet >= 2 && met < 200) metsuf = "_met140to200";
+          else if (tightMETin2j && njet >= 2 && met > 200) metsuf = "_metge200";
           else metsuf = "_final";
           weight = origwgt * tf_etog * tf_sgtoll;
           fillhists(metsuf+jetcat+"_ll");
@@ -1385,7 +1457,25 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
 
       float met_thr = (tightMETin2j && njet >= 2)? 140 : 125.;
 
+      // // Event detail printing 316240:755:1062964357
+      // if (is_data && RunNumber() == 316240 && EventNumber() == 1062964357) {
+      //   cout << ">> RunNumber()= " << RunNumber() << ", EventNumber()= " << EventNumber() << endl;
+      //   cout << ">> Vpt= " << Vpt << ", Veta= " << Veta << ", Vphi= " << Vphi << ", Vmass= " << Vmass << ", met= " << met << ", metphi= " << metphi << endl;
+      //   cout << ">> leptons_pt()[0]= " << leptons_pt().at(0) << ", eta()[0]= " << leptons_eta().at(0) << ", phi()[0]= " << leptons_phi().at(0) << endl;
+      //   cout << ">> leptons_pt()[1]= " << leptons_pt().at(1) << ", eta()[1]= " << leptons_eta().at(1) << ", phi()[1]= " << leptons_phi().at(1) << endl;
+      //   cout << ">> ak4jets_pt()[0]= " << ak4jets_pt()[0] << ", eta()[0]= " << ak4jets_eta()[0] << ", phi()[0]= " << ak4jets_phi()[0] << endl;
+      //   cout << ">> ak4jets_pt()[1]= " << ak4jets_pt()[1] << ", eta()[1]= " << ak4jets_eta()[1] << ", phi()[1]= " << ak4jets_phi()[1] << endl;
+      //   cout << ">> dphijmet= " << dphijmet << ", dphilljmet= " << dphilljmet << ", mtZZ= " << mtZZ << ", DjjVBF= " << DjjVBF << ", njet= " << njet << endl;
+      // }
+      // // // Print HF jet events
+      // // bool hasHFjet = ((njet > 0) && fabs(ak4jets_eta()[0]) > 3.2) || ((njet > 1) && fabs(ak4jets_eta()[1]) > 3.2);
+      // // if (static int pct7 = 0; is_data && hasHFjet && pct7++ < 20) {
+      // //   cout << ">> Run:Lumi:Event = " << RunNumber() << ":" << LuminosityBlock() << ":" << EventNumber() << endl;
+      // // }
+
+
       bool passMETcut = (produceInvtdMETtree)? met < 125. : met > met_thr;
+      passMETcut &= (mtZZ >= 300);
       if (produceResultTree && passMETcut) {
         // Common branches
         // evt_weight = weight; <-- already assigned
@@ -1464,6 +1554,16 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
               ak8jet_mass = ak8jets_mass()[j];
             }
           }
+
+          if (isllg || isgamma) {
+            ph_isEB     = photon_isEB();
+            ph_isEE     = photon_isEE();
+            ph_isBEGap  = photon_isEBEEGap();
+          } else {
+            ph_isEB     = false;
+            ph_isEE     = false;
+            ph_isBEGap  = false;
+          }
         } else {
           // lepton_cat = lepton_cat; <-- already assigned above
           // mindphi_jet_met = dphijmet; <-- already assigned above
@@ -1489,6 +1589,8 @@ int ScanChain(TChain* ch, TString sample, TString tag, TString systype = "", TSt
             ph_convveto = photon_is_conversionSafe();
             ph_passPFid = photon_is_PFID();
             ph_isEB     = photon_isEB();
+            ph_isEE     = photon_isEE();
+            ph_isBEGap  = photon_isEBEEGap();
             ph_pt       = photon_pt();
             ph_eta      = photon_eta();
             ph_phi      = photon_phi();

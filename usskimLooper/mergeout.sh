@@ -18,7 +18,9 @@ if [ $skimtype == "llskim" ]; then
     hadd -f DY.root DYJetsToLL_*.root &> /dev/null
     hadd -f ZZ.root ZZTo2L2Nu.root ZZTo2L2Q.root ZZTo2Q2Nu.root ZZTo4L.root &> /dev/null
     hadd -f WZ.root WZTo1L3Nu.root WZTo1L1Nu2Q.root WZTo3LNu.root WZTo2L2Q.root &> /dev/null
-    hadd -f Others.root WWToLNuQQ.root TTGJets.root TGJets.root QCD*.root tZq_ll.root ST.root TTWJetsToLNu.root WJetsToLNu.root WGToLNuG.root ZLLGJets.root triboson.root &> /dev/null
+    # hadd -f Others.root WWToLNuQQ.root TTGJets.root TGJets.root QCD*.root tZq_ll.root ST.root TTWJetsToLNu.root WJetsToLNu.root WGToLNuG.root ZLLGJets.root triboson.root &> /dev/null
+    [ -f ZLLGJets.root ] && hadd -f ZGTo2LG.root ZLLGJets.root ZGTo2LG_PtG-130.root &> /dev/null
+    hadd -f Others.root WWToLNuQQ.root TTGJets.root TGJets.root QCD*.root tZq_ll.root ST.root TTWJetsToLNu.root WJetsToLNu.root WGToLNuG.root ZGTo2LG.root triboson.root &> /dev/null
     # hadd -f diboson.root WWToLNuQQ.root WZTo1L3Nu.root WZTo1L1Nu2Q.root WZTo3LNu.root WZTo2L2Q.root   &> /dev/null
     cd -;
 fi
@@ -56,9 +58,7 @@ if [ $skimtype == "slskim" ]; then
     rename _Nominal.root .root *
     hadd -f data_slskim.root EGamma*.root  &> /dev/null
     cd -;
-    cd $phdir
-    ln -s ${dir/output/..}/data_slskim.root WlnuFromCR.root
-    cd -;
+    cd $phdir && ln -s ${dir/output/..}/data_slskim.root WlnuFromCR.root && cd -;
 fi
 
 if [ $skimtype == "phtree" ]; then

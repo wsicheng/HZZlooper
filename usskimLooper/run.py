@@ -40,6 +40,9 @@ osoutdir = "/hadoop/cms/store/user/usarica/Offshell_2L2Nu/Worker/output";
 datasuf  = "/PFMET_WithXY_WithPartMomCorr_P4Preserved/";
 mcsuf    = "/PFMET_WithXY_NoJER_WithPartMomCorr_P4Preserved_ResolutionCorrected/";
 
+skimver  = "v5_01";
+skimver  = "v5_02";
+
 # skimver  = "v4_09";
 # skimdate = "/SkimTrees/210329/AK4Jets_WithPUJetId_NoTightLeptonJetId_ParticleCleaned";
 # mcsuf    = "/PFMET_WithXY_NoJER_WithPartMomCorr_P4Preserved_ResolutionUncorrected/";
@@ -83,6 +86,7 @@ if __name__ == '__main__':
     parser.add_argument('-dr', '--dryrun', action='store_true', default=False)
     parser.add_argument('-fg', '--nolog', action='store_true', default=False)
     # parser.add_argument('--nomerge', action='store_true', default=False)
+    parser.add_argument('--syst', default='nominal')
     parser.add_argument('--merge', action='store_true', default=False)
     parser.add_argument('--nice', default=10)
     parser.add_argument('--test', action='store_true', default=False)
@@ -121,9 +125,24 @@ if __name__ == '__main__':
     # samp_flists_16.update(samplists['bkg_llgskim_16'])
     # samp_flists_17.update(samplists['bkg_llgskim_17'])
     # samp_flists_18.update(samplists['bkg_llgskim_18'])
+    # samp_flists_16.update(samplists['bkg_llskim_16'])
+    # samp_flists_17.update(samplists['bkg_llskim_17'])
+    # samp_flists_18.update(samplists['bkg_llskim_18'])
     # samp_flists_16.update({'ZGTo2NuG' : '',})
     # samp_flists_17.update({'ZGTo2NuG' : '',})
     # samp_flists_18.update({'ZGTo2NuG' : '',})
+    # samp_flists_16.update({'ZZTo2L2Nu' : 'ext1',})
+    # samp_flists_17.update({'ZZTo2L2Nu' : 'Nu_13TeV',})
+    # samp_flists_18.update({'ZZTo2L2Nu' : 'ext2',})
+    # samp_flists_16.update({'WZTo3LNu' : "LNu_Tune,powheg",})
+    # samp_flists_17.update({'WZTo3LNu' : "LNu_13,powheg",})
+    # samp_flists_18.update({'WZTo3LNu' : "LNu_Tune,powheg",})
+    # samp_flists_16.update({'DYJetsToLL_M-50' : "ext2",})
+    # samp_flists_17.update({'DYJetsToLL_M-50' : "ext1",})
+    # samp_flists_18.update({'DYJetsToLL_M-50' : "ext2",})
+    # samp_flists_16.update({'WZTo3LNu' : "mllmin01", 'ZZTo2L2Nu' : "ext1"})
+    # samp_flists_17.update({'WZTo3LNu' : "mllmin01", 'ZZTo2L2Nu' : "Nu_13TeV"})
+    # samp_flists_18.update({'WZTo3LNu' : "mllmin01", 'ZZTo2L2Nu' : "ext2"})
 
     # samp_flists_17.update(samplists['bkg_wgtolnu_1718'])
     # samp_flists_18.update(samplists['bkg_wgtolnu_1718'])
@@ -134,15 +153,21 @@ if __name__ == '__main__':
         "2016:SinglePhotonEvents:phCR_all2jsel_rwgtd" : samp_flists_16,
         "2017:SinglePhotonEvents:phCR_all2jsel_rwgtd" : samp_flists_17,
         "2018:SinglePhotonEvents:phCR_all2jsel_rwgtd" : samp_flists_18,
-        # "2016:SingleLeptonEvents:slCR_all2jsel_rwgtd" : samplists['egamma_2016'],
-        # "2017:SingleLeptonEvents:slCR_all2jsel_rwgtd" : samplists['egamma_2017'],
-        # "2018:SingleLeptonEvents:slCR_all2jsel_rwgtd" : samplists['egamma_2018'],
+        "2016:SingleLeptonEvents:slCR_all2jsel_rwgtd" : samplists['egamma_2016'],
+        "2017:SingleLeptonEvents:slCR_all2jsel_rwgtd" : samplists['egamma_2017'],
+        "2018:SingleLeptonEvents:slCR_all2jsel_rwgtd" : samplists['egamma_2018'],
         # "2016:LLGEvents:llgCR" : samp_flists_16,
         # "2017:LLGEvents:llgCR" : samp_flists_17,
         # "2018:LLGEvents:llgCR" : samp_flists_18,
         # "2016:DileptonEvents:2lSR_all2jsel" : samplists['data_2016'],
         # "2017:DileptonEvents:2lSR_all2jsel" : samplists['data_2017'],
         # "2018:DileptonEvents:2lSR_all2jsel" : samplists['data_2018'],
+        # "2016:DileptonEvents:2lSR_all2jsel" : samp_flists_16,
+        # "2017:DileptonEvents:2lSR_all2jsel" : samp_flists_17,
+        # "2018:DileptonEvents:2lSR_all2jsel" : samp_flists_18,
+        # "2016:DileptonEvents:2lSR2_uni2j" : samp_flists_16,
+        # "2017:DileptonEvents:2lSR2_uni2j" : samp_flists_17,
+        # "2018:DileptonEvents:2lSR2_uni2j" : samp_flists_18,
         # "2016:SinglePhotonEvents:phCR_all2jsel_rwgtd_raweta" : samplists['data_2016'],
         # "2017:SinglePhotonEvents:phCR_all2jsel_rwgtd_raweta" : samplists['data_2017'],
         # "2018:SinglePhotonEvents:phCR_all2jsel_rwgtd_raweta" : samplists['data_2018'],
@@ -151,6 +176,7 @@ if __name__ == '__main__':
         # "2018:SinglePhotonEvents:phCR_all2jsel_rwgtd_wgtsbkup" : samp_flists_18,
         # "2018:SinglePhotonEvents:phCR_ee2j_test" : samplists['data_tester'],
         # "2018:SinglePhotonEvents:phCR_all2jsel_rwgtd_tmp" : samplists['mc_tester'],
+        # "2018:DileptonEvents:2lSR_all2jsel_tmp" : {'Run2018A' : '',},
     }
 
     if args.indir != None: indir = args.indir
@@ -167,8 +193,11 @@ if __name__ == '__main__':
 
     arglist = []
 
-    systypes = ["Nominal", "JECUp", "JECDn", "METUp", "METDn", "JERUp", "JERDn"]
-    # systypes = ["Nominal", ]
+    systypes = ["Nominal", ]
+    if args.syst == 'all':
+        systypes = ["Nominal", "JECUp", "JECDn", "METUp", "METDn", "JERUp", "JERDn"]
+    if args.syst == 'updnonly':
+        systypes = ["JECUp", "JECDn", "METUp", "METDn", "JERUp", "JERDn"]
 
     # The samples that can be separated
     for yrcfg, dslists in yrsamp_flists.items():
@@ -231,7 +260,14 @@ if __name__ == '__main__':
     if njobs_done >= njobs_total-1:
         print( 'All {} job done!'.format(njobs_done) )
         if args.merge:
-            mergeOutputHists(outdir, samplists['merge_map'])
+            os.system('for yr in 2016 2017 2018; do ./mergeout.sh phskim output/v5_02_phCR_all2jsel_rwgtd_${yr}; done')
+            os.system('for yr in 2016 2017 2018; do ./mergeout.sh slskim output/v5_02_slCR_all2jsel_rwgtd_${yr}; done')
+            os.system('./mergeout.sh phrun2 output/v5_02_phCR_all2jsel_rwgtd')
+            os.system('for yr in 2016 2017 2018; do ./mergeout.sh phtree outtree/v5_02_phCR_all2jsel_rwgtd_${yr}; done')
+            os.system('for yr in 2016 2017 2018; do ./mergeout.sh sltree outtree/v5_02_slCR_all2jsel_rwgtd_${yr}; done')
+            os.system('for yr in 2016 2017 2018; do cp outtree/v5_02_phCR_all2jsel_rwgtd_${yr}/* ~/shared/finaltrees_v2/${yr} && rm ~/shared/finaltrees_v2/${yr}/finaltree_Run*; done')
+            os.system('for yr in 2016 2017 2018; do cp outtree/v5_02_slCR_all2jsel_rwgtd_${yr}/finaltree_WJetsToLNu_datadriven_* ~/shared/finaltrees_v2/${yr}; done')
+            # os.system('echo "Find trees in ~sicheng/shared/finaltrees_v2/" | mail -s "Jobs Done" $EMAIL')
     else:
         print( '{} jobs finished out of {}!'.format(njobs_done, njobs_total) )
 

@@ -53,12 +53,11 @@ egamma_2018:
   EGamma_2018C:
   EGamma_2018D:
 
-
 bkg_llskim_18:
   DYJetsToLL_M-50: "ext2"
   DYJetsToLL_M-10to50: "ext1"
   ZZTo2L2Nu: "ext2"
-  ZZTo2L2Nu_mZMin-18:
+  # ZZTo2L2Nu_mZMin-18:
   WWTo2L2Nu:
   TTTo2L2Nu:
   TTZToLLNuNu:
@@ -68,6 +67,69 @@ bkg_llskim_18:
   WJetsToLNu: "amcatnloFXFX"
   TGJets:
   WGToLNuG: "amcatnloFXFX"
+  tZq_ll:
+  QCD_HT:
+  ZZTo2L2Q:
+  ZZTo2Q2Nu:
+  ZZTo4L:
+  WWToLNuQQ:
+  WZTo1L1Nu2Q:
+  WZTo2L2Q:
+  WZTo3LNu: "mllmin01"
+  WZTo1L3Nu: "amcatnloFXFX"
+  ZGTo2LG_PtG-130:
+  ZLLGJets:
+  WWW:
+  WWZ:
+  ZZZ:
+  WZG:
+  WZZ:
+
+bkg_llskim_17:
+  DYJetsToLL_M-50: "ext1"
+  DYJetsToLL_M-10to50: "ext1"
+  ZZTo2L2Nu: "Nu_13TeV"
+  WWTo2L2Nu:
+  TTTo2L2Nu:
+  TTZToLLNuNu:
+  ST:
+  TTGJets:
+  TTWJetsToLNu:
+  WJetsToLNu: "amcatnloFXFX"
+  TGJets:
+  WGToLNuG: "amcatnloFXFX"
+  tZq_ll:
+  QCD_HT:
+  ZZTo2L2Q:
+  ZZTo2Q2Nu:
+  ZZTo4L:
+  WWToLNuQQ:
+  WZTo1L1Nu2Q:
+  WZTo2L2Q:
+  WZTo3LNu: "mllmin01"
+  WZTo1L3Nu: "amcatnloFXFX"
+  ZGTo2LG_PtG-130:
+  ZLLGJets:
+  WWW:
+  WWZ:
+  ZZZ:
+  WZG:
+  WZZ:
+
+bkg_llskim_16:
+  DYJetsToLL_M-50: "ext2"
+  DYJetsToLL_M-10to50: "ext1"
+  ZGTo2LG:
+  ZZTo2L2Nu: "ext1"
+  WWTo2L2Nu:
+  TTTo2L2Nu:
+  TTZToLLNuNu:
+  ST:
+  TTGJets:
+  TTWJetsToLNu:
+  WJetsToLNu: "amcatnloFXFX"
+  TGJets:
+  WGToLNuG: "LNuG_01J"
   tZq_ll:
   QCD_HT:
   ZZTo2L2Q:

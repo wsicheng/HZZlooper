@@ -165,33 +165,30 @@ def makeCombinedHists():
 
 def makeSubtraction():
 
-    year = '2018'
+    year = '2017'
     indir = '../usskimLooper/output/'
-    skimver = 'v4_04'
-    # phsuf = '_ee2j_flateta_rwgtd'
-    phsuf = '2_ee2j_flateta_rwgtd_metge125'
+    skimver = 'v5_00'
+    phsuf = '_all2jsel_rwgtd'
 
-    fdat = r.TFile('{0}{2}_phCR{3}_{1}/data_{1}_phskim.root'.format(indir, year, skimver, phsuf))
+    fdat = r.TFile('{0}{2}_phCR{3}_{1}/data_phskim.root'.format(indir, year, skimver, phsuf))
     fbkg = r.TFile('{0}{2}_phCR{3}_{1}/subtractor.root'.format(indir, year, skimver, phsuf))
     fout = r.TFile('{0}{2}_phCR{3}_{1}/DYestFromCR.root'.format(indir, year, skimver, phsuf), 'RECREATE')
 
-
-    year = 'run2'
-    indir = '../usskimLooper/output/fthists_'
-    skimver = 'v4_06_dphi0p5_met140'
-    fdat = r.TFile('{0}{2}_{1}/data.root'.format(indir, year, skimver, phsuf))
-    fbkg = r.TFile('{0}{2}_{1}/subtractor.root'.format(indir, year, skimver, phsuf))
-    fout = r.TFile('{0}{2}_{1}/DYestFromCR.root'.format(indir, year, skimver, phsuf), 'RECREATE')
+    # year = 'run2'
+    # indir = '../usskimLooper/output/fthists_'
+    # skimver = 'v4_06_dphi0p5_met140'
+    # fdat = r.TFile('{0}{2}_{1}/data.root'.format(indir, year, skimver, phsuf))
+    # fbkg = r.TFile('{0}{2}_{1}/subtractor.root'.format(indir, year, skimver, phsuf))
+    # fout = r.TFile('{0}{2}_{1}/DYestFromCR.root'.format(indir, year, skimver, phsuf), 'RECREATE')
 
     nfast = 'data single-#gamma'
     nfull = ''
 
     # hlist = ['mtZZ', 'mZZ', 'mtZZ_b1', 'mtZZ_b3', 'njets', 'boson_pt', 'met', 'DjjVBF', 'usmetrat' ]
     # hlist = ['mtZZ', 'mZZ', 'mtZZ_b1', 'mtZZ_b3', 'njets', 'boson_pt', 'met', 'DjjVBF', 'min_dphijemt', 'dphi_boson_met', 'dphi_lljets_met']
-    hlist = ['mtZZ', 'mtZZ_b1', 'njets', 'boson_pt', 'met', 'DjjVBF', 'min_dphijemt', 'dphi_boson_met', 'dphi_lljets_met']
+    hlist = ['mtZZ', 'mtZZ_b1', 'njets', 'boson_pt', 'met', 'DjjVBF', 'min_dphijmet', 'min_dphiVjet', 'dphi_boson_met', 'dphi_lljets_met']
 
     for lsuf in ['_ll',]:
-    # for metsuf in ['_fullMET', '_metge125',  '_metlt125']:
         for jsuf in ['_eq0j', '_eq1j', '_ge2j']:
             dn = 'OffShell'+jsuf+lsuf
             hdir = fdat.Get('{}'.format(dn))
@@ -206,6 +203,7 @@ def makeSubtraction():
                     if hname in hn: inlist = True
 
                 if not inlist: continue
+                if 'photon' in hn or 'm60to130' in hn: continue
 
                 hdat = fdat.Get('{}/{}'.format(dn, hn))
                 hbkg = fbkg.Get('{}/{}'.format(dn, hn))
@@ -245,7 +243,7 @@ def plotDYComparePlots(hdir, hname='met', samp='', rebin=1, y2=None, newrange=No
 
     # y2 = True
     ffast = r.TFile('{0}{2}_phCR{3}_{1}/data_phskim.root'.format(indir, year, kwargs.get('skimver', 'v5_00'), phsuf))
-    ffull = r.TFile('{0}{2}_2lSR{3}_{1}/data_llskim.root'.format(indir, year, kwargs.get('skimver', 'v5_00'), llsuf))
+    ffull = r.TFile('{0}{2}_2lSR{3}_{1}/data_llskim.root'.format(indir, year, kwargs.get('llver', kwargs.get('skimver', 'v5_00')), llsuf))
     if y2: fy2 = r.TFile('{0}{2}_phCR{2}_{1}/subtractor.root'.format(indir, year, kwargs.get('skimver', 'v5_00'), phsuf))
     nfast = 'data single-#gamma'
     nfull = 'data ee/#mu#mu'
@@ -492,11 +490,12 @@ def makeDYtestPlots():
 
     args = {
         'year'    : '2018',
-        'sdir'    : 'dyest_v5_00_May9',
-        # 'phsuf'   : '_all2jsel',
-        'phsuf'   : '_all2jsel_rwgtd_raweta',
+        'sdir'    : 'dyest_v5_02_May9',
+        'phsuf'   : '_all2jsel',
+        # 'phsuf'   : '_all2jsel_rwgtd_raweta',
         'llsuf'   : '_all2jsel',
-        'skimver' : 'v5_00',
+        'skimver' : 'v5_02',
+        'llver'   : 'v5_00',
         'lsuf'    : 'll',
     }
 
@@ -530,10 +529,10 @@ if __name__ == '__main__':
     # makeSubtraction()
     # makeCombinedHists()
 
-    makeNjetSF('2016', 1)
-    makeNjetSF('2016', 2)
-    makeNjetSF('2017', 1)
-    makeNjetSF('2017', 2)
-    makeNjetSF('2018', 1)
-    makeNjetSF('2018', 2)
+    # makeNjetSF('2016', 1)
+    # makeNjetSF('2016', 2)
+    # makeNjetSF('2017', 1)
+    # makeNjetSF('2017', 2)
+    # makeNjetSF('2018', 1)
+    # makeNjetSF('2018', 2)
 

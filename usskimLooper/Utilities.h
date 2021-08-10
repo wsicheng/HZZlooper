@@ -110,7 +110,7 @@ inline bool isCloseObject(const float eta1, const float phi1, const float eta2, 
   return true;
 }
 
-inline float phiFolding(float phi, float shift = 0.05) {
+inline float phiFolding(float phi, float shift = 0) {
   phi += shift;
   while (phi > TMath::Pi()) phi -= TMath::TwoPi();
   while (phi < -TMath::Pi()) phi += TMath::TwoPi();
@@ -1064,6 +1064,7 @@ std::pair<float,float> getNjetSFfromLLG(int njet, int year, string systype) {
     float diff = sfval_llgCR_v1.at(year).at(std::min(njet, 2)) - sfval_llgCR_v2.at(year).at(std::min(njet, 2));
     sferr = sqrt(sferr*sferr + diff*diff);
   }
+  if (year == 2016) sfval *= 35.9/36.33;
 
   return std::make_pair(sfval, sferr);
 }
